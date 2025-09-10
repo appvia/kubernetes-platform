@@ -4,20 +4,20 @@
 
     This documentation is a work in progress and is subject to change. Please check back regularly for updates.
 
-The following tries to depict a typical standalone deployment. You can find the example code base for this walk-through at [https://github.com/gambol99/platform-tenant](https://github.com/gambol99/platform-tenant)
+The following tries to depict a typical standalone deployment. You can find the example code base for this walk-through at [https://github.com/appvia/platform-tenant](https://github.com/appvia/platform-tenant)
 
 ## :octicons-cross-reference-24: Example Scenerio
 
 Using the following scenario, we have
 
-| Feature | Description |
-|---------|-------------|
-| Multiple Environments | Two Kubernetes clusters (`dev` and `prod`) representing different environments in the application life cycle |
-| Independent Platform Upgrades | Each cluster runs its own version of the platform, allowing independent platform upgrades and testing |
-| GitOps Workflows | Application teams can deploy and manage their applications using GitOps workflows |
-| Controlled Promotion | Changes to both platform and applications can be promoted between environments in a controlled manner |
-| Version Tracking | Platform versions are defined in code, enabling clear tracking of what's running where |
-| Team Autonomy | Application teams have autonomy to deploy, test, and promote |
+| Feature                       | Description                                                                                                  |
+| ----------------------------- | ------------------------------------------------------------------------------------------------------------ |
+| Multiple Environments         | Two Kubernetes clusters (`dev` and `prod`) representing different environments in the application life cycle |
+| Independent Platform Upgrades | Each cluster runs its own version of the platform, allowing independent platform upgrades and testing        |
+| GitOps Workflows              | Application teams can deploy and manage their applications using GitOps workflows                            |
+| Controlled Promotion          | Changes to both platform and applications can be promoted between environments in a controlled manner        |
+| Version Tracking              | Platform versions are defined in code, enabling clear tracking of what's running where                       |
+| Team Autonomy                 | Application teams have autonomy to deploy, test, and promote                                                 |
 
 ## :octicons-cpu-24: Required Binaries
 
@@ -27,10 +27,10 @@ Using the following scenario, we have
 
 ## :octicons-project-roadmap-24: Setup the Environments
 
-We need to provision a repository to house the tenant application stack, we can use the template [EKS Tenant](https://github.com/gambol99/eks-tenant). Clone repository via
+We need to provision a repository to house the tenant application stack, we can use the template [EKS Tenant](https://github.com/appvia/eks-tenant). Clone repository via
 
 ```shell
-gh repo clone gambol99/provision-tenant
+gh repo clone appvia/provision-tenant
 ```
 
 The folder structure of a tenant repository is as follows.
@@ -44,7 +44,7 @@ The folder structure of a tenant repository is as follows.
 
 ## Cluster Definitions
 
-A typical [cluster definition](https://github.com/gambol99/platform-tenant/blob/main/clusters/dev.yaml) is as follows
+A typical [cluster definition](https://github.com/appvia/platform-tenant/blob/main/clusters/dev.yaml) is as follows
 
 ```yaml
 ## The name of the tenant cluster
@@ -54,13 +54,13 @@ cloud_vendor: aws
 ## The environment to use for the tenant cluster
 environment: development
 ## The repository containing the tenant configuration
-tenant_repository: https://github.com/gambol99/platform-tenant.git
+tenant_repository: https://github.com/appvia/platform-tenant.git
 ## The revision to use for the tenant repository
 tenant_revision: HEAD
 ## The path inside the tenant repository to use for the tenant cluster
 tenant_path: ""
 ## The repository containing the platform configuration
-platform_repository: https://github.com/gambol99/kubernetes-platform.git
+platform_repository: https://github.com/appvia/kubernetes-platform.git
 ## The revision to use for the platform repository
 platform_revision: HEAD
 ## The path inside the platform repository
@@ -79,7 +79,7 @@ labels:
   enable_metrics_server: "true"
 ```
 
-Noteworthy section are the `labels`. Label are used by the platform to control whether a piece of [functionality is installed](https://github.com/gambol99/kubernetes-platform/blob/main/apps/system/system-helm.yaml#L60-L67) via the platform.
+Noteworthy section are the `labels`. Label are used by the platform to control whether a piece of [functionality is installed](https://github.com/appvia/kubernetes-platform/blob/main/apps/system/system-helm.yaml#L60-L67) via the platform.
 
 The following depicts a typical setup using the standalone deployment option. We have an application stacks and te
 
@@ -88,11 +88,11 @@ Under this arrangement
 - ArgoCD is installed on the cluster itself, with all deployments installing on the same cluster.
 - The tenany repository points at the version of the platform, and contains the applications stack.
 
-| Feature | Description |
-|---------|-------------|
-| Multiple Environments | Two Kubernetes clusters (`dev` and `prod`) representing different environments in the application life cycle |
-| Independent Platform Upgrades | Each cluster runs its own version of the platform, allowing independent platform upgrades and testing |
-| GitOps Workflows | Application teams can deploy and manage their applications using GitOps workflows |
-| Controlled Promotion | Changes to both platform and applications can be promoted between environments in a controlled manner |
-| Version Tracking | Platform versions are defined in code, enabling clear tracking of what's running where |
-| Team Autonomy | Application teams have autonomy to deploy, test, and promote |
+| Feature                       | Description                                                                                                  |
+| ----------------------------- | ------------------------------------------------------------------------------------------------------------ |
+| Multiple Environments         | Two Kubernetes clusters (`dev` and `prod`) representing different environments in the application life cycle |
+| Independent Platform Upgrades | Each cluster runs its own version of the platform, allowing independent platform upgrades and testing        |
+| GitOps Workflows              | Application teams can deploy and manage their applications using GitOps workflows                            |
+| Controlled Promotion          | Changes to both platform and applications can be promoted between environments in a controlled manner        |
+| Version Tracking              | Platform versions are defined in code, enabling clear tracking of what's running where                       |
+| Team Autonomy                 | Application teams have autonomy to deploy, test, and promote                                                 |

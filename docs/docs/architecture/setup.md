@@ -16,13 +16,13 @@ cloud_vendor: aws
 ## The environment to use for the tenant cluster
 environment: development
 ## The repository containing the tenant configuration
-tenant_repository: https://github.com/gambol99/platform-tenant.git
+tenant_repository: https://github.com/appvia/platform-tenant.git
 ## The revision to use for the tenant repository
 tenant_revision: HEAD
 ## The path inside the tenant repository to use for the tenant cluster
 tenant_path: ""
 ## The repository containing the platform configuration
-platform_repository: https://github.com/gambol99/kubernetes-platform.git
+platform_repository: https://github.com/appvia/kubernetes-platform.git
 ## The revision to use for the platform repository
 platform_revision: HEAD
 ## The path inside the platform repository
@@ -48,7 +48,7 @@ Once we have provisioned a Kubernetes cluster and installed ArgoCD, the values f
 - Platform Repository and Revision: the location of the platform (i.e. this repository) and the version of the platform you want to run.
 - Tenant Repository: the location of the tenant repository, which contains the cluster definitions, and tenants applications.
 
-See the [Standalone Example Repository](https://github.com/gambol99/platform-tenant)
+See the [Standalone Example Repository](https://github.com/appvia/platform-tenant)
 
 ## Bootstrap Application
 
@@ -73,7 +73,7 @@ locals {
 ## Provision and bootstrap the platform using an tenant repository
 module "platform" {
   count = local.enable_platform ? 1 : 0
-  source = "github.com/gambol99/terraform-aws-eks//modules/platform?ref=main"
+  source = "github.com/appvia/terraform-aws-eks//modules/platform?ref=main"
 
   ## Name of the cluster
   cluster_name = local.cluster_name
@@ -119,7 +119,7 @@ source:
       - patch: |
           - op: replace
             path: /spec/generators/0/git/repoURL
-            value: https://github.com/gambol99/platform-tenant.git
+            value: https://github.com/appvia/platform-tenant.git
           - op: replace
             path: /spec/generators/0/git/revision
             value: main
@@ -130,11 +130,11 @@ source:
           kind: ApplicationSet
           name: system-platform
   path: kustomize/overlays/standalone
-  repoURL: https://github.com/gambol99/kubernetes-platform.git
+  repoURL: https://github.com/appvia/kubernetes-platform.git
   targetRevision: main
 ```
 
-The application passes the tenany repository down into the platform as Kustomize patches, alone with the location of the cluster definition. The next important Application created off the back of this is the `system-registration` Application, which can be found [here](https://github.com/gambol99/kubernetes-platform/blob/main/apps/registration/standalone/registration.yaml).
+The application passes the tenany repository down into the platform as Kustomize patches, alone with the location of the cluster definition. The next important Application created off the back of this is the `system-registration` Application, which can be found [here](https://github.com/appvia/kubernetes-platform/blob/main/apps/registration/standalone/registration.yaml).
 
 ## Cluster Registration
 
@@ -146,6 +146,6 @@ NAME                  SYNC STATUS   HEALTH STATUS
 system-registration   Synced        Healthy
 ```
 
-This used the [charts/cluster-registration](https://github.com/gambol99/kubernetes-platform/tree/main/charts/cluster-registration), creating the ArgoCD cluster secret from the values.
+This used the [charts/cluster-registration](https://github.com/appvia/kubernetes-platform/tree/main/charts/cluster-registration), creating the ArgoCD cluster secret from the values.
 
 The bootstap also sources in the rest of the Platform application sets which are repository for providing tenant functionality as well sourcing in the platform applications themselves.

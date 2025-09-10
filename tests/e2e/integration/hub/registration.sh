@@ -25,8 +25,8 @@ teardown() {
 }
 
 @test "We should have a cluster registration application pointing at the correct git repository" {
-  kubectl_argocd "get application system-registration-hub -o yaml | yq .spec.sources[0].repoURL | grep -i https://github.com/gambol99/kubernetes-platform"
-  kubectl_argocd "get application system-registration-spoke -o yaml | yq .spec.sources[0].repoURL | grep -i https://github.com/gambol99/kubernetes-platform"
+  kubectl_argocd "get application system-registration-hub -o yaml | yq .spec.sources[0].repoURL | grep -i https://github.com/appvia/kubernetes-platform"
+  kubectl_argocd "get application system-registration-spoke -o yaml | yq .spec.sources[0].repoURL | grep -i https://github.com/appvia/kubernetes-platform"
 }
 
 @test "We should have a cluster registration application pointing at the correct git branch" {
@@ -49,7 +49,7 @@ teardown() {
 }
 
 @test "We should have a cluster secret with a platform_repository annotation" {
-  kubectl_argocd "get secret cluster-hub -o yaml | yq .metadata.annotations.platform_repository | grep -i https://github.com/gambol99/kubernetes-platform"
+  kubectl_argocd "get secret cluster-hub -o yaml | yq .metadata.annotations.platform_repository | grep -i https://github.com/appvia/kubernetes-platform"
 }
 
 @test "We should have a cluster secret with a platform_revision annotation" {
@@ -57,7 +57,7 @@ teardown() {
 }
 
 @test "We should have a cluster secret with a tenant repository annotation" {
-  kubectl_argocd "get secret cluster-hub -o yaml | yq .metadata.annotations.tenant_repository | grep -i https://github.com/gambol99/kubernetes-platform"
+  kubectl_argocd "get secret cluster-hub -o yaml | yq .metadata.annotations.tenant_repository | grep -i https://github.com/appvia/kubernetes-platform"
 }
 
 @test "We should have a cluster secret with a tenant revision annotation" {
@@ -65,7 +65,7 @@ teardown() {
 }
 
 @test "We should have the expected labels on the cluster secret" {
-  kubectl_argocd "get secret cluster-hub -o yaml | yq .metadata.labels | grep -i 'enable_core: \"true\"'"  
+  kubectl_argocd "get secret cluster-hub -o yaml | yq .metadata.labels | grep -i 'enable_core: \"true\"'"
   kubectl_argocd "get secret cluster-hub -o yaml | yq .metadata.labels | grep -i 'enable_kyverno: \"true\"'"
   kubectl_argocd "get secret cluster-hub -o yaml | yq .metadata.labels | grep -i 'cluster_type: hub'"
   kubectl_argocd "get secret cluster-hub -o yaml | yq .metadata.labels | grep -i 'cluster_name: hub'"
