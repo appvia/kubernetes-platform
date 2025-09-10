@@ -32,7 +32,7 @@ jobs:
           LAST_TAG=$(git tag --sort=-version:refname | head -n 2 | tail -n 1)
           echo "LAST_TAG=${LAST_TAG}" >> "${GITHUB_ENV}"
       - name: Generate a changelog
-        uses: orhun/git-cliff-action@v3
+        uses: orhun/git-cliff-action@v4
         with:
           args: "--verbose ${{ env.LAST_TAG }}..HEAD"
           config: .cliff/cliff.toml
