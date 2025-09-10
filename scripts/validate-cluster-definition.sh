@@ -94,8 +94,10 @@ function check_cluster_type() {
 function check_repositories() {
   echo -e "\n${GREEN}Checking repositories:${NC}"
 
-  local tenant_repo=$(yq e '.tenant_repository' "$CLUSTER_FILE")
-  local platform_repo=$(yq e '.platform_repository' "$CLUSTER_FILE")
+  local tenant_repo, platform_repo
+
+  tenant_repo=$(yq e '.tenant_repository' "$CLUSTER_FILE")
+  platform_repo=$(yq e '.platform_repository' "$CLUSTER_FILE")
 
   # Basic format validation
   if [[ ! $tenant_repo =~ ^https://.*\.git$  ]]; then
@@ -112,7 +114,9 @@ function check_features() {
   echo -e "\n${GREEN}Checking enabled features:${NC}"
 
   # Get all keys from the labels section
-  local all_labels=$(yq e '.labels | keys | .[]' "$CLUSTER_FILE" || echo "")
+  local all_labels
+
+  all_labels=$(yq e '.labels | keys | .[]' "$CLUSTER_FILE" || echo "")
 
   if [ -z "$all_labels" ]; then
     echo -e "${YELLOW}Warning: No labels defined in the cluster definition${NC}"
@@ -128,7 +132,7 @@ function check_features() {
   for label in $all_labels; do
     # Check if label starts with enable_
     if [[ $label =~ ^enable_ ]]; then
-      local value=$(yq e ".labels.$label" "$CLUSTER_FILE")
+      value=$(yq e ".labels.$label" "$CLUSTER_FILE")
 
       # Validate value is true or false
       if [ "$value" == "true" ] || [ "$value" == "false" ]; then
@@ -187,13 +191,15 @@ function check_features() {
 
 # Check cloud vendor specific configuration
 function check_cloud_vendor() {
-  local vendor=$(yq e '.cloud_vendor' "$CLUSTER_FILE")
+  local vendor
+
+  vendor=$(yq e '.cloud_vendor' "$CLUSTER_FILE")
   echo -e "\n${GREEN}Checking cloud vendor configuration for: $vendor${NC}"
 
   case $vendor in
     aws)
       # Check for AWS specific fields
-      local region=$(yq e '.aws_region // ""' "$CLUSTER_FILE")
+      region=$(yq e '.aws_region // ""' "$CLUSTER_FILE")
       if [ -z "$region" ]; then
         echo -e "${YELLOW}Warning: No AWS region specified${NC}"
       else
@@ -203,7 +209,9 @@ function check_cloud_vendor() {
 
     azure | azurerm)
       # Check for Azure specific fields
-      local resource_group=$(yq e '.resource_group // ""' "$CLUSTER_FILE")
+      local resource_group
+
+      resource_group=$(yq e '.resource_group // ""' "$CLUSTER_FILE")
       if [ -z "$resource_group" ]; then
         echo -e "${YELLOW}Warning: No Azure resource group specified${NC}"
       else
@@ -213,7 +221,9 @@ function check_cloud_vendor() {
 
     google | gcp)
       # Check for GCP specific fields
-      local project=$(yq e '.project_id // ""' "$CLUSTER_FILE")
+      local project
+
+      project=$(yq e '.project_id // ""' "$CLUSTER_FILE")
       if [ -z "$project" ]; then
         echo -e "${YELLOW}Warning: No GCP project ID specified${NC}"
       else
