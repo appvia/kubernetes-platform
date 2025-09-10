@@ -16,5 +16,5 @@ This repository includes a terraform pipeline / codebase to validate locally a s
 
 The terraform codebase can be found in the `terraform` directory. This currently uses two modules to handle the provisioning.
 
-- [terraform-aws-eks](https://github.com/gambol99/terraform-aws-eks) - This module provisions the EKS cluster, networking, iam roles and so on.
-- [terraform-kube-platform](https://github.com/gambol99/terraform-kube-platform) - This module provisions the platform components, such as ArgoCD and bootstraps the cluster with the platform.
+- [terraform-aws-eks](https://github.com/appvia/terraform-aws-eks) - This module provisions the EKS cluster, networking, iam roles and so on.
+- [terraform-kube-platform](https://github.com/appvia/terraform-kube-platform) - This module provisions the platform components, such as ArgoCD and bootstraps the cluster with the platform.

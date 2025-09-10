@@ -7,7 +7,7 @@ kustomize:
   ## The path inside the repository
   path: cloudresources/aws/
   ## The location of an external kustomize repository (optional)
-  repository: https://github.com/gambol99/terranetes-cloudresources.git
+  repository: https://github.com/appvia/terranetes-cloudresources.git
   ## The revision of the external repository (optional)
   revision: main
 

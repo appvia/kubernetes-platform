@@ -2,12 +2,12 @@
 
 All of the platform applications are effectively sourced in via these two application sets
 
-- [Helm Application](https://github.com/gambol99/kubernetes-platform/blob/main/apps/system/system-helm.yaml): is responsible for reading the helm application definition, and installing the applications on all clusters who have the `enable_FEATURE` label.
-- [Kustomize Applications](https://github.com/gambol99/kubernetes-platform/blob/main/apps/system/system-kustomize.yaml): is responsible for installing any Kustomize applications from the Platform, again using the feature labels as a toggle.
+- [Helm Application](https://github.com/appvia/kubernetes-platform/blob/main/apps/system/system-helm.yaml): is responsible for reading the helm application definition, and installing the applications on all clusters who have the `enable_FEATURE` label.
+- [Kustomize Applications](https://github.com/appvia/kubernetes-platform/blob/main/apps/system/system-kustomize.yaml): is responsible for installing any Kustomize applications from the Platform, again using the feature labels as a toggle.
 
 ## Helm Applications
 
-All the helm applications deployable by the platform can be found in the [addons](https://github.com/gambol99/kubernetes-platform/tree/main/addons) directory. For Helm applications
+All the helm applications deployable by the platform can be found in the [addons](https://github.com/appvia/kubernetes-platform/tree/main/addons) directory. For Helm applications
 
 ```shell
 $ tree addons/helm -L2

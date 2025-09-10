@@ -1,5 +1,5 @@
 site_name: Kubernetes Platform
-repo_url: https://github.com/gambol99/kubernetes-platform
+repo_url: https://github.com/appvia/kubernetes-platform
 
 nav:
   - Overview: index.md
@@ -55,7 +55,7 @@ plugins:
 extra:
   social:
     - icon: simple/github
-      link: https://github.com/gambol99
+      link: https://github.com/appvia
 
 ## Copyright
 copyright: Copyright &copy; 2025 Rohith Jayawardene

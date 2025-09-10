@@ -45,8 +45,8 @@ release/hub-aws/
 └── workloads
 ```
 
-1. We have two cluster definitions [hub.yaml](https://github.com/gambol99/kubernetes-platform/blob/main/release/hub-aws/clusters/hub.yaml) and [spoke.yaml](https://github.com/gambol99/kubernetes-platform/blob/main/release/hub-aws/clusters/spoke.yaml)
-2. Note, similar to local development with [local](https://gambol99.github.io/kubernetes-platform/development/local/) and the [standalone](https://gambol99.github.io/kubernetes-platform/development/standalone/) development, the revision found in the cluster definitions are overridden, allowing you to use your current branch to validate changes.
+1. We have two cluster definitions [hub.yaml](https://github.com/appvia/kubernetes-platform/blob/main/release/hub-aws/clusters/hub.yaml) and [spoke.yaml](https://github.com/appvia/kubernetes-platform/blob/main/release/hub-aws/clusters/spoke.yaml)
+2. Note, similar to local development with [local](https://appvia.github.io/kubernetes-platform/development/local/) and the [standalone](https://appvia.github.io/kubernetes-platform/development/standalone/) development, the revision found in the cluster definitions are overridden, allowing you to use your current branch to validate changes.
 
 ### :octicons-rocket-24: Provision the Hub cluster
 
@@ -136,7 +136,7 @@ resource "aws_iam_role" "argocd_cross_account_role" {
 
     You could bypass the updating of the cluster configuration by simply added an known endpoint i.e create route53 domain and use the EKS endpoint as a CNAME
 
-On the Hub cluster [pod identity](https://github.com/gambol99/terraform-aws-eks/blob/main/pod_identity.tf#L1-L29) allows the ArgoCD service account to assume the roles in the spoke accounts. The only manually change currently is adding in the Kubernetes endpoints URL post the creation.
+On the Hub cluster [pod identity](https://github.com/appvia/terraform-aws-eks/blob/main/pod_identity.tf#L1-L29) allows the ArgoCD service account to assume the roles in the spoke accounts. The only manually change currently is adding in the Kubernetes endpoints URL post the creation.
 
 1. Once a spoke have been provisioned, you will have the Kubernetes endpoints URL in the terraform outputs or AWS Console.
 2. We need to update the cluster definition in the spoke to include this information i.e. below

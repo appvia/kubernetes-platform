@@ -23,7 +23,7 @@ helm repo update
 
 ## :octicons-rocket-24: Provisioning a Local Cluster (Standalone)
 
-Within the [platform repository](https://github.com/gambol99/kubernetes-platform) we have a `release` folder, which can be used to simulate a tenant repository, keeping all the development within the same repository.
+Within the [platform repository](https://github.com/appvia/kubernetes-platform) we have a `release` folder, which can be used to simulate a tenant repository, keeping all the development within the same repository.
 
 ```shell
 $ tree release -L2
