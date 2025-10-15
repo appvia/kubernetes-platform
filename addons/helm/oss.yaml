@@ -26,13 +26,13 @@
 - feature: cert_manager
   chart: cert-manager
   repository: https://charts.jetstack.io
-  version: "v1.15.2"
+  version: "v1.19.1"
   namespace: cert-manager
 
 - feature: cilium
   chart: cilium
   repository: https://helm.cilium.io/
-  version: "1.17.1"
+  version: "1.18.2"
   namespace: cilium-system
 
 - feature: cluster_autoscaler
@@ -44,13 +44,13 @@
 - feature: external_dns
   chart: external-dns
   repository: https://kubernetes-sigs.github.io/external-dns
-  version: "1.14.5"
+  version: "1.19.0"
   namespace: kube-system
 
 - feature: external_secrets
   chart: external-secrets
   repository: https://charts.external-secrets.io
-  version: "0.10.0"
+  version: "0.20.3"
   namespace: external-secrets
 
 - feature: ingress_nginx
@@ -86,7 +86,7 @@
 - feature: metrics_server
   chart: metrics-server
   repository: https://kubernetes-sigs.github.io/metrics-server
-  version: "3.12.2"
+  version: "3.13.0"
   namespace: kube-system
 
 - feature: prometheus_adapter
@@ -98,7 +98,7 @@
 - feature: secrets_store_csi_driver
   chart: secrets-store-csi-driver
   repository: https://kubernetes-sigs.github.io/secrets-store-csi-driver/charts
-  version: "1.4.4"
+  version: "1.5.4"
   namespace: kube-system
 
 - feature: terranetes
