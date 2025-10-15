@@ -98,7 +98,7 @@
 - feature: aws_secrets_store_csi_driver_provider
   chart: secrets-store-csi-driver-provider-aws
   repository: https://aws.github.io/secrets-store-csi-driver-provider-aws
-  version: "0.3.9"
+  version: "2.1.1"
   namespace: kube-system
 
 - feature: aws_ack_apigatewayv2

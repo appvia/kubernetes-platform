@@ -80,7 +80,7 @@
 - feature: kyverno
   chart: kyverno
   repository: https://kyverno.github.io/kyverno
-  version: "3.2.6"
+  version: "3.5.0"
   namespace: kyverno-system
 
 - feature: metrics_server
