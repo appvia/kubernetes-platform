@@ -1,0 +1,32 @@
+---
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: mutate-traffic-distribution
+  annotations:
+    policies.kyverno.io/title: Mutate Services to add trafficDistribution
+    policies.kyverno.io/category: Other
+    policies.kyverno.io/minversion: 1.6.0
+    policies.kyverno.io/severity: low
+    policies.kyverno.io/subject: Service
+    kyverno.io/kubernetes-version: "1.34"
+    policies.kyverno.io/description: >-
+      Automatically adds spec.trafficDistribution: PreferSameZone to all Services
+      that don't already have this field set.
+spec:
+  rules:
+    - name: add-traffic-distribution
+      match:
+        any:
+          - resources:
+              kinds:
+                - Service
+      preconditions:
+        any:
+          - key: "{{ request.object.spec.trafficDistribution || '' }}"
+            operator: Equals
+            value: ""
+      mutate:
+        patchStrategicMerge:
+          spec:
+            trafficDistribution: PreferSameZone
