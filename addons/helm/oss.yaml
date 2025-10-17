@@ -77,6 +77,15 @@
   version: "69.6.0"
   namespace: prometheus
 
+- feature: kubecost
+  chart: kubecost
+  repository: https://kubecost.github.io/kubecost
+  version: "3.0.0"
+  namespace: kubecost
+  helm_values: |
+    global:
+      clusterName: {{ .metadata.annotations.cluster_name }}
+
 - feature: kyverno
   chart: kyverno
   repository: https://kyverno.github.io/kyverno
