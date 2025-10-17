@@ -5,7 +5,7 @@
 Kyverno is a policy engine designed for Kubernetes that validates, mutates, and generates configurations using policies as Kubernetes resources. It provides key features like:
 
 - Policy validation and enforcement
-- Resource mutation and generation 
+- Resource mutation and generation
 - Image verification and security controls
 - Audit logging and reporting
 - Admission control webhooks
