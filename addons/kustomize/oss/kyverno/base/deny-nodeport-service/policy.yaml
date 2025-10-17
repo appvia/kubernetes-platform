@@ -19,7 +19,7 @@ spec:
   validationFailureAction: Enforce
   background: true
   rules:
-    - name: validate-nodeport
+    - name: deny-nodeport-service
       match:
         any:
           - resources:

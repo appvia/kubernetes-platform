@@ -21,7 +21,7 @@ spec:
   validationFailureAction: Enforce
   background: true
   rules:
-    - name: validate-namespace
+    - name: deny-default-namespace
       match:
         any:
           - resources:

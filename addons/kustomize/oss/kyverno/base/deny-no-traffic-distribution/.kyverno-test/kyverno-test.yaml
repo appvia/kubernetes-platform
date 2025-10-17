@@ -12,22 +12,31 @@ results:
     resources:
       - service-with-prefer-same-zone
     result: pass
-    rule: deny-no-traffic-distribution
+    rule: service-without-traffic-distribution
   - kind: Service
     policy: deny-no-traffic-distribution
+    rule: deny-no-traffic-distribution
     resources:
       - service-with-prefer-same-node
     result: pass
-    rule: deny-no-traffic-distribution
+
   - kind: Service
     policy: deny-no-traffic-distribution
+    rule: deny-no-traffic-distribution
     resources:
       - service-without-traffic-distribution
     result: fail
-    rule: deny-no-traffic-distribution
+
   - kind: Service
     policy: deny-no-traffic-distribution
     rule: deny-no-traffic-distribution
     resources:
       - service-with-invalid-traffic-distribution
+    result: fail
+
+  - kind: Service
+    policy: deny-no-traffic-distribution
+    rule: deny-no-traffic-distribution
+    resources:
+      - service-with-empty-traffic-distribution
     result: fail

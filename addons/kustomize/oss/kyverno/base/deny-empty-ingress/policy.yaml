@@ -16,7 +16,7 @@ spec:
   validationFailureAction: Audit
   background: false
   rules:
-    - name: disallow-empty-ingress-host
+    - name: deny-empty-ingress-host
       match:
         any:
           - resources:

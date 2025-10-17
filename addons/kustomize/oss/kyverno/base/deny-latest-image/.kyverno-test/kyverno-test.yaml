@@ -12,10 +12,10 @@ results:
     resources:
       - badpod
     result: fail
-    rule: deny-latest-image
+    rule: validate-image-tag
   - kind: Pod
     policy: deny-latest-image
     resources:
       - goodpod
     result: pass
-    rule: deny-latest-image
+    rule: require-image-tag

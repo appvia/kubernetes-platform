@@ -19,7 +19,7 @@ spec:
   validationFailureAction: Enforce
   background: true
   rules:
-    - name: validate-resources
+    - name: deny-no-limits
       match:
         any:
           - resources:
@@ -35,20 +35,6 @@ spec:
         pattern:
           spec:
             containers:
-              - resources:
-                  requests:
-                    memory: "?*"
-                    cpu: "?*"
-                  limits:
-                    memory: "?*"
-            initContainers:
-              - resources:
-                  requests:
-                    memory: "?*"
-                    cpu: "?*"
-                  limits:
-                    memory: "?*"
-            ephemeralContainers:
               - resources:
                   requests:
                     memory: "?*"
