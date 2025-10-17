@@ -68,7 +68,7 @@
 - feature: kro
   repository_path: helm
   repository: https://github.com/kro-run/kro
-  version: "0.2.1"
+  version: "0.4.1"
   namespace: kro-system
 
 - feature: kube_prometheus_stack
