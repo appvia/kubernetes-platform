@@ -7,7 +7,7 @@ environment: release
 ## The repository containing the tenant configuration
 tenant_repository: https://github.com/appvia/kubernetes-platform.git
 ## The revision to use for the tenant repository
-tenant_revision: main
+tenant_revision: dev
 ## The path inside the tenant repository to use for the tenant cluster
 tenant_path: release/standalone
 ## The cost center to use for the tenant cluster
@@ -15,7 +15,7 @@ tenant_cost_center: "123456"
 ## The repository containing the platform configuration
 platform_repository: https://github.com/appvia/kubernetes-platform.git
 ## The revision to use for the platform repository
-platform_revision: main
+platform_revision: dev
 ## The path to the kustomize overlay to use for the tenant cluster
 platform_path: overlays/release
 ## The type of cluster we are (standalone, spoke or hub)
