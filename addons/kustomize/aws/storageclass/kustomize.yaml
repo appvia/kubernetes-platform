@@ -13,9 +13,8 @@ kustomize:
         name: gp3
       patch:
         - op: replace
-          path: /spec/provisioner
+          path: provisioner
           key: metadata.annotations.storage_ebs_provisioner
-          default: "kubernetes.io/aws-ebs"
 
 ## The namespace options (required)
 namespace:
