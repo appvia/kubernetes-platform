@@ -15,7 +15,7 @@ kustomize:
     - target:
         kind: <KIND>
         name: <NAME>
-      path: <PATH>
+      path: /<PATH>
       key: <KEY>
       default: <DEFAULT>
 
