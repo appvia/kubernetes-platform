@@ -94,7 +94,8 @@ function check_cluster_type() {
 function check_repositories() {
   echo -e "\n${GREEN}Checking repositories:${NC}"
 
-  local tenant_repo, platform_repo
+  local tenant_repo
+  local platform_repo
 
   tenant_repo=$(yq e '.tenant_repository' "$CLUSTER_FILE")
   platform_repo=$(yq e '.platform_repository' "$CLUSTER_FILE")
