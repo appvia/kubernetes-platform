@@ -4,10 +4,10 @@ The following describes the different formats that can be used to deploy the pla
 
 ## Helm
 
-You can deploy using a helm chart, by adding a helm.yaml.
+You can deploy using a helm chart, by adding a `helm.yaml`.
 
 1. Create a folder (by default this becomes the namespace)
-2. Add a helm.yaml file
+2. Add a `helm.yaml` file
 
 ```yaml
 helm:
@@ -36,7 +36,7 @@ sync:
   max_duration: 5m
 ```
 
-In order to use values, you need to create a values.yaml file.
+In order to use values, you need to create a `values.yaml` file.
 
 1. For the values, create a folder called `values` inside the folder you created in step 1.
 2. Add a `all.yaml` file to the values folder, which will be used to deploy the application.
@@ -54,10 +54,10 @@ Similar to the helm deployment, create a folder for your deployments. Taking the
 
 ## Kustomize
 
-You can deploy using kustomize, by adding a kustomize.yaml.
+You can deploy using kustomize, by adding a `kustomize.yaml`.
 
 1. Create a folder (by default this becomes the namespace)
-2. Add a kustomize.yaml file
+2. Add a `kustomize.yaml` file
 
 ```yaml
 kustomize:
