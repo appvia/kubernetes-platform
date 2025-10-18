@@ -2,25 +2,25 @@
 - feature: argocd
   chart: argo-cd
   repository: https://argoproj.github.io/argo-helm
-  version: "7.8.5"
+  version: "9.0.0"
   namespace: argocd
 
 - feature: argo_events
   chart: argo-events
   repository: https://argoproj.github.io/argo-helm
-  version: "2.4.13"
+  version: "2.4.16"
   namespace: argocd
 
 - feature: argo_rollouts
   chart: argo-rollouts
   repository: https://argoproj.github.io/argo-helm
-  version: "2.39.0"
+  version: "2.40.5"
   namespace: argocd-rollouts
 
 - feature: argo_workflows
   chart: argo-workflows
   repository: https://argoproj.github.io/argo-helm
-  version: "0.45.8"
+  version: "0.45.27"
   namespace: argo-workflows
 
 - feature: cert_manager
