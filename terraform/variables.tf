@@ -71,18 +71,6 @@ variable "cluster_path" {
   type        = string
 }
 
-variable "enable_external_secrets" {
-  description = "Indicates we should enable the external secrets platform"
-  type        = bool
-  default     = true
-}
-
-variable "enable_nat_gateway" {
-  description = "Enable the NAT gateway"
-  type        = bool
-  default     = true
-}
-
 variable "kubernetes_version" {
   description = "The version of the cluster to provision"
   type        = string
@@ -101,23 +89,6 @@ variable "hub_account_role" {
   default     = "argocd-pod-identity-hub"
 }
 
-variable "enable_ebs_csi_driver" {
-  description = "Indicates we should enable the EBS CSI driver"
-  type        = bool
-  default     = true
-}
-
-variable "efs_csi_driver_version" {
-  description = "The version of the EFS CSI driver to use"
-  type        = string
-  default     = "v1.51.0-eksbuild.1"
-}
-
-variable "enable_terranetes" {
-  description = "Indicates we should enable the terranetes platform"
-  type        = bool
-  default     = true
-}
 
 variable "nat_gateway_mode" {
   description = "The NAT gateway mode"
@@ -151,7 +122,7 @@ variable "transit_gateway_id" {
 variable "transit_gateway_routes" {
   description = "The routes to add to the Transit Gateway"
   type        = map(string)
-  default     = {
+  default = {
     private = "0.0.0.0/0"
   }
 }
