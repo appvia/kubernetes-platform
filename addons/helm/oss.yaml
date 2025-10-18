@@ -84,7 +84,7 @@
   namespace: kubecost
   helm_values: |
     global:
-      clusterName: {{ .metadata.annotations.cluster_name }}
+      clusterName: {{ .metadata.labels.cluster_name }}
 
 - feature: kyverno
   chart: kyverno
