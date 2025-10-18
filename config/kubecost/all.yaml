@@ -1,3 +1,48 @@
 ---
+#
+## Helm Value: https://github.com/kubecost/kubecost/blob/develop/kubecost/values.yaml
+#
+
+## The network costs configuration
 networkCosts:
+  ## The network costs enabled flag
   enabled: true
+  ## The prometheus scrape flag
+  prometheusScrape: true
+
+## The frontend configuration
+frontend:
+  ## The frontend enabled flag
+  enabled: true
+  ## Number of replicas to run
+  replicas: 2
+
+## Cluster Autoscaler configuration
+clusterController:
+  ## Indicating if the cluster controller is enabled
+  enabled: false
+
+## The forecasting configuration
+forecasting:
+  ## Indicating if the forecasting is enabled
+  enabled: true
+
+## The finops-agent can be installed with the primary, or it can be disabled to allow for a global
+## agent deployment that is consistent across all clusters.
+finops-agent:
+  ## Indicating if the finops-agent is enabled
+  enabled: true
+
+## Kubecost Bug Reports
+## k8s role bindings to be able to access pods/logs limited to .Release.Namespace
+## Ref: https://www.ibm.com/docs/en/kubecost/self-hosted/2.x?topic=capture-bug-report
+##
+reporting:
+  ## Indicating if the log collection is enabled
+  logCollection: false
+
+# Enables or disables the sending of anonymized telemetry data to help
+# improve Kubecost.
+telemetry:
+  ## Indicating if the telemetry is enabled
+  enabled: false
