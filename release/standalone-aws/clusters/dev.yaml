@@ -48,5 +48,9 @@ labels:
   enable_terranetes_crs: "false"
 ## Annotations are using for additional metadata about the tenant cluster
 annotations:
+  ## The EBS provisioner to use for the storage class
+  storage_ebs_provisioner: ebs.csi.eks.amazonaws.com
+  ## The tenant name
   platform.local/tenant: tenant
+  ## The region the cluster resides in
   region: eu-west-2

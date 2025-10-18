@@ -19,7 +19,7 @@ parameters:
   ## The type of the storage class
   type: gp3
 ## The provisioner of the storage class
-provisioner: kubernetes.io/aws-ebs
+provisioner: ebs.csi.eks.amazonaws.com
 ## The reclaim policy of the storage class
 reclaimPolicy: Delete
 ## Binding mode
