@@ -31,7 +31,7 @@ forecasting:
 ## agent deployment that is consistent across all clusters.
 finops-agent:
   ## Indicating if the finops-agent is enabled
-  enabled: true
+  enabled: false
 
 ## Kubecost Bug Reports
 ## k8s role bindings to be able to access pods/logs limited to .Release.Namespace
