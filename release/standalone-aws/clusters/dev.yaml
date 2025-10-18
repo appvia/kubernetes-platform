@@ -43,7 +43,7 @@ labels:
   # Enable the metrics-server feature
   enable_metrics_server: "true"
   # Enable the terranetes feature
-  enable_terranetes: "false "
+  enable_terranetes: "false"
   # Enable the terranetes CRs feature
   enable_terranetes_crs: "false"
 ## Annotations are using for additional metadata about the tenant cluster
