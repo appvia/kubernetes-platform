@@ -5,7 +5,7 @@ revision_overrides = {
   # The revision to use for the platform repository
   platform_revision = "main"
   # The revision to use for the tenant repository
-  tenant_revision   = "main"
+  tenant_revision = "main"
 }
 
 ## Tags to apply to the EKS cluster
@@ -13,11 +13,11 @@ tags = {
   # Name of the environment we are deploying to
   Environment = "Development"
   # The Git repository we are deploying from
-  GitRepo     = "https://github.com/appvia/kubernetes-platform"
+  GitRepo = "https://github.com/appvia/kubernetes-platform"
   # The owner of the environment
-  Owner       = "Engineering"
+  Owner = "Engineering"
   # The product of the environment
-  Product     = "EKS"
+  Product = "EKS"
   # The provisioner of the environment
   Provisioner = "Terraform"
 }
