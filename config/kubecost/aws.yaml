@@ -1,0 +1,16 @@
+## The network costs configuration
+networkCosts:
+  ## The network costs enabled flag
+  enabled: true
+  ## The prometheus scrape flag
+  prometheusScrape: true
+  ## The AWS configuration
+  aws:
+    config:
+      services:
+        ## Indicating if the Amazon Web Services is enabled
+        amazon-web-services: true
+        ## Indicating if the Google Cloud Services is enabled
+        google-cloud-services: false
+        ## Indicating if the Azure Cloud Services is enabled
+        azure-cloud-services: false
