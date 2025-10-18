@@ -54,7 +54,7 @@ variable "argocd_repositories" {
   default = {}
 }
 
-variable "cluster_endpoint_public_access" {
+variable "enable_public_access" {
   description = "The public access to the cluster endpoint"
   type        = bool
   default     = true
@@ -77,6 +77,36 @@ variable "enable_nat_gateway" {
   default     = true
 }
 
+variable "kubernetes_version" {
+  description = "The version of the cluster to provision"
+  type        = string
+  default     = "1.34"
+}
+
+variable "hub_account_id" {
+  description = "When using a hub deployment options, this is the account where argocd is running"
+  type        = string
+  default     = null
+}
+
+variable "hub_account_role" {
+  description = "The role to use for the hub account"
+  type        = string
+  default     = "argocd-pod-identity-hub"
+}
+
+variable "enable_ebs_csi_driver" {
+  description = "Indicates we should enable the EBS CSI driver"
+  type        = bool
+  default     = true
+}
+
+variable "efs_csi_driver_version" {
+  description = "The version of the EFS CSI driver to use"
+  type        = string
+  default     = "v1.51.0-eksbuild.1"
+}
+
 variable "enable_platform" {
   description = "Indicates we should install the platform"
   type        = bool
@@ -87,12 +117,6 @@ variable "enable_terranetes" {
   description = "Indicates we should enable the terranetes platform"
   type        = bool
   default     = true
-}
-
-variable "hub_account_id" {
-  description = "When using a hub deployment options, this is the account where argocd is running"
-  type        = string
-  default     = null
 }
 
 variable "nat_gateway_mode" {
@@ -118,15 +142,22 @@ variable "tags" {
   type        = map(string)
 }
 
+variable "transit_gateway_id" {
+  description = "The ID of the Transit Gateway to use, when attaching to a Transit Gateway"
+  type        = string
+  default     = null
+}
+
+variable "transit_gateway_routes" {
+  description = "The routes to add to the Transit Gateway"
+  type        = map(string)
+  default     = {
+    private = "0.0.0.0/0"
+  }
+}
+
 variable "vpc_cidr" {
   description = "The CIDR block for the VPC, if not using an existing VPC"
   type        = string
   default     = "10.90.0.0/16"
 }
-
-variable "vpc_id" {
-  description = "The VPC ID when using an existing VPC"
-  type        = string
-  default     = null
-}
-

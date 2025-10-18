@@ -8,7 +8,7 @@ set -euo pipefail
 CLUSTER_NAME="dev"
 CLUSTER_TYPE="standalone"
 CREDENTIALS=false
-ARGOCD_VERSION="7.8.5"
+ARGOCD_VERSION="9.0.0"
 GITHUB_USER=""
 GIT_BRANCH=$(git rev-parse --abbrev-ref HEAD)
 GIT_COMMIT=$(git rev-parse HEAD)

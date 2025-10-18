@@ -1,5 +1,7 @@
 
 locals {
+  ## The current account ID
+  account_id = data.aws_caller_identity.current.account_id
   ## The cluster configuration, decoded from the YAML file
   cluster = yamldecode(file(var.cluster_path))
   ## The cluster_name of the cluster
@@ -20,5 +22,7 @@ locals {
   tenant_revision = local.cluster.tenant_revision
   ## Indicates if argocd should be enabled with pod identity
   enable_argocd_pod_identity = (local.cluster_type == "hub" ? true : false)
+  ## The root account ARN
+  root_account_arn = "arn:aws:iam::${local.account_id}:root"
 }
 
