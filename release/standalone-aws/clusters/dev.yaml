@@ -24,16 +24,28 @@ cluster_type: standalone
 tenant: test
 ## We use labels to enable/disable features in the tenant cluster
 labels:
+  # Enable the cost monitoring feature
+  enable_kubecost: "true"
+  # Enable the cert-manager feature
   enable_cert_manager: "true"
+  # Enable the cilium CNI feature
   enable_cilium: "true"
+  # Enable the external-secrets feature
   enable_external_secrets: "true"
+  # Enable the karpenter nodepools feature
   enable_karpenter_nodepools: "true"
+  # Enable the karpenter feature
   enable_kerpenter: "false"
+  # Enable the kro feature
   enable_kro: "true"
+  # Enable the kyverno feature
   enable_kyverno: "true"
+  # Enable the metrics-server feature
   enable_metrics_server: "true"
-  enable_terranetes: "true"
-  enable_terranetes_crs: "true"
+  # Enable the terranetes feature
+  enable_terranetes: "false "
+  # Enable the terranetes CRs feature
+  enable_terranetes_crs: "false"
 ## Annotations are using for additional metadata about the tenant cluster
 annotations:
   platform.local/tenant: tenant
