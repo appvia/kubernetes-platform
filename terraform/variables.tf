@@ -22,6 +22,12 @@ variable "access_entries" {
   default = null
 }
 
+variable "sso_administrator_role" {
+  description = "The SSO administrator role ARN"
+  type        = string
+  default     = null
+}
+
 variable "revision_overrides" {
   description = "Revision overrides permit the user to override the revision contained in cluster definition"
   type = object({
@@ -107,12 +113,6 @@ variable "efs_csi_driver_version" {
   default     = "v1.51.0-eksbuild.1"
 }
 
-variable "enable_platform" {
-  description = "Indicates we should install the platform"
-  type        = bool
-  default     = true
-}
-
 variable "enable_terranetes" {
   description = "Indicates we should enable the terranetes platform"
   type        = bool
@@ -160,4 +160,36 @@ variable "vpc_cidr" {
   description = "The CIDR block for the VPC, if not using an existing VPC"
   type        = string
   default     = "10.90.0.0/16"
+}
+
+variable "pod_identity" {
+  description = "The pod identity configuration"
+  type = map(object({
+    ## Indicates if we should enable the pod identity
+    enabled = optional(bool, true)
+    ## The namespace to deploy the pod identity to
+    description = optional(string, null)
+    ## The service account to deploy the pod identity to
+    service_account = optional(string, null)
+    ## The managed policy ARNs to attach to the pod identity
+    managed_policy_arns = optional(map(string), {})
+    ## The permissions boundary ARN to use for the pod identity
+    permissions_boundary_arn = optional(string, null)
+    ## The namespace to deploy the pod identity to
+    namespace = optional(string, null)
+    ## The name of the pod identity role
+    name = optional(string, null)
+    ## Additional policy statements to attach to the pod identity role
+    policy_statements = optional(list(object({
+      ## The statement ID
+      sid = optional(string, null)
+      ## The actions to allow
+      actions = optional(list(string), [])
+      ## The resources to allow
+      resources = optional(list(string), [])
+      ## The effect to allow
+      effect = optional(string, null)
+    })), [])
+  }))
+  default = {}
 }
