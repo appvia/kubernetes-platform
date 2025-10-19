@@ -84,7 +84,7 @@
   namespace: kubecost
   parameters:
     - name: global.clusterName
-      value: "{{ .metadata.labels.cluster_name }}"
+      value: .metadata.labels.cluster_name
 
 - feature: kyverno
   chart: kyverno
