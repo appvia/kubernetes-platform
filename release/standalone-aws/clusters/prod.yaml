@@ -1,0 +1,56 @@
+## The name of the tenant cluster
+cluster_name: prod
+## The cloud vendor to use for the tenant cluster
+cloud_vendor: aws
+## The environment to use for the tenant cluster
+environment: release
+## The repository containing the tenant configuration
+tenant_repository: https://github.com/appvia/kubernetes-platform.git
+## The revision to use for the tenant repository
+tenant_revision: main
+## The path inside the tenant repository to use for the tenant cluster
+tenant_path: release/standalone-aws
+## The cost center to use for the tenant cluster
+tenant_cost_center: "123456"
+## The repository containing the platform configuration
+platform_repository: https://github.com/appvia/kubernetes-platform.git
+## The revision to use for the platform repository
+platform_revision: main
+## The path to the kustomize overlay to use for the tenant cluster
+platform_path: overlays/release
+## The type of cluster we are (standalone, spoke or hub)
+cluster_type: standalone
+## The name of the tenant
+tenant: tenant
+## We use labels to enable/disable features in the tenant cluster
+labels:
+  # Enable the cost monitoring feature
+  enable_kubecost: "true"
+  # Enable the cert-manager feature
+  enable_cert_manager: "true"
+  # Enable the cilium CNI feature
+  enable_cilium: "true"
+  # Enable the external-secrets feature
+  enable_external_secrets: "true"
+  # Enable the karpenter nodepools feature
+  enable_karpenter_nodepools: "true"
+  # Enable the karpenter feature
+  enable_kerpenter: "false"
+  # Enable the kro feature
+  enable_kro: "true"
+  # Enable the kyverno feature
+  enable_kyverno: "true"
+  # Enable the metrics-server feature
+  enable_metrics_server: "true"
+  # Enable the terranetes feature
+  enable_terranetes: "false"
+  # Enable the terranetes CRs feature
+  enable_terranetes_crs: "false"
+## Annotations are using for additional metadata about the tenant cluster
+annotations:
+  ## The EBS provisioner to use for the storage class
+  storage_ebs_provisioner: ebs.csi.eks.amazonaws.com
+  ## The tenant name
+  platform.local/tenant: tenant
+  ## The region the cluster resides in
+  region: eu-west-2
