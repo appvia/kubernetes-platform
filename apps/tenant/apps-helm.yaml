@@ -163,6 +163,10 @@ spec:
               - "$values/{{ .path.path }}/values/{{ .metadata.labels.environment }}.yaml"
               - "$values/{{ .path.path }}/values/{{ .metadata.labels.tenant }}.yaml"
               - "$values/{{ .path.path }}/values/all.yaml"
+            {{- if .helm.values }}
+            values: |
+              {{ .helm.values }}
+            {{- end }}
             {{- if and (.helm.parameters) (gt (len .helm.parameters) 0) }}
             parameters:
             {{- range $param := .helm.parameters }}
