@@ -82,9 +82,9 @@
   repository: https://kubecost.github.io/kubecost
   version: "3.0.0"
   namespace: kubecost
-  helm_values: |
-    global:
-      clusterName: {{ .metadata.labels.cluster_name }}
+  parameters:
+    - name: global.clusterName
+      value: "{{ .metadata.labels.cluster_name }}"
 
 - feature: kyverno
   chart: kyverno
