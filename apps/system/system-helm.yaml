@@ -141,6 +141,7 @@ spec:
             parameters:
             {{- range $param := .parameters }}
               {{- $params := splitList "." $param.value }}
+              {{- $value := default $param.default "" }}
               - name: {{ $param.name }}
                 {{- if eq (len $params) 1 }}
                 {{- $value = dig (index $params 0) $param.value $context }}
