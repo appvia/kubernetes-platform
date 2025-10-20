@@ -14,37 +14,9 @@
 #
 .PHONY: all security lint format documentation documentation-examples validate-all validate validate-examples init examples tests
 
+ENVIRONMENT ?= dev
+
 default: all
-
-destroy-dev:
-	@echo "--> Destroying development environment"
-	@terraform workspace select -or-create=true dev
-	@terraform destroy -var-file=variables/dev.tfvars
-
-destroy-hub:
-	@echo "--> Destroying hub environment"
-	@terraform workspace select -or-create=true hub
-	@terraform destroy -var-file=variables/hub.tfvars
-
-destroy-spoke:
-	@echo "--> Destroying spoke environment"
-	@terraform workspace select -or-create=true spoke
-	@terraform destroy -var-file=variables/spoke.tfvars -var-file=variables/sensitive.tfvars
-
-dev:
-	@echo "--> Running development environment"
-	@terraform workspace select -or-create=true dev
-	@terraform apply -var-file=variables/dev.tfvars
-
-hub:
-	@echo "--> Running hub environment"
-	@terraform workspace select -or-create=true hub
-	@terraform apply -var-file=variables/hub.tfvars
-
-spoke:
-	@echo "--> Running spoke environment"
-	@terraform workspace select -or-create=true spoke
-	@terraform apply -var-file=variables/spoke.tfvars -var-file=variables/sensitive.tfvars
 
 all:
 	$(MAKE) init
@@ -63,6 +35,16 @@ examples:
 	$(MAKE) security
 	$(MAKE) format
 	$(MAKE) documentation
+
+environment: 
+	@echo "--> Running \"${ENVIRONMENT}\" environment"
+	@echo "--> ENVIRONMENT=(dev|prod|hub|spoke) make environment"
+	@terraform apply -var-file=variables/${ENVIRONMENT}.tfvars -var-file=variables/appvia.tfvars
+
+destroy-environment:
+	@echo "--> Destroying \"${ENVIRONMENT}\" environment"
+	@echo "--> ENVIRONMENT=(dev|prod|hub|spoke) make environment"
+	@terraform destroy -var-file=variables/${ENVIRONMENT}.tfvars -var-file=variables/appvia.tfvars
 
 documentation:
 	@echo "--> Generating documentation"
