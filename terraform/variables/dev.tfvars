@@ -8,6 +8,18 @@ revision_overrides = {
   tenant_revision = "main"
 }
 
+# Network configuration
+vpc_cidr = "10.90.0.0/16"
+
+## Kubecost configuration
+kubecosts = {
+  enable = true
+  federated_storage = {
+    create_bucket = true
+    federated_bucket_arn = "arn:aws:s3:::kubecost-federated-eu-west-2"
+  }
+}
+
 ## Tags to apply to the EKS cluster
 tags = {
   # Name of the environment we are deploying to
