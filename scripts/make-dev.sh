@@ -28,7 +28,7 @@ Options:
   -h, --help               Show this help message and exit
 EOF
   if [[ ${#} -gt 0   ]]; then
-    echo "Error: ${*}"
+    echo -e "Error: ${*}"
     exit 1
   fi
 }
@@ -41,7 +41,10 @@ setup_cluster() {
   echo "Provisioning Cluster: \"${cluster_name}\", Type: \"${CLUSTER_TYPE}\""
 
   # Create cluster
-  kind create cluster --name "${cluster_name}" 2> /dev/null
+  if ! error_output=$(kind create cluster --name "${cluster_name}" 2>&1); then 
+    echo "Failed to provision the kind cluster: \n$error_output"
+    exit 1 
+  fi
 
   # Check if ArgoCD deployments are already present
   if kubectl get deployments -n argocd --context "${cluster_context}" 2>&1 | grep "No resources found" > /dev/null; then
@@ -49,8 +52,8 @@ setup_cluster() {
     # Create ArgoCD namespace
     kubectl create namespace argocd --context "${cluster_context}" > /dev/null
     # Install ArgoCD
-    if ! helm upgrade -n argocd --install argocd argo/argo-cd --version "${ARGOCD_VERSION}" > /dev/null; then
-      usage "Failed to install ArgoCD on cluster: \"${cluster_name}\", ensure you have the repository configured"
+    if ! error_output=$(helm upgrade -n argocd --install argocd argo/argo-cd --version "${ARGOCD_VERSION}" 2>&1); then
+      usage "Failed to install ArgoCD on cluster: \"${cluster_name}\", ensure you have the repository configured. \nError: $error_output"
     fi
     # Wait for ArgoCD to be ready
   fi
