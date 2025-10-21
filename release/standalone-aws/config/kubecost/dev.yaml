@@ -1,0 +1,10 @@
+---
+## Configuration for the federated storage
+federatedStorage:
+  config: |
+    type: S3
+    config:
+      bucket: "kubecost-federated-eu-west-2"
+      endpoint: https://s3.eu-west-2.amazonaws.com
+      region: eu-west-2
+      aws_sdk_auth: true
