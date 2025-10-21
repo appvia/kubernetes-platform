@@ -21,15 +21,20 @@ platform_path: overlays/release
 ## The type of cluster we are (standalone, spoke or hub)
 cluster_type: standalone
 ## The name of the tenant
-tenant: test
+tenant: tenant
 ## We use labels to enable/disable features in the tenant cluster
 labels:
+  # Enable the ceritfication management feature
   enable_cert_manager: "true"
+  # Enable the external secrets feature
   enable_external_secrets: "true"
+  # Enable the karpenter nodepools feature
   enable_karpenter_nodepools: "true"
+  # Enable the kyverno feature
   enable_kyverno: "true"
 ## Annotations are using for additional metadata about the tenant cluster
 annotations:
+  # The tenant name
   platform.local/tenant: tenant
 ## The authentication details for the cluster
 cluster_authentication: {}
