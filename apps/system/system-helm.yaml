@@ -144,7 +144,7 @@ spec:
               {{- $value := default $param.default "" }}
               - name: {{ $param.name }}
                 {{- if eq (len $params) 1 }}
-                {{- $value = dig (index $params 0) $param.value $context }}
+                {{- $value = dig (index $params 0) "" $context }}
                 {{- else if eq (len $params) 2 }}
                 {{- $value = dig (index $params 0) (index $params 1) "" $context }}
                 {{- else if eq (len $params) 3 }}
