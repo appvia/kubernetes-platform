@@ -140,7 +140,7 @@ spec:
             {{- if and (.parameters) (gt (len .parameters) 0) }}
             parameters:
             {{- range $param := .parameters }}
-              {{- $params := splitList "." $param.value }}
+              {{- $params := splitList "." (trimPrefix "." $param.value) }}
               {{- $value := default $param.default "" }}
               - name: {{ $param.name }}
                 {{- if eq (len $params) 1 }}
