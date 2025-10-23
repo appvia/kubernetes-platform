@@ -15,7 +15,7 @@ vpc_cidr = "10.90.0.0/16"
 kubecosts = {
   enable = true
   federated_storage = {
-    create_bucket = true
+    create_bucket        = true
     federated_bucket_arn = "arn:aws:s3:::kubecost-federated-eu-west-2"
   }
 }

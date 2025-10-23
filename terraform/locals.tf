@@ -20,8 +20,6 @@ locals {
   tenant_repository = local.cluster.tenant_repository
   ## The tenant revision
   tenant_revision = local.cluster.tenant_revision
-  ## Indicates if argocd should be enabled with pod identity
-  enable_argocd_pod_identity = (local.cluster_type == "hub" ? true : false)
   ## The root account ARN
   root_account_arn = "arn:aws:iam::${local.account_id}:root"
 }
