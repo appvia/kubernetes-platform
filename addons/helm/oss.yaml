@@ -110,6 +110,21 @@
   version: "1.5.4"
   namespace: kube-system
 
+- feature: opencost
+  chart: opencost
+  repository: https://opencost.github.io/opencost-helm-chart
+  version: "2.4.0"
+  namespace: opencost
+  parameters:
+    - name: opencost.exporter.defaultClusterId
+      value: metadata.labels.cluster_name
+    - name: opencost.exporter.extraEnv.CLUSTER_ID
+      value: metadata.labels.cluster_name
+    - name: opencost.exporter.extraEnv.REGION
+      value: metadata.labels.region
+    - name: opencost.exporter.extraEnv.AWS_EKS_CLUSTER_ID
+      value: metadata.labels.cluster_name
+
 - feature: terranetes
   chart: terranetes-controller
   repository: https://terranetes-controller.appvia.io

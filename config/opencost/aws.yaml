@@ -1,0 +1,123 @@
+---
+opencost:
+  # Use default pricing instead of custom rates
+  customPricing:
+    # Indicates if we should enable custom pricing
+    enabled: false
+
+  # Main exporter configuration
+  exporter:
+    # Unique identifier for this cluster
+    defaultClusterId: PATCH_ME
+    # Environment variables for OpenCost
+    env:
+      # The URL for the Prometheus server endpoint
+      - name: PROMETHEUS_SERVER_ENDPOINT
+        value: "http://prometheus.monitoring.svc.cluster.local:9090"
+
+    # Additional configuration
+    extraEnv:
+      # API port for OpenCost
+      API_PORT: "9003"
+      # AWS Configuration
+      AWS_REGION: PATCH_ME
+      # Use regional STS endpoints for better performance
+      AWS_STS_REGIONAL_ENDPOINTS: "regional"
+      # Token file for IAM authentication
+      AWS_WEB_IDENTITY_TOKEN_FILE: "/var/run/secrets/eks.amazonaws.com/serviceaccount/token"
+      # Enable EKS-specific pricing
+      AWS_EKS_PRICING_ENABLED: "true"
+      # Disable Athena for simplicity
+      AWS_ATHENA_ENABLED: "false"
+      # CloudWatch Export - send metrics to CloudWatch
+      AWS_CLOUDWATCH_METRICS_ENABLED: "true"
+      # Namespace for CloudWatch metrics
+      AWS_CLOUDWATCH_METRICS_NAMESPACE: "OpenCost/EKS"
+      # Use only KSM v1 metrics for compatibility
+      EMIT_KSM_V1_METRICS: "false"
+      # Emit only KSM v1 metrics
+      EMIT_KSM_V1_METRICS_ONLY: "true"
+      # Enable CSV export for data processing
+      EXPORT_CSV_FILE: "true"
+      # Namespace where OpenCost runs
+      KUBECOST_NAMESPACE: "opencost"
+
+  # OpenCost UI configuration
+  ui:
+    # Indicates if we should enable the OpenCost UI
+    enabled: true
+    # The port for the OpenCost UI
+    uiPort: 9091
+    # The service for the OpenCost UI
+    service:
+      # The port for the OpenCost UI
+      port: 9091
+      # The target port for the OpenCost UI
+      targetPort: 9091
+    # The container port for the OpenCost UI
+    containerPort: 9091
+    # Additional environment variables for the OpenCost UI
+    extraEnv:
+      # The port for the OpenCost UI
+      - name: UI_PORT
+        value: "9091"
+      # The API port for the OpenCost UI
+      - name: API_PORT
+        value: "9003"
+
+  # Prometheus configuration
+  prometheus:
+    # Indicates if we should enable the internal Prometheus
+    internal:
+      # Indicates if we should enable the internal Prometheus
+      enabled: false
+      # The service name for the internal Prometheus
+      serviceName: prometheus
+      # Namespace of in-cluster Prometheus
+      namespaceName: prometheus
+      # Service port of in-cluster Prometheus
+      port: 9090
+    external:
+      # Indicates if we should enable the external Prometheus
+      enabled: true
+      # The URL for the external Prometheus
+      url: "http://prometheus.prometheus.svc.cluster.local:9090"
+
+  # ServiceMonitor for Prometheus operator
+  metrics:
+    # Indicates if we should enable the ServiceMonitor for Prometheus operator
+    serviceMonitor:
+      # Indicates if we should enable the ServiceMonitor for Prometheus operator
+      enabled: true
+      # The namespace for the ServiceMonitor for Prometheus operator
+      namespace: monitoring
+
+  # Service Account with IAM permissions
+  serviceAccount:
+    # Indicates if we should create the ServiceAccount for OpenCost
+    create: true
+    # The name for the ServiceAccount for OpenCost
+    name: "opencost"
+
+  # Volume mounts for storage and IAM tokens
+  extraVolumeMounts:
+    - name: cost-data
+      mountPath: /var/opencost
+    - name: aws-iam-token
+      mountPath: /var/run/secrets/eks.amazonaws.com/serviceaccount
+      readOnly: true
+
+  extraVolumes:
+    # The name for the extra volume for cost data
+    - name: cost-data
+      # The empty dir for the extra volume for cost data
+      emptyDir: {}
+    - name: aws-iam-token
+      # The projected for the extra volume for aws-iam-token
+      projected:
+        defaultMode: 420
+        sources:
+          - serviceAccountToken:
+              audience: sts.amazonaws.com
+              expirationSeconds: 86400
+              path: token

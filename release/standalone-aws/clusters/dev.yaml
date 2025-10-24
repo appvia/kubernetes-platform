@@ -25,7 +25,9 @@ tenant: tenant
 ## We use labels to enable/disable features in the tenant cluster
 labels:
   # Enable the cost monitoring feature
-  enable_kubecost: "true"
+  enable_opencost: "true"
+  # Enable the cost monitoring feature
+  enable_kubecost: "false"
   # Enable the cert-manager feature
   enable_cert_manager: "true"
   # Enable the cilium CNI feature
