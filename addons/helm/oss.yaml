@@ -118,12 +118,6 @@
   parameters:
     - name: opencost.exporter.defaultClusterId
       value: metadata.labels.cluster_name
-    - name: opencost.exporter.extraEnv.CLUSTER_ID
-      value: metadata.labels.cluster_name
-    - name: opencost.exporter.extraEnv.REGION
-      value: metadata.labels.region
-    - name: opencost.exporter.extraEnv.AWS_EKS_CLUSTER_ID
-      value: metadata.labels.cluster_name
 
 - feature: terranetes
   chart: terranetes-controller
