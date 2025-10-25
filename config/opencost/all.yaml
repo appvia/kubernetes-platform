@@ -9,16 +9,9 @@ opencost:
   exporter:
     # Unique identifier for this cluster
     defaultClusterId: PATCH_ME
-    # Environment variables for OpenCost
-    env:
-      # The URL for the Prometheus server endpoint
-      - name: PROMETHEUS_SERVER_ENDPOINT
-        value: "http://prometheus.monitoring.svc.cluster.local:9090"
 
     # Additional configuration
     extraEnv:
-      # API port for OpenCost
-      API_PORT: "9003"
       # Use only KSM v1 metrics for compatibility
       EMIT_KSM_V1_METRICS: "false"
       # Emit only KSM v1 metrics
