@@ -24,7 +24,9 @@ cluster_type: standalone
 tenant: tenant
 ## We use labels to enable/disable features in the tenant cluster
 labels:
-  # Enable Opencost
+  # Enable the prometheus stack
+  enable_kube_prometheus_stack: "true"
+  # Enable the cost mangement feature
   enable_opencost: "true"
   # Enable the cost monitoring feature
   enable_kubecost: "false"
@@ -33,9 +35,9 @@ labels:
   # Enable the cilium CNI feature
   enable_cilium: "true"
   # Enable the external-secrets feature
-  enable_external_secrets: "true"
+  enable_external_secrets: "false"
   # Enable the karpenter nodepools features
-  enable_karpenter_nodepools: "true"
+  enable_karpenter_nodepools: "false"
   # Enable the kro feature
   enable_kro: "true"
   # Enable the kyverno feature
