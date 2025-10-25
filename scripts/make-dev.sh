@@ -19,15 +19,16 @@ usage() {
 Usage: ${0} [options]
 
 Options:
-  -C, --credentials        Set the credentials for the platform repository (default: ${CREDENTIALS})
-  -c, --cluster NAME       Set the cluster name (default: ${CLUSTER_NAME})
-  -G, --github-user USER   Set the GitHub user (default: ${GITHUB_USER})
-  -g, --github-token PASS  Set the GitHub token (default: "GITHUB_TOKEN")
-  -t, --type TYPE          The type of cluster to create, i.e. hub or standalone (default: ${CLUSTER_TYPE})
-  -I, --use-git-commit     Indicate to use the git commit as the revision, instead of branch (default: ${GIT_COMMIT})
-  -h, --help               Show this help message and exit
+  -C, --credentials            Set the credentials for the platform repository (default: ${CREDENTIALS})
+  -c, --cluster NAME           Set the cluster name (default: ${CLUSTER_NAME})
+  -G, --github-user USER       Set the GitHub user (default: ${GITHUB_USER})
+  -g, --github-token TOKEN     Set the GitHub token (default: "GITHUB_TOKEN")
+  -t, --type TYPE              The type of cluster to create, i.e. hub or standalone (default: ${CLUSTER_TYPE})
+  -I, --use-git-revision       Indicate to use current git commit as the revision, instead of branch (default: ${USE_GIT_COMMIT})
+  -r, --revision REVISION      Set the revision to use for the platform repository
+  -h, --help                   Show this help message and exit
 EOF
-  if [[ ${#} -gt 0   ]]; then
+  if [[ "${#}" -gt 0   ]]; then
     echo -e "Error: ${*}"
     exit 1
   fi
@@ -41,9 +42,9 @@ setup_cluster() {
   echo "Provisioning Cluster: \"${cluster_name}\", Type: \"${CLUSTER_TYPE}\""
 
   # Create cluster
-  if ! error_output=$(kind create cluster --name "${cluster_name}" 2>&1); then 
-    echo "Failed to provision the kind cluster: \n$error_output"
-    exit 1 
+  if ! error_output=$(kind create cluster --name "${cluster_name}" 2>&1); then
+    echo "Failed to provision the kind cluster: \n${error_output}"
+    exit 1
   fi
 
   # Check if ArgoCD deployments are already present
@@ -109,6 +110,8 @@ setup_bootstrap() {
   ## If we are using the git commit, use that instead of the branch
   if [[ ${USE_GIT_COMMIT} == "true" ]]; then
     platform_revision=${GIT_COMMIT}
+  elif [[ -n ${USE_REVISION} ]]; then
+    platform_revision=${USE_REVISION}
   fi
 
   echo "Using repository: \"${platform_repo}\""
@@ -212,6 +215,10 @@ while [[ ${#} -gt 0   ]]; do
     -I | --use-git-commit)
       USE_GIT_COMMIT="true"
       shift 1
+      ;;
+    -r | --use-revision)
+      USE_REVISION="${2}"
+      shift 2
       ;;
     -t | --cluster-type)
       CLUSTER_TYPE="${2}"
