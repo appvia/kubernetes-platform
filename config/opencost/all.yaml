@@ -53,7 +53,7 @@ opencost:
       # Indicates if we should enable the external Prometheus
       enabled: true
       # The URL for the external Prometheus
-      url: "http://prometheus.prometheus.svc.cluster.local:9090"
+      url: "http://prometheus-prometheus.prometheus.svc.cluster.local:9090"
 
   # ServiceMonitor for Prometheus operator
   metrics:
