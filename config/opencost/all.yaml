@@ -43,13 +43,6 @@ opencost:
     # The container port for the OpenCost UI
     containerPort: 9091
     # Additional environment variables for the OpenCost UI
-    extraEnv:
-      # The port for the OpenCost UI
-      - name: UI_PORT
-        value: "9091"
-      # The API port for the OpenCost UI
-      - name: API_PORT
-        value: "9003"
 
   # Prometheus configuration
   prometheus:
