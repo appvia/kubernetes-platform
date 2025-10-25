@@ -74,7 +74,7 @@ opencost:
     # Indicates if we should enable the ServiceMonitor for Prometheus operator
     serviceMonitor:
       # Indicates if we should enable the ServiceMonitor for Prometheus operator
-      enabled: true
+      enabled: false
       # The namespace for the ServiceMonitor for Prometheus operator
       namespace: monitoring
 
