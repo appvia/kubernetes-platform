@@ -30,11 +30,11 @@ jobs:
         id: previous_release
         run: |
           LAST_TAG=$(git tag --sort=-version:refname | head -n 2 | tail -n 1)
-          echo "LAST_TAG=${LAST_TAG}" >> "${GITHUB_ENV}"
+          echo "LAST_TAG=${LAST_TAG}" >> "${GITHUB_OUTPUT}"
       - name: Generate a changelog
         uses: orhun/git-cliff-action@v4
         with:
-          args: "--verbose ${{ env.LAST_TAG }}..HEAD"
+          args: "--verbose ${{ steps.previous_release.outputs.LAST_TAG }}..HEAD"
           config: .cliff/cliff.toml
           github-token: "${{ secrets.GITHUB_TOKEN }}"
         env:
