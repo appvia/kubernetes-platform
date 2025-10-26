@@ -1,0 +1,73 @@
+# Example Kustomize patches for mutate-ecr-cache policy
+#
+# To use these patches, add them to your kustomization.yaml:
+#
+# patches:
+#   - path: mutate-ecr-cache/kustomize-patch-example.yaml
+#     target:
+#       kind: ClusterPolicy
+#       name: mutate-ecr-cache
+
+---
+# Patch 1: Exclude additional namespaces (optional)
+# By default, kube-system, kube-public, and kube-node-lease are already excluded
+- op: add
+  path: /spec/rules/0/exclude/resources/namespaces/-
+  value: your-custom-namespace
+
+---
+# Patch 2: Replace ECR_REGISTRY_PLACEHOLDER with your actual ECR registry
+# This replaces the placeholder in both container and initContainer sections
+- op: replace
+  path: /spec/rules/0/mutate/foreach/0/patchStrategicMerge/spec/containers/0/image
+  value: ECR_REGISTRY_PLACEHOLDER/dockerhub.{{ element.image | regex_replace('^docker\\.io/', '') }}
+
+- op: replace
+  path: /spec/rules/0/mutate/foreach/1/patchStrategicMerge/spec/initContainers/0/image
+  value: ECR_REGISTRY_PLACEHOLDER/dockerhub.{{ element.image | regex_replace('^docker\\.io/', '') }}
+
+---
+# Patch 3: Add additional image patterns to match
+# This adds a new pattern to match redis images
+- op: add
+  path: /spec/rules/0/mutate/foreach/0/preconditions/any/-
+  value:
+    key: "{{ element.image }}"
+    operator: Contains
+    value: "redis"
+
+- op: add
+  path: /spec/rules/0/mutate/foreach/0/preconditions/any/-
+  value:
+    key: "{{ element.image }}"
+    operator: Contains
+    value: "postgres"
+
+- op: add
+  path: /spec/rules/0/mutate/foreach/1/preconditions/any/-
+  value:
+    key: "{{ element.image }}"
+    operator: Contains
+    value: "redis"
+
+- op: add
+  path: /spec/rules/0/mutate/foreach/1/preconditions/any/-
+  value:
+    key: "{{ element.image }}"
+    operator: Contains
+    value: "postgres"
+# Example of more patterns:
+# - op: add
+#   path: /spec/rules/0/mutate/foreach/0/preconditions/any/-
+#   value:
+#     key: "{{ element.image }}"
+#     operator: Contains
+#     value: "nginx"
+#
+# - op: add
+#   path: /spec/rules/0/mutate/foreach/0/preconditions/any/-
+#   value:
+#     key: "{{ element.image }}"
+#     operator: Contains
+#     value: "alpine"
+

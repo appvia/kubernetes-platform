@@ -1,0 +1,105 @@
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: mutate-ecr-cache
+  annotations:
+    policies.kyverno.io/title: "Mutate images to use ECR pull-through cache"
+    policies.kyverno.io/category: "Best Practices"
+    policies.kyverno.io/severity: medium
+    policies.kyverno.io/subject: Pod
+    policies.kyverno.io/description: >-
+      Rewrites container images to use ECR Docker Hub pull-through cache.
+      Images matching regex patterns are rewritten to use the ECR cache prefix.
+      Example: library/nginx:1.25 becomes 123456789012.dkr.ecr.us-east-1.amazonaws.com/dockerhub/library/nginx:1.25
+      This policy can be patched via kustomize to add custom image patterns.
+spec:
+  rules:
+    - name: rewrite-images-for-ecr-cache
+      match:
+        any:
+          - resources:
+              kinds:
+                - Pod
+          - resources:
+              kinds:
+                - Deployment
+                - StatefulSet
+                - DaemonSet
+                - Job
+                - CronJob
+      exclude:
+        resources:
+          namespaces:
+            - kube-system
+            - kube-public
+            - kube-node-lease
+      preconditions:
+        all:
+          - key: "{{ request.operation }}"
+            operator: In
+            value: ["CREATE", "UPDATE"]
+      mutate:
+        foreach:
+          - list: "request.object.spec.containers"
+            preconditions:
+              all:
+                # Only mutate if image doesn't already use ECR cache
+                - key: "{{ element.image }}"
+                  operator: NotContains
+                  value: ".dkr.ecr."
+                - key: "{{ element.image }}"
+                  operator: NotEquals
+                  value: ""
+              # ============================================
+              # KUSTOMIZE PATCH TARGET - ADD IMAGE PATTERNS HERE
+              # ============================================
+              # Add patterns to match images that should be mutated
+              # Example kustomize patch to add more patterns:
+              #   patches:
+              #     - patch: |-
+              #         - op: add
+              #           path: /spec/rules/0/mutate/foreach/0/preconditions/any/-
+              #           value:
+              #             key: "{{ element.image }}"
+              #             operator: Contains
+              #             value: "redis"
+              # ============================================
+              any:
+                # Default: Match library/ images (e.g., library/nginx:1.25)
+                - key: "{{ element.image }}"
+                  operator: Contains
+                  value: "library/"
+            patchStrategicMerge:
+              spec:
+                containers:
+                  - name: "{{ element.name }}"
+                    # Remove docker.io prefix if present, then prepend ECR cache prefix
+                    # TO PATCH: Replace ECR_REGISTRY_PLACEHOLDER with your registry (e.g., "123456789012.dkr.ecr.us-east-1.amazonaws.com")
+                    # Example: library/nginx:1.25 -> ECR_REGISTRY_PLACEHOLDER/dockerhub/library/nginx:1.25
+                    image: "ECR_REGISTRY_PLACEHOLDER/dockerhub.{{ element.image | regex_replace('^docker\\.io/', '') }}"
+          - list: "request.object.spec.initContainers"
+            preconditions:
+              all:
+                # Only mutate if image doesn't already use ECR cache
+                - key: "{{ element.image }}"
+                  operator: NotContains
+                  value: ".dkr.ecr."
+                - key: "{{ element.image }}"
+                  operator: NotEquals
+                  value: ""
+              # ============================================
+              # KUSTOMIZE PATCH TARGET - SAME PATTERNS AS CONTAINERS
+              # ============================================
+              any:
+                # Default: Match library/ images (e.g., library/nginx:1.25)
+                - key: "{{ element.image }}"
+                  operator: Contains
+                  value: "library/"
+            patchStrategicMerge:
+              spec:
+                initContainers:
+                  - name: "{{ element.name }}"
+                    # Remove docker.io prefix if present, then prepend ECR cache prefix
+                    # TO PATCH: Replace ECR_REGISTRY_PLACEHOLDER with your registry (e.g., "123456789012.dkr.ecr.us-east-1.amazonaws.com")
+                    # Example: library/nginx:1.25 -> ECR_REGISTRY_PLACEHOLDER/dockerhub/library/nginx:1.25
+                    image: "ECR_REGISTRY_PLACEHOLDER/dockerhub.{{ element.image | regex_replace('^docker\\.io/', '') }}"
