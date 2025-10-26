@@ -20,6 +20,7 @@ The helm entry format is as follows:
       value: MY_VALUE
     - name: global.settings.hostname
       value: .metadata.labels.cluster_name
+      default: mydefault_value
   values: |
     my_value: hello    
 ```
@@ -32,7 +33,10 @@ The following fields are supported:
 - `path`: Optional path inside the repository to install the chart from (assuming the repository is a git repository).
 - `version`: The version of the chart to install or the git reference to use (e.g. `main`, `HEAD`, `v0.1.0`).
 - `namespace`: The namespace to install the chart into.
-- `parameters`: A collection of helm parameters to define on the application.
+- `parameters`: A lsit of helm parameters to define on the application (these can reference metadata associated to the cluster)
+  - name: Path inside the helm values which is being replaced.
+  - value: A default or reference to the cluster metadata.
+  - default: The value to use if the value is empty.
 - `values`: A multiline string of helm values to add to the application.
 
 All the fields are optional except for `path` and `chart`, as they are dependent on if the repository is a helm repository or a git repository.
