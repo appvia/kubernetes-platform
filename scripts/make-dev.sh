@@ -43,6 +43,7 @@ setup_cluster() {
 
   # Create cluster
   if ! error_output=$(kind create cluster --name "${cluster_name}" 2>&1); then
+    # shellcheck disable=SC2028
     echo "Failed to provision the kind cluster: \n${error_output}"
     exit 1
   fi
