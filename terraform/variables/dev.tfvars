@@ -13,9 +13,12 @@ vpc_cidr = "10.90.0.0/16"
 
 ## Kubecost configuration
 kubecosts = {
-  enable = true
+  ## Indicates if we should enable the Kubecost platform
+  enable = false
   federated_storage = {
-    create_bucket        = true
+    ## Indicates if we should create the federated bucket
+    create_bucket = true
+    ## The ARN of the federated bucket to use for the Kubecost platform
     federated_bucket_arn = "arn:aws:s3:::kubecost-federated-eu-west-2"
   }
 }

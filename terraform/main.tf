@@ -35,7 +35,7 @@ module "network" {
 ## Provision a EKS cluster for the hub
 module "eks" {
   source  = "appvia/eks/aws"
-  version = "1.2.7"
+  version = "1.2.10"
 
   access_entries         = local.access_entries
   cluster_name           = local.cluster_name
@@ -80,7 +80,7 @@ module "eks" {
 ## Provision and bootstrap the platform using an tenant repository
 module "platform" {
   source  = "appvia/eks/aws//modules/platform"
-  version = "1.2.7"
+  version = "1.2.10"
 
   ## Name of the cluster
   cluster_name = local.cluster_name

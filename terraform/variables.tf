@@ -22,6 +22,12 @@ variable "access_entries" {
   default = null
 }
 
+variable "enable_aws_managed_prometheus" {
+  description = "Indicates if we should enable the AWS Managed Prometheus"
+  type        = bool
+  default     = false
+}
+
 variable "sso_administrator_role" {
   description = "The SSO administrator role ARN"
   type        = string
@@ -142,7 +148,6 @@ variable "hub_account_role" {
   type        = string
   default     = "argocd-pod-identity-hub"
 }
-
 
 variable "nat_gateway_mode" {
   description = "The NAT gateway mode"

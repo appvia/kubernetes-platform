@@ -18,3 +18,13 @@ output "argocd_spoke_role_arn" {
   description = "When provisioning a spoke, the is the IAM role the hub must assume"
   value       = module.eks.cross_account_role_arn
 }
+
+output "region" {
+  description = "The region of the cluster"
+  value       = local.region
+}
+
+output "account_id" {
+  description = "The account ID of the cluster"
+  value       = local.account_id
+}

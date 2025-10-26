@@ -22,5 +22,7 @@ locals {
   tenant_revision = local.cluster.tenant_revision
   ## The root account ARN
   root_account_arn = "arn:aws:iam::${local.account_id}:root"
+  ## The region
+  region = data.aws_region.current.region
 }
 
