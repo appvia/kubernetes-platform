@@ -26,6 +26,8 @@ tenant: tenant
 labels:
   # Enable the cost monitoring feature
   enable_opencost: "true"
+  # Enable the prometheus stack
+  enable_kube_prometheus_stack: "true"
   # Enable the cost monitoring feature
   enable_kubecost: "false"
   # Enable the cert-manager feature
