@@ -4,8 +4,6 @@ opencost:
   exporter:
     # Additional configuration
     extraEnv:
-      # API port for OpenCost
-      API_PORT: "9003"
       # AWS Configuration
       AWS_REGION: PATCH_ME
       # Use regional STS endpoints for better performance
