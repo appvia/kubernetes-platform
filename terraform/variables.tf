@@ -22,6 +22,19 @@ variable "access_entries" {
   default = null
 }
 
+variable "opencost" {
+  description = "Indicates if we should enable the spot feed"
+  type = object({
+    ## Indicates if we should enable the spot feed
+    enable_spot_feed = optional(bool, false)
+    ## Name of the spot feed bucket else we auto generate one
+    spot_feed_bucket_name = optional(string, null)
+    ## The prefix to use for the spot feed
+    spot_feed_prefix = optional(string, "")
+  })
+  default = {}
+}
+
 variable "enable_aws_managed_prometheus" {
   description = "Indicates if we should enable the AWS Managed Prometheus"
   type        = bool
