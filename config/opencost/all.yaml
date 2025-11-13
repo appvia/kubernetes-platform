@@ -84,3 +84,16 @@ opencost:
     - name: cost-data
       # The empty dir for the extra volume for cost data
       emptyDir: {}
+
+# PodDisruptionBudget for high availability
+pdb:
+  enabled: true
+  # -- Minimum number of pods that must be available after the eviction
+  minAvailable: 1
+  # -- Maximum number of pods that can be unavailable after the eviction
+  maxUnavailable: 0
+
+## Network Policies
+networkPolicies:
+  # Indicates if we should enable the NetworkPolicies for OpenCost
+  enabled: true
