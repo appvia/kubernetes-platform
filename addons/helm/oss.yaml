@@ -11,6 +11,12 @@
   version: "2.4.16"
   namespace: argocd
 
+- feature: gateway_api
+  chart: gateway-api
+  repository: https://charts.appscode.com/stable/
+  version: "v17.4.0"
+  namespace: kube-system
+
 - feature: argo_rollouts
   chart: argo-rollouts
   repository: https://argoproj.github.io/argo-helm
@@ -32,7 +38,7 @@
 - feature: cilium
   chart: cilium
   repository: https://helm.cilium.io/
-  version: "1.18.2"
+  version: "1.18.4"
   namespace: cilium-system
 
 - feature: cluster_autoscaler
