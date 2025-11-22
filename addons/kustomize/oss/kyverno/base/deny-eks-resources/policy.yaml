@@ -26,6 +26,7 @@ spec:
                 - FargateProfile
                 - IdentityProviderConfig
                 - Nodegroup
+                - PodIdentityAssociation
       validate:
         message: "EKS resources can only be provisioned in the ack-system namespace."
         deny:
