@@ -1,0 +1,24 @@
+---
+## Common resource requests and limits for all ACK controllers
+resources:
+  requests:
+    memory: "64Mi"
+    cpu: "50m"
+  limits:
+    memory: "128Mi"
+    cpu: "100m"
+
+## Configuration for all ACK controllers
+deployment:
+  ## Number of replicas for each controller
+  replicas: 2
+
+# Set to "namespace" to install the controller in a namespaced scope, will only
+# watch for object creation in the namespace. By default installScope is
+# cluster wide.
+installScope: namespace
+
+# Set the value of the "namespace" to be watched by the controller
+# This value is only used when the `installScope` is set to "namespace". If left empty, the default value is the release namespace for the chart.
+# You can set multiple namespaces by providing a comma separated list of namespaces. e.g "namespace1,namespace2"
+watchNamespace: ack-system
