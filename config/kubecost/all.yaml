@@ -90,7 +90,7 @@ aggregator:
   # Governs storage size of aggregator DB storage. Disk performance is important
   # to aggregator performance. Consider high IOPS for best performance.
   aggregatorDbStorage:
-    storageClass: "" # use default storage class
+    storageClass: ""
     storageRequest: 128Gi
 
 ## The frontend configuration
