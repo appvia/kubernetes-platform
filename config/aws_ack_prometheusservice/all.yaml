@@ -1,0 +1,14 @@
+---
+## Common resource requests and limits for all ACK controllers
+resources:
+  requests:
+    memory: "64Mi"
+    cpu: "50m"
+  limits:
+    memory: "128Mi"
+    cpu: "100m"
+
+## Configuration for all ACK controllers
+deployment:
+  ## Number of replicas for each controller
+  replicas: 2
