@@ -39,7 +39,7 @@ labels:
   # Enable the karpenter nodepools feature
   enable_karpenter_nodepools: "true"
   # Enable the karpenter feature
-  enable_kerpenter: "false"
+  enable_karpenter: "false"
   # Enable the kro feature
   enable_kro: "true"
   # Enable the kyverno feature
