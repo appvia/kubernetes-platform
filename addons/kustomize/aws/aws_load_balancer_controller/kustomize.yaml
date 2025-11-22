@@ -1,0 +1,32 @@
+---
+kustomize:
+  ## The feature label
+  feature: aws_load_balancer_controller
+  ## The entrypoint for the kustomize
+  path: base
+  ## The patches to apply to the kustomize
+  patches:
+    - target:
+        kind: Policy
+        name: aws-load-balancer-controller-policy
+      patch:
+        - op: replace
+          path: /spec/name
+          key: metadata.labels.cluster_name
+          prefix: "aws-loadbalancer-"
+    - target:
+        kind: Role
+        name: aws-load-balancer-controller
+      patch:
+        - op: replace
+          path: /spec/name
+          key: metadata.labels.cluster_name
+          prefix: "aws-loadbalancer-"
+
+## The namespace options
+namespace:
+  ## The namespace to deploy the resources
+  name: ack-system
+
+sync:
+  phase: secondary
