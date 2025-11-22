@@ -73,6 +73,8 @@ spec:
   ## List of destinations we are permitted to create
   ## resources in
   destinations:
+    - namespace: "!ack-system"
+      server: "*"
     - namespace: "!argocd"
       server: "*"
     - namespace: "!cert-manager"
