@@ -2,7 +2,7 @@
 - feature: aws_load_balancer_controller
   chart: aws-load-balancer-controller
   repository: https://aws.github.io/eks-charts
-  version: "1.8.1"
+  version: "1.16.0"
   namespace: ingress-system
 
 - feature: aws_ebs_csi_resources
