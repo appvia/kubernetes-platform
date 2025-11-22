@@ -1,0 +1,19 @@
+---
+kustomize:
+  ## The features to enable in the tenant cluster
+  feature: gateway_api
+  ## The path to the kustomize overlay
+  path: config/crd
+  ## The location of an external kustomize repository (optional)
+  repository: https://github.com/kubernetes-sigs/gateway-api
+  ## The revision of the external repository (optional)
+  revision: v1.4.0
+
+namespace:
+  ## Name of the namespace to deploy the application
+  name: kube-system
+
+## Synchronization options
+sync:
+  ## We want to deploy gateway-api after the platform
+  phase: secondary
