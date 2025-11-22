@@ -22,7 +22,7 @@ spec:
           "Action": [
             "sts:AssumeRole",
             "sts:TagSession"
-          ]
+          ],
           "Condition": {
             "StringEquals": {
               "aws:RequestTag/kubernetes-namespace": ["ack-system"]
