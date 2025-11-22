@@ -31,6 +31,13 @@ spec:
         }
       ]
     }
+  # Tags to apply to the role
+  tags:
+    - key: kubernetes-namespace
+      value: ack-system
+    - key: kubernetes-service-account
+      value: aws-ack-s3-controller
+  # List of policies to attach to the role
   policies:
     - arn:aws:iam::aws:policy/AmazonS3FullAccess
 ---
