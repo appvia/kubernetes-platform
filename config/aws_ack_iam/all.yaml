@@ -8,11 +8,6 @@ resources:
     memory: "128Mi"
     cpu: "100m"
 
-## Configuration for all ACK controllers
-deployment:
-  ## Number of replicas for each controller
-  replicas: 2
-
 # Set to "namespace" to install the controller in a namespaced scope, will only
 # watch for object creation in the namespace. By default installScope is
 # cluster wide.

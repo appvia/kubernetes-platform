@@ -7,8 +7,3 @@ resources:
   limits:
     memory: "128Mi"
     cpu: "100m"
-
-## Configuration for all ACK controllers
-deployment:
-  ## Number of replicas for each controller
-  replicas: 2
