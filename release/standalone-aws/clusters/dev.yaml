@@ -29,7 +29,7 @@ labels:
   # Enable the aws ack eks feature
   enable_aws_ack_eks: "true"
   # Enable the AWS Load Balancer Controller feature
-  enable_aws_load_balancer_controller: "true"
+  enable_aws_load_balancer: "true"
   # Enable the cost monitoring feature
   enable_opencost: "false"
   # Enable the prometheus stack
