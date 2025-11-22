@@ -2,12 +2,14 @@
 
 GIT_BRANCH := $(shell git rev-parse --abbrev-ref HEAD)
 LAST_TAG ?= $(shell git tag --sort=-version:refname | head -n 2 | tail -n 1)
+REVISION := $(shell git rev-parse --abbrev-ref HEAD)
 
 standalone:
 	@echo "--> Provisioning Standalone Cluster (dev)"
 	@scripts/make-dev.sh \
 		--cluster-type standalone \
-	  --cluster dev
+	  --cluster dev \
+		--use-revision ${REVISION}
 
 standalone-aws:
 	@echo "--> Provisioning Standalone Cluster (dev) in AWS"
