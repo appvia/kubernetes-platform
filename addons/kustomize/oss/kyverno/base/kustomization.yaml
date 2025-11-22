@@ -6,6 +6,7 @@ namespace: kyverno-system
 resources:
   - mutate-traffic-distribution/policy.yaml
   - deny-default-namespace/policy.yaml
+  - deny-eks-resources/policy.yaml
   - deny-empty-ingress/policy.yaml
   - deny-external-secrets/policy.yaml
   - deny-latest-image/policy.yaml

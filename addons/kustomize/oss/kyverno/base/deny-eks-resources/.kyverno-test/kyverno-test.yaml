@@ -1,0 +1,22 @@
+---
+apiVersion: cli.kyverno.io/v1alpha1
+kind: Test
+metadata:
+  name: deny-eks-resources
+policies:
+  - ../policy.yaml
+resources:
+  - resources.yaml
+results:
+  - kind: AccessEntry
+    policy: deny-eks-resources
+    resources:
+      - deny-access-entry
+    result: fail
+    rule: deny-eks-resources
+  - kind: AccessEntry
+    policy: deny-eks-resources
+    resources:
+      - permitted-access-entry
+    result: pass
+    rule: deny-eks-resources

@@ -1,0 +1,14 @@
+---
+apiVersion: eks.services.k8s.aws/v1alpha1
+kind: AccessEntry
+metadata:
+  name: deny-access-entry
+  namespace: default
+spec:
+---
+apiVersion: eks.services.k8s.aws/v1alpha1
+kind: AccessEntry
+metadata:
+  name: permitted-access-entry
+  namespace: ack-system
+spec:
