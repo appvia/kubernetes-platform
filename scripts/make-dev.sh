@@ -13,6 +13,7 @@ GITHUB_USER=""
 GIT_BRANCH=$(git rev-parse --abbrev-ref HEAD)
 GIT_COMMIT=$(git rev-parse HEAD)
 USE_GIT_COMMIT=false
+USE_REVISION=""
 
 usage() {
   cat << EOF
@@ -41,11 +42,16 @@ setup_cluster() {
 
   echo "Provisioning Cluster: \"${cluster_name}\", Type: \"${CLUSTER_TYPE}\""
 
-  # Create cluster
-  if ! error_output=$(kind create cluster --name "${cluster_name}" 2>&1); then
-    # shellcheck disable=SC2028
-    echo "Failed to provision the kind cluster: \n${error_output}"
-    exit 1
+  ## Check if the cluster already exists
+  if kind get clusters | grep -q "${cluster_name}"; then
+    echo "Cluster: \"${cluster_name}\" already exists"
+  else 
+    # Create cluster
+    if ! error_output=$(kind create cluster --name "${cluster_name}" 2>&1); then
+      # shellcheck disable=SC2028
+      echo "Failed to provision the kind cluster: \n${error_output}"
+      exit 1
+    fi
   fi
 
   # Check if ArgoCD deployments are already present
