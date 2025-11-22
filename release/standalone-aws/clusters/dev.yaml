@@ -25,7 +25,7 @@ tenant: tenant
 ## We use labels to enable/disable features in the tenant cluster
 labels:
   # Enable the cost monitoring feature
-  enable_opencost: "true"
+  enable_opencost: "false"
   # Enable the prometheus stack
   enable_kube_prometheus_stack: "true"
   # Enable the cost monitoring feature
@@ -50,6 +50,8 @@ labels:
   enable_terranetes: "false"
   # Enable the terranetes CRs feature
   enable_terranetes_crs: "false"
+  # Enable the gateway-api feature
+  enable_gateway_api: "true"
 ## Annotations are using for additional metadata about the tenant cluster
 annotations:
   ## The EBS provisioner to use for the storage class

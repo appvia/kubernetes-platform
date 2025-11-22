@@ -27,7 +27,7 @@ labels:
   # Enable the prometheus stack
   enable_kube_prometheus_stack: "true"
   # Enable the cost mangement feature
-  enable_opencost: "true"
+  enable_opencost: "false"
   # Enable the cost monitoring feature
   enable_kubecost: "false"
   # Enable the cert-manager feature
@@ -42,6 +42,8 @@ labels:
   enable_kro: "true"
   # Enable the kyverno feature
   enable_kyverno: "true"
+  # Enable the gateway-api feature
+  enable_gateway_api: "true"
 ## Annotations are using for additional metadata about the tenant cluster
 annotations:
   # The tenant name
