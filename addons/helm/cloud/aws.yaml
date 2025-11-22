@@ -142,7 +142,7 @@
   repository: public.ecr.aws
   version: "1.5.3"
   namespace: ack-system
-  helm_values: |
+  values: |
     aws:
       region: {{ .metadata.annotations.region }}
 
@@ -169,7 +169,7 @@
   repository: public.ecr.aws
   version: "1.1.2"
   namespace: ack-system
-  helm_values: |
+  values: |
     aws:
       region: {{ .metadata.annotations.region }}
 
