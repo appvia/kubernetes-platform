@@ -36,6 +36,7 @@ apiVersion: iam.services.k8s.aws/v1alpha1
 kind: RolePolicyAttachment
 metadata:
   name: aws-ack-prometheusservice-policy-attachment
+  namespace: ack-system
 spec:
   roleRef:
     from:
