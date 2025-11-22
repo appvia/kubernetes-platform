@@ -44,7 +44,7 @@
 - feature: aws_gateway_api_controller
   chart: aws-gateway-controller-chart
   repository: public.ecr.aws
-  version: "v1.0.7"
+  version: "v1.1.7"
   namespace: kube-system
 
 - feature: aws_node_termination_handler
@@ -104,55 +104,70 @@
 - feature: aws_ack_apigatewayv2
   chart: aws-controllers-k8s/apigatewayv2-chart
   repository: public.ecr.aws
-  version: "1.0.15"
+  version: "1.1.2"
   namespace: ack-system
 
 - feature: aws_ack_dynamodb
   chart: aws-controllers-k8s/dynamodb-chart
   repository: public.ecr.aws
-  version: "1.2.13"
+  version: "1.6.1"
   namespace: ack-system
 
 - feature: aws_ack_prometheusservice
   chart: aws-controllers-k8s/prometheusservice-chart
   repository: public.ecr.aws
-  version: "1.2.13"
-  namespace: ack-system
-
-- feature: aws_ack_emrcontainers
-  chart: aws-controllers-k8s/emrcontainers-chart
-  repository: public.ecr.aws
-  version: "1.0.12"
+  version: "1.3.2"
   namespace: ack-system
 
 - feature: aws_ack_eventbridge
   chart: aws-controllers-k8s/eventbridge-chart
   repository: public.ecr.aws
-  version: "1.0.13"
+  version: "1.1.2"
   namespace: ack-system
 
 - feature: aws_ack_rds
   chart: aws-controllers-k8s/rds-chart
   repository: public.ecr.aws
-  version: "1.4.3"
+  version: "1.6.3"
   namespace: ack-system
 
 - feature: aws_ack_s3
   chart: aws-controllers-k8s/s3-chart
   repository: public.ecr.aws
-  version: "1.0.27"
+  version: "1.1.2"
   namespace: ack-system
 
 - feature: aws_ack_iam
   chart: aws-controllers-k8s/iam-chart
   repository: public.ecr.aws
-  version: "1.3.18"
+  version: "1.5.3"
+  namespace: ack-system
+  helm_values: |
+    aws:
+      region: {{ .metadata.annotations.region }}
+
+- feature: aws_ack_sns
+  chart: aws-controllers-k8s/sns-chart
+  repository: public.ecr.aws
+  version: "1.2.3"
+  namespace: ack-system
+
+- feature: aws_ack_sqs
+  chart: aws-controllers-k8s/sqs-chart
+  repository: public.ecr.aws
+  version: "1.2.2"
+  namespace: ack-system
+
+- feature: aws_ack_ses
+  chart: aws-controllers-k8s/ses-chart
+  repository: public.ecr.aws
+  version: "1.1.2"
   namespace: ack-system
 
 - feature: aws_ack_sfn
   chart: aws-controllers-k8s/sfn-chart
   repository: public.ecr.aws
-  version: "1.0.13"
+  version: "1.1.2"
   namespace: ack-system
   helm_values: |
     aws:
@@ -161,5 +176,5 @@
 - feature: aws_ack_eks
   chart: aws-controllers-k8s/eks-chart
   repository: public.ecr.aws
-  version: "1.6.3"
+  version: "1.9.4"
   namespace: ack-system
