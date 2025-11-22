@@ -159,6 +159,9 @@ spec:
                   {{- else if eq (len $params) 4 }}
                   {{- $value = dig (index $params 0) (index $params 1) (index $params 2) (index $params 3) "" $context }}
                   {{- end }}
+                  {{- if $patch.prefix }}
+                  {{- $value = printf "%s%s" $patch.prefix $value }}
+                  {{- end }}
                   value: {{ default $patch.default $value }}
               {{- end }}
             {{- end }}
