@@ -2,14 +2,14 @@
 apiVersion: iam.services.k8s.aws/v1alpha1
 kind: Policy
 metadata:
-  name: aws-load-balancer-controller-policy
+  name: aws-load-balancer
   namespace: ack-system
 spec:
-  name: aws-load-balancer-controller
+  name: aws-load-balancer
   description: "Policy used by the AWS Load Balancer Controller to manage Load Balancer resources"
   tags:
     kubernetes-namespace: ingress-system
-    kubernetes-service-account: aws-load-balancer-controller
+    kubernetes-service-account: aws-load-balancer
   policyDocument: |
     {
       "Version": "2012-10-17",
@@ -266,11 +266,11 @@ spec:
 apiVersion: iam.services.k8s.aws/v1alpha1
 kind: Role
 metadata:
-  name: aws-load-balancer-controller
+  name: aws-load-balancer
   namespace: ack-system
 spec:
   # The name the role will have in AWS IAM
-  name: aws-load-balancer-controller
+  name: aws-load-balancer
   # Description of the role
   description: "IAM Role used by the AWS Load Balancer Controller to manage Load Balancer resources"
   # The trust policy, allowing an entity to assume the role
@@ -297,25 +297,25 @@ spec:
     }
   policyRefs:
     from:
-      name: aws-load-balancer-controller-policy
+      name: aws-load-balancer
       namespace: ack-system
 ---
 apiVersion: eks.services.k8s.aws/v1alpha1
 kind: PodIdentityAssociation
 metadata:
-  name: aws-load-balancer-controller-association
+  name: aws-load-balancer
   namespace: ack-system
 spec:
   # The name of the Kubernetes Service Account to associate
-  serviceAccount: aws-load-balancer-controller
+  serviceAccount: aws-load-balancer
   # The Kubernetes Namespace of the Service Account (must match metadata.namespace)
   namespace: ingress-system
   # The reference to the IAM role
   roleRef:
     from:
-      name: aws-load-balancer-controller
+      name: aws-load-balancer
       namespace: ack-system
   # Tags to apply to the pod identity association
   tags:
     kubernetes-namespace: ack-system
-    kubernetes-service-account: aws-load-balancer-controller
+    kubernetes-service-account: aws-load-balancer
