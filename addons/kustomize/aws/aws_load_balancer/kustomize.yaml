@@ -1,7 +1,7 @@
 ---
 kustomize:
   ## The feature label
-  feature: aws_load_balancer_controller
+  feature: aws_load_balancer
   ## The entrypoint for the kustomize
   path: base
   ## The patches to apply to the kustomize
