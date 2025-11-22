@@ -8,8 +8,10 @@ spec:
   name: aws-load-balancer
   description: "Policy used by the AWS Load Balancer Controller to manage Load Balancer resources"
   tags:
-    kubernetes-namespace: ingress-system
-    kubernetes-service-account: aws-load-balancer
+    - key: kubernetes-namespace
+      value: ingress-system
+    - key: kubernetes-service-account
+      value: aws-load-balancer
   policyDocument: |
     {
       "Version": "2012-10-17",
@@ -273,6 +275,12 @@ spec:
   name: aws-load-balancer
   # Description of the role
   description: "IAM Role used by the AWS Load Balancer Controller to manage Load Balancer resources"
+  # Tags to apply to the role
+  tags:
+    - key: kubernetes-namespace
+      value: ingress-system
+    - key: kubernetes-service-account
+      value: aws-load-balancer
   # The trust policy, allowing an entity to assume the role
   assumeRolePolicyDocument: |
     {
@@ -286,7 +294,7 @@ spec:
           "Action": [
             "sts:AssumeRole",
             "sts:TagSession"
-          ]
+          ],
           "Condition": {
             "StringEquals": {
               "aws:RequestTag/kubernetes-namespace": ["ingress-system"]
@@ -296,9 +304,9 @@ spec:
       ]
     }
   policyRefs:
-    from:
-      name: aws-load-balancer
-      namespace: ack-system
+    - from:
+        name: aws-load-balancer
+        namespace: ack-system
 ---
 apiVersion: eks.services.k8s.aws/v1alpha1
 kind: PodIdentityAssociation
@@ -317,5 +325,5 @@ spec:
       namespace: ack-system
   # Tags to apply to the pod identity association
   tags:
-    kubernetes-namespace: ack-system
+    kubernetes-namespace: ingress-system
     kubernetes-service-account: aws-load-balancer
