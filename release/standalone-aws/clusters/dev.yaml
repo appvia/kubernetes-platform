@@ -24,6 +24,10 @@ cluster_type: standalone
 tenant: tenant
 ## We use labels to enable/disable features in the tenant cluster
 labels:
+  # Enable the aws ack iam feature
+  enable_aws_ack_iam: "true"
+  # Enable the aws ack eks feature
+  enable_aws_ack_eks: "true"
   # Enable the cost monitoring feature
   enable_opencost: "false"
   # Enable the prometheus stack
