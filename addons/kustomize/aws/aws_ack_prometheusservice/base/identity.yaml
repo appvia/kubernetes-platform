@@ -31,17 +31,8 @@ spec:
         }
       ]
     }
----
-apiVersion: iam.services.k8s.aws/v1alpha1
-kind: RolePolicyAttachment
-metadata:
-  name: aws-ack-prometheusservice-policy-attachment
-  namespace: ack-system
-spec:
-  roleRef:
-    from:
-      name: aws-ack-prometheusservice
-  policyARN: "arn:aws:iam::aws:policy/AmazonPrometheusConsoleFullAccess"
+  policies:
+    - arn:aws:iam::aws:policy/AmazonPrometheusConsoleFullAccess
 ---
 apiVersion: eks.services.k8s.aws/v1alpha1
 kind: PodIdentityAssociation
@@ -53,11 +44,12 @@ spec:
   serviceAccount: aws-ack-prometheusservice-controller
   # The Kubernetes Namespace of the Service Account (must match metadata.namespace)
   namespace: ack-system
-  # The Amazon Resource Name (ARN) of the IAM role for full admin permission
+  # The reference to the IAM role
   roleRef:
     from:
       name: aws-ack-prometheusservice
       namespace: ack-system
+  # Tags to apply to the pod identity association
   tags:
     kubernetes-namespace: ack-system
     kubernetes-service-account: aws-ack-prometheusservice-controller

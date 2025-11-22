@@ -300,17 +300,6 @@ spec:
       name: aws-load-balancer-controller-policy
       namespace: ack-system
 ---
-apiVersion: iam.services.k8s.aws/v1alpha1
-kind: RolePolicyAttachment
-metadata:
-  name: aws-load-balancer-controller-policy-attachment
-  namespace: ack-system
-spec:
-  roleRef:
-    from:
-      name: aws
-  policyARN: "arn:aws:iam::aws:policy/AmazonElasticLoadBalancingFullAccess"
----
 apiVersion: eks.services.k8s.aws/v1alpha1
 kind: PodIdentityAssociation
 metadata:
@@ -321,11 +310,12 @@ spec:
   serviceAccount: aws-load-balancer-controller
   # The Kubernetes Namespace of the Service Account (must match metadata.namespace)
   namespace: ingress-system
-  # The Amazon Resource Name (ARN) of the IAM role for full admin permission
+  # The reference to the IAM role
   roleRef:
     from:
       name: aws-load-balancer-controller
       namespace: ack-system
+  # Tags to apply to the pod identity association
   tags:
     kubernetes-namespace: ack-system
     kubernetes-service-account: aws-load-balancer-controller
