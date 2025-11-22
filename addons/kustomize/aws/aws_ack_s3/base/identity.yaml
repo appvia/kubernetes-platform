@@ -1,0 +1,62 @@
+---
+apiVersion: iam.services.k8s.aws/v1alpha1
+kind: Role
+metadata:
+  name: aws-ack-s3
+  namespace: ack-system
+spec:
+  # The name the role will have in AWS IAM
+  name: aws-ack-s3
+  # Description of the role
+  description: "IAM Role used by the AWS ACK S3 Controller to manage S3 resources"
+  # The trust policy, allowing an entity to assume the role
+  assumeRolePolicyDocument: |
+    {
+      "Version": "2012-10-17",
+      "Statement": [
+        {
+          "Effect": "Allow",
+          "Principal": {
+            "Service": "pods.eks.amazonaws.com"
+          },
+          "Action": [
+            "sts:AssumeRole",
+            "sts:TagSession"
+          ]
+          "Condition": {
+            "StringEquals": {
+              "aws:RequestTag/kubernetes-namespace": ["ack-system"]
+            }
+          }
+        }
+      ]
+    }
+---
+apiVersion: iam.services.k8s.aws/v1alpha1
+kind: RolePolicyAttachment
+metadata:
+  name: aws-ack-s3-policy-attachment
+spec:
+  roleRef:
+    from:
+      name: aws-ack-s3
+  policyARN: "arn:aws:iam::aws:policy/AmazonS3FullAccess"
+---
+apiVersion: eks.services.k8s.aws/v1alpha1
+kind: PodIdentityAssociation
+metadata:
+  name: aws-ack-s3-association
+  namespace: ack-system
+spec:
+  # The name of the Kubernetes Service Account to associate
+  serviceAccount: aws-ack-s3-controller
+  # The Kubernetes Namespace of the Service Account (must match metadata.namespace)
+  namespace: ack-system
+  # The Amazon Resource Name (ARN) of the IAM role for full admin permission
+  roleRef:
+    from:
+      name: aws-ack-s3
+      namespace: ack-system
+  tags:
+    kubernetes-namespace: ack-system
+    kubernetes-service-account: aws-ack-s3-controller

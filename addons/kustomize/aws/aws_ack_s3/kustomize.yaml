@@ -1,0 +1,24 @@
+---
+kustomize:
+  ## The feature label
+  feature: aws_ack_s3
+  ## The entrypoint for the kustomize
+  path: base
+  ## The patches to apply to the kustomize
+  patches:
+    - target:
+        kind: Role
+        name: aws-ack-s3
+      patch:
+        - op: replace
+          path: /spec/name
+          key: .metadata.labels.cluster_name
+          prefix: "aws-ack-s3-"
+
+## The namespace options
+namespace:
+  ## The namespace to deploy the resources
+  name: ack-system
+
+sync:
+  phase: secondary
