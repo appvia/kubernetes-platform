@@ -18,6 +18,8 @@ kustomize:
       path: /<PATH>
       key: <KEY>
       default: <DEFAULT>
+      # This will prefix the value from `default` and `key` 
+      prefix: <OPTIONAL_PREFIX_TO_VALUE>
 
   ## A collection of common labels to apply (optional)
   commomLabels:
