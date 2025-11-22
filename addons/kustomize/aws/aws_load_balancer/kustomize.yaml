@@ -8,7 +8,7 @@ kustomize:
   patches:
     - target:
         kind: Policy
-        name: aws-load-balancer-controller-policy
+        name: aws-load-balancer
       patch:
         - op: replace
           path: /spec/name
@@ -16,7 +16,7 @@ kustomize:
           prefix: "aws-loadbalancer-"
     - target:
         kind: Role
-        name: aws-load-balancer-controller
+        name: aws-load-balancer
       patch:
         - op: replace
           path: /spec/name
