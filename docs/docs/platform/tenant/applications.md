@@ -103,6 +103,8 @@ kustomize:
           value: metadata.annotations.version
           ## This is the default value to use if the value is not found.
           default: "1.21.3"
+          ## An optional prefix can be applied to to value 
+          prefix: my-prefix-
 
   ## Optional labels applied to all resources
   commonLabels:
