@@ -39,15 +39,23 @@ terraform apply -var-file=variables/dev.tfvars
 
 | Name | Source | Version |
 |------|--------|---------|
-| <a name="module_eks"></a> [eks](#module\_eks) | github.com/appvia/terraform-aws-eks.git | dev |
+| <a name="module_eks"></a> [eks](#module\_eks) | appvia/eks/aws | 1.2.12 |
 | <a name="module_network"></a> [network](#module\_network) | appvia/network/aws | 0.6.12 |
-| <a name="module_platform"></a> [platform](#module\_platform) | appvia/eks/aws//modules/platform | 1.2.6 |
+| <a name="module_platform"></a> [platform](#module\_platform) | appvia/eks/aws//modules/platform | 1.2.12 |
+| <a name="module_spot_feed_bucket"></a> [spot\_feed\_bucket](#module\_spot\_feed\_bucket) | terraform-aws-modules/s3-bucket/aws | 3.10.0 |
+| <a name="module_spot_feed_pod_identity"></a> [spot\_feed\_pod\_identity](#module\_spot\_feed\_pod\_identity) | terraform-aws-modules/eks-pod-identity/aws | 2.2.0 |
 
 ## Resources
 
 | Name | Type |
 |------|------|
+| [aws_cloudwatch_log_group.prometheus](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/cloudwatch_log_group) | resource |
+| [aws_prometheus_workspace.prometheus](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/prometheus_workspace) | resource |
+| [aws_spot_datafeed_subscription.default](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/spot_datafeed_subscription) | resource |
 | [aws_caller_identity.current](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/caller_identity) | data source |
+| [aws_canonical_user_id.current](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/canonical_user_id) | data source |
+| [aws_iam_policy_document.spot_feed_bucket_policy](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/iam_policy_document) | data source |
+| [aws_region.current](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/region) | data source |
 
 ## Inputs
 
@@ -57,6 +65,7 @@ terraform apply -var-file=variables/dev.tfvars
 | <a name="input_tags"></a> [tags](#input\_tags) | The tags to apply to all resources | `map(string)` | n/a | yes |
 | <a name="input_access_entries"></a> [access\_entries](#input\_access\_entries) | Map of access entries to add to the cluster. | <pre>map(object({<br/>    ## The kubernetes groups<br/>    kubernetes_groups = optional(list(string))<br/>    ## The principal ARN<br/>    principal_arn = string<br/>    ## The policy associations<br/>    policy_associations = optional(map(object({<br/>      # The policy arn to associate<br/>      policy_arn = string<br/>      # The access scope (namespace or clsuter)<br/>      access_scope = object({<br/>        # The namespaces to apply the policy to (optional)<br/>        namespaces = optional(list(string))<br/>        # The type of access (namespace or cluster)<br/>        type = string<br/>      })<br/>    })))<br/>  }))</pre> | `null` | no |
 | <a name="input_argocd_repositories"></a> [argocd\_repositories](#input\_argocd\_repositories) | A collection of repository secrets to add to the argocd namespace | <pre>map(object({<br/>    ## The description of the repository<br/>    description = string<br/>    ## An optional password for the repository<br/>    password = optional(string, null)<br/>    ## The secret to use for the repository<br/>    secret = optional(string, null)<br/>    ## The secret manager ARN to use for the secret<br/>    secret_manager_arn = optional(string, null)<br/>    ## An optional SSH private key for the repository<br/>    ssh_private_key = optional(string, null)<br/>    ## The URL for the repository<br/>    url = string<br/>    ## An optional username for the repository<br/>    username = optional(string, null)<br/>  }))</pre> | `{}` | no |
+| <a name="input_enable_aws_managed_prometheus"></a> [enable\_aws\_managed\_prometheus](#input\_enable\_aws\_managed\_prometheus) | Indicates if we should enable the AWS Managed Prometheus | `bool` | `false` | no |
 | <a name="input_enable_public_access"></a> [enable\_public\_access](#input\_enable\_public\_access) | The public access to the cluster endpoint | `bool` | `true` | no |
 | <a name="input_hub_account_id"></a> [hub\_account\_id](#input\_hub\_account\_id) | When using a hub deployment options, this is the account where argocd is running | `string` | `null` | no |
 | <a name="input_hub_account_role"></a> [hub\_account\_role](#input\_hub\_account\_role) | The role to use for the hub account | `string` | `"argocd-pod-identity-hub"` | no |
@@ -64,6 +73,7 @@ terraform apply -var-file=variables/dev.tfvars
 | <a name="input_kubecosts_agent"></a> [kubecosts\_agent](#input\_kubecosts\_agent) | The Kubecost Agent configuration | <pre>object({<br/>    ## Indicates if we should enable the Kubecost Agent platform<br/>    enable = optional(bool, false)<br/>    ## The namespace to deploy the Kubecost Agent platform to<br/>    namespace = optional(string, "kubecosts")<br/>    ## The service account to deploy the Kubecost Agent platform to<br/>    service_account = optional(string, "kubecosts")<br/>    ## The ARN of the federated bucket to use for the Kubecost Agent platform<br/>    federated_bucket_arn = string<br/>    ## List of principals to allowed to write to the federated bucket<br/>    allowed_principals = optional(list(string), [])<br/>  })</pre> | `null` | no |
 | <a name="input_kubernetes_version"></a> [kubernetes\_version](#input\_kubernetes\_version) | The version of the cluster to provision | `string` | `"1.34"` | no |
 | <a name="input_nat_gateway_mode"></a> [nat\_gateway\_mode](#input\_nat\_gateway\_mode) | The NAT gateway mode | `string` | `"single_az"` | no |
+| <a name="input_opencost"></a> [opencost](#input\_opencost) | Indicates if we should enable the spot feed | <pre>object({<br/>    ## Indicates if we should enable the spot feed<br/>    enable_spot_feed = optional(bool, false)<br/>    ## Name of the spot feed bucket else we auto generate one<br/>    spot_feed_bucket_name = optional(string, null)<br/>    ## The prefix to use for the spot feed<br/>    spot_feed_prefix = optional(string, "")<br/>  })</pre> | `{}` | no |
 | <a name="input_pod_identity"></a> [pod\_identity](#input\_pod\_identity) | The pod identity configuration | <pre>map(object({<br/>    ## Indicates if we should enable the pod identity<br/>    enabled = optional(bool, true)<br/>    ## The namespace to deploy the pod identity to<br/>    description = optional(string, null)<br/>    ## The service account to deploy the pod identity to<br/>    service_account = optional(string, null)<br/>    ## The managed policy ARNs to attach to the pod identity<br/>    managed_policy_arns = optional(map(string), {})<br/>    ## The permissions boundary ARN to use for the pod identity<br/>    permissions_boundary_arn = optional(string, null)<br/>    ## The namespace to deploy the pod identity to<br/>    namespace = optional(string, null)<br/>    ## The name of the pod identity role<br/>    name = optional(string, null)<br/>    ## Additional policy statements to attach to the pod identity role<br/>    policy_statements = optional(list(object({<br/>      ## The statement ID<br/>      sid = optional(string, null)<br/>      ## The actions to allow<br/>      actions = optional(list(string), [])<br/>      ## The resources to allow<br/>      resources = optional(list(string), [])<br/>      ## The effect to allow<br/>      effect = optional(string, null)<br/>    })), [])<br/>  }))</pre> | `{}` | no |
 | <a name="input_private_subnet_netmask"></a> [private\_subnet\_netmask](#input\_private\_subnet\_netmask) | The netmask for the private subnets | `number` | `24` | no |
 | <a name="input_public_subnet_netmask"></a> [public\_subnet\_netmask](#input\_public\_subnet\_netmask) | The netmask for the public subnets | `number` | `24` | no |
@@ -77,9 +87,11 @@ terraform apply -var-file=variables/dev.tfvars
 
 | Name | Description |
 |------|-------------|
+| <a name="output_account_id"></a> [account\_id](#output\_account\_id) | The account ID of the cluster |
 | <a name="output_argocd_spoke_role_arn"></a> [argocd\_spoke\_role\_arn](#output\_argocd\_spoke\_role\_arn) | When provisioning a spoke, the is the IAM role the hub must assume |
 | <a name="output_eks_cluster_certificate_authority_data"></a> [eks\_cluster\_certificate\_authority\_data](#output\_eks\_cluster\_certificate\_authority\_data) | The certificate authority of the EKS cluster |
 | <a name="output_eks_cluster_endpoint"></a> [eks\_cluster\_endpoint](#output\_eks\_cluster\_endpoint) | The endpoint of the EKS cluster |
 | <a name="output_eks_cluster_name"></a> [eks\_cluster\_name](#output\_eks\_cluster\_name) | The name of the EKS cluster |
+| <a name="output_region"></a> [region](#output\_region) | The region of the cluster |
 <!-- END_TF_DOCS -->
 
