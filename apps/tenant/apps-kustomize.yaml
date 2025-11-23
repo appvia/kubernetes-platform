@@ -164,8 +164,8 @@ spec:
                 kind: {{ $change.target.kind }}
                 name: {{ $change.target.name }}
               {{- range $patch := $change.patch }}
-              {{- $params := splitList "." $patch.key }}
-              {{- $value := $patch.default }}
+              {{- $params := splitList "." (trimPrefix "." $patch.key) }}
+              {{- $value := default $patch.default "" }}
               patch: |
                 - op: {{ $patch.op }}
                   path: {{ $patch.path }}
