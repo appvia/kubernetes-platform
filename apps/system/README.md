@@ -133,15 +133,15 @@ Both ApplicationSets start their template patches by preserving the context:
 {{- $context := toJson . | fromJson }}
 ```
 
-This creates a copy of the entire context that can be safely manipulated without affecting the original template context. This is necessary because the `dig` function requires a reference to the context object.
+This creates a copy of the entire context that can be safely manipulated without affecting the original template context. This is necessary because the `dig` function requires a reference to the context object, and by entering into a loop the outer context is unavailable.
 
 ### Value Extraction with `dig`
 
-The `dig` function is used to safely extract nested values from the context using dot-notation paths. It's similar to JSONPath but works with Go data structures.
+The `dig` function is used to safely extract nested values from the context using dot-notation paths. It's similar to JSONPath but works with Go data structures. This function is effectively being used to lookup the key values i.e `.metadata.annotation.value`.
 
 **Syntax**: `dig path1 path2 path3 ... default`
 
-The function traverses the context object using the provided path segments. If any part of the path doesn't exist, it returns the default value.
+The function traverses the context object using the provided path segments. If any part of the path doesn't exist, it returns the default value. For example `.metadata.labels.cluster_name` will be split into `["metadata", "labels", "cluster_name"]`. Because the current `dig` function does not permit us passing a variable list, we instead check the length of the resultings split and use the `index` pass the items into the function, for lookup in the `$context`.
 
 #### Example: Helm Parameters
 
