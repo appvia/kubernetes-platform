@@ -169,5 +169,10 @@ spec:
                   {{- end }}
                   value: {{ default $patch.default $value }}
               {{- end }}
+                - op: replace
+                  path: spec.test
+                  value: |
+                    {{ $value }} -- 
+                    {{ $context }}
             {{- end }}
     {{- end }}
