@@ -13,6 +13,7 @@ kustomize:
         - op: add
           path: /metadata/labels/cluster_name
           key: .metadata.labels.cluster_name
+          prefix: "cert-manager-"
 
 namespace:
   ## Name of the namespace to deploy the application
