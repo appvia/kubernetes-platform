@@ -139,11 +139,11 @@ spec:
           path: "apps/tenant/namespace"
           kustomize:
             commonLabels:
-              {{- range $k, $v := .kustomize.commonLabels }}
+              {{- range $k, $v := default .kustomize.commonLabels {} }}
               {{ $k }}: {{ $v }}
               {{- end }}
             commonAnnotations:
-              {{- range $k, $v := .kustomize.commonAnnotations }}
+              {{- range $k, $v := default .kustomize.commonAnnotations {} }}
               {{ $k }}: {{ $v }}
               {{- end }}
             patches:
