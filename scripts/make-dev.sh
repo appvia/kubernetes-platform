@@ -43,7 +43,7 @@ setup_cluster() {
   echo "Provisioning Cluster: \"${cluster_name}\", Type: \"${CLUSTER_TYPE}\""
 
   ## Check if the cluster already exists
-  if kind get clusters | grep -q "${cluster_name}"; then
+  if kind get clusters 2>&1 | grep -q "${cluster_name}"; then
     echo "Cluster: \"${cluster_name}\" already exists"
   else 
     # Create cluster
