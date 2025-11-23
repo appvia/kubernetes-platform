@@ -4,6 +4,11 @@ kind: Policy
 metadata:
   name: aws-load-balancer
   namespace: ack-system
+  labels:
+    app.kubernetes.io/managed-by: argocd
+    app.kubernetes.io/name: aws-load-balancer
+    app.kubernetes.io/component: policy
+    app.kubernetes.io/part-of: aws-load-balancer
 spec:
   name: UPDATE_ME
   description: "Policy used by the AWS Load Balancer Controller to manage Load Balancer resources"
@@ -270,6 +275,11 @@ kind: Role
 metadata:
   name: aws-load-balancer
   namespace: ack-system
+  labels:
+    app.kubernetes.io/managed-by: argocd
+    app.kubernetes.io/name: aws-load-balancer
+    app.kubernetes.io/component: role
+    app.kubernetes.io/part-of: aws-load-balancer
 spec:
   # The name the role will have in AWS IAM
   name: UPDATE_ME
@@ -313,6 +323,11 @@ kind: PodIdentityAssociation
 metadata:
   name: aws-load-balancer
   namespace: ack-system
+  labels:
+    app.kubernetes.io/managed-by: argocd
+    app.kubernetes.io/name: aws-load-balancer
+    app.kubernetes.io/component: pod-identity-association
+    app.kubernetes.io/part-of: aws-load-balancer
 spec:
   # The name of the cluster to associate the pod identity with
   clusterName: UPDATE_ME
