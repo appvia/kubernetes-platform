@@ -165,7 +165,7 @@ spec:
                 name: {{ $change.target.name }}
               {{- range $patch := $change.patch }}
               {{- $params := splitList "." (trimPrefix "." $patch.key) }}
-              {{- $value := default $patch.default "" }}
+              {{- $value := $patch.default }}
               patch: |
                 - op: {{ $patch.op }}
                   path: {{ $patch.path }}
@@ -188,5 +188,9 @@ spec:
           ## We either use the tenant revision of the kustomize.revision (external revision)
           targetRevision: "{{ default .metadata.annotations.tenant_revision .kustomize.revision }}"
           ## We either use the tenant path of the kustomize.path (external path)
-          path: '{{ printf "%s/%s" .path.path .kustomize.path }}'
+          {{- if .kustomize.repository }}
+          path: "{{ .kustomize.path }}"
+          {{- else }}
+          path: "{{ printf "%s/%s" .path.path .kustomize.path }}"
+          {{- end }}
           kustomize: {}
