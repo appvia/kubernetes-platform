@@ -54,8 +54,6 @@ spec:
               matchExpressions:
                 - key: kustomize.path
                   operator: Exists
-                - key: kustomize.revision
-                  operator: Exists
 
   ## Sync Policy for the ApplicationSet
   syncPolicy:
