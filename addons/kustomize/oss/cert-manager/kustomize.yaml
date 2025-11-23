@@ -10,7 +10,7 @@ kustomize:
         kind: ClusterIssuer
         name: selfsigned-issuer
       patch:
-        - op: replace
+        - op: add
           path: /metadata/labels/cluster_name
           key: .metadata.labels.cluster_name
 
