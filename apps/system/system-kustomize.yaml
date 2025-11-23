@@ -151,7 +151,7 @@ spec:
                 name: {{ $change.target.name }}
               {{- range $patch := $change.patch }}
               {{- $params := splitList "." $patch.key }}
-              {{- $value := $patch.default }}
+              {{- $value := default $patch.default "" }}
               patch: |
                 - op: {{ $patch.op }}
                   path: {{ $patch.path }}
