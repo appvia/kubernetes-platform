@@ -44,7 +44,7 @@ spec:
 apiVersion: eks.services.k8s.aws/v1alpha1
 kind: PodIdentityAssociation
 metadata:
-  name: aws-ack-dynamodb-association
+  name: aws-ack-dynamodb
   namespace: ack-system
 spec:
   # The name of the Kubernetes Service Account to associate

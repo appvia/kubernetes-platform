@@ -44,9 +44,11 @@ spec:
 apiVersion: eks.services.k8s.aws/v1alpha1
 kind: PodIdentityAssociation
 metadata:
-  name: aws-ack-prometheusservice-association
+  name: aws-ack-prometheusservice
   namespace: ack-system
 spec:
+  # The name of the cluster to associate the pod identity with
+  clusterName: UPDATE_ME
   # The name of the Kubernetes Service Account to associate
   serviceAccount: aws-ack-prometheusservice-controller
   # The Kubernetes Namespace of the Service Account (must match metadata.namespace)

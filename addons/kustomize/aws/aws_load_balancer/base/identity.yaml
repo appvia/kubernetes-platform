@@ -314,6 +314,8 @@ metadata:
   name: aws-load-balancer
   namespace: ack-system
 spec:
+  # The name of the cluster to associate the pod identity with
+  clusterName: UPDATE_ME
   # The name of the Kubernetes Service Account to associate
   serviceAccount: aws-load-balancer
   # The Kubernetes Namespace of the Service Account (must match metadata.namespace)

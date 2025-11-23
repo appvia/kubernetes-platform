@@ -22,6 +22,13 @@ kustomize:
           path: /spec/name
           key: metadata.labels.cluster_name
           prefix: "aws-loadbalancer-"
+    - target:
+        kind: PodIdentityAssociation
+        name: aws-load-balancer
+      patch:
+        - op: replace
+          path: /spec/clusterName
+          key: metadata.labels.cluster_name
 
 ## The namespace options
 namespace:
