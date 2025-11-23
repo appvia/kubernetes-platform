@@ -1,0 +1,34 @@
+---
+kustomize:
+  ## Human friendly description
+  description: "Deploy a test application"
+  ## The path to the kustomize overlay
+  path: base
+  ## Optional patches to apply to the kustomize overlay
+  patches:
+    - target:
+        kind: Deployment
+        name: tenant-kustomize-app
+      patch:
+        - op: add
+          path: /metadata/labels/parameter_metadata
+          key: metadata.labels.cluster_name
+        - op: add
+          path: /metadata/labels/parameter_metadata_missing
+          key: metadata.labels.cluster_name_missing
+          default: "missing"
+        - op: add
+          path: /metadata/labels/parameter_metadata_missing_prefix
+          key: metadata.labels.cluster_name_missing
+          default: "missing"
+          prefix: "prefix-"
+
+## The namespace options
+namespace:
+  ## The name of the namespace to deploy the application
+  name: tenant-kustomize-app
+
+## Synchronization options
+sync:
+  ## How to order the deployment of the resources
+  phase: primary

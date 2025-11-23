@@ -1,0 +1,28 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: tenant-kustomize-app
+  namespace: tenant-kustomize-app
+  labels: {}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: tenant-kustomize-app
+  template:
+    metadata:
+      labels:
+        app: tenant-kustomize-app
+    spec:
+      containers:
+        - name: tenant-kustomize-app
+          image: nginx:latest
+          ports:
+            - containerPort: 80
+          resources:
+            requests:
+              cpu: 100m
+              memory: 100Mi
+            limits:
+              cpu: 200m
