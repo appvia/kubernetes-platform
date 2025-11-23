@@ -172,6 +172,6 @@ spec:
                 - op: replace
                   path: spec.test
                   value: |
-                    {{ toYaml $context }}
+                    {{ $context }}
             {{- end }}
     {{- end }}
