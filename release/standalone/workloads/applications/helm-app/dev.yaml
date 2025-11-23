@@ -7,3 +7,7 @@ helm:
   chart: hello-world
   ## The chart version to install
   version: "0.1.0"
+  ## Custom parameters
+  parameters:
+    - name: custom.parameter.tests
+      value: metadata.labels.cluster_name
