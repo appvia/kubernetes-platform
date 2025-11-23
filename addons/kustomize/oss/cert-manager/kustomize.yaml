@@ -4,6 +4,15 @@ kustomize:
   feature: cert_manager
   ## The path to the kustomize overlay
   path: base
+  ## The patches to apply to the kustomize
+  patches:
+    - target:
+        kind: ClusterIssuer
+        name: selfsigned-issuer
+      patch:
+        - op: replace
+          path: /metadata/labels/cluster_name
+          key: .metadata.labels.cluster_name
 
 namespace:
   ## Name of the namespace to deploy the application
