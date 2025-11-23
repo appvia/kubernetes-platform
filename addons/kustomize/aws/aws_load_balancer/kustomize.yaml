@@ -12,7 +12,7 @@ kustomize:
       patch:
         - op: replace
           path: /spec/name
-          key: metadata.labels.cluster_name
+          key: .metadata.labels.cluster_name
           prefix: "aws-loadbalancer-"
     - target:
         kind: Role
@@ -20,7 +20,7 @@ kustomize:
       patch:
         - op: replace
           path: /spec/name
-          key: metadata.labels.cluster_name
+          key: .metadata.labels.cluster_name
           prefix: "aws-loadbalancer-"
     - target:
         kind: PodIdentityAssociation
@@ -28,7 +28,7 @@ kustomize:
       patch:
         - op: replace
           path: /spec/clusterName
-          key: metadata.labels.cluster_name
+          key: .metadata.labels.cluster_name
 
 ## The namespace options
 namespace:
