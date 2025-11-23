@@ -44,3 +44,8 @@ teardown() {
   kubectl "get deployment helm-app-hello-world -n helm-app"
   kubectl "get pod -l app.kubernetes.io/name=hello-world --no-headers -n helm-app | grep hello"
 }
+
+@test "We should have a custom parameters in the helm-app application" {
+  kubectl_argocd  "get application tenant-helm-helm-app-dev -o yaml | yq .spec.sources[1].helm.parameters[0].name | grep -i custom.parameter.tests"
+  kubectl_argocd  "get application tenant-helm-helm-app-dev -o yaml | yq .spec.sources[1].helm.parameters[0].value | grep -i ${CLUSTER_NAME}"
+}
