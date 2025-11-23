@@ -5,7 +5,7 @@ metadata:
   name: aws-load-balancer
   namespace: ack-system
 spec:
-  name: aws-load-balancer
+  name: UPDATE_ME
   description: "Policy used by the AWS Load Balancer Controller to manage Load Balancer resources"
   tags:
     - key: kubernetes-namespace
@@ -272,7 +272,7 @@ metadata:
   namespace: ack-system
 spec:
   # The name the role will have in AWS IAM
-  name: aws-load-balancer
+  name: UPDATE_ME
   # Description of the role
   description: "IAM Role used by the AWS Load Balancer Controller to manage Load Balancer resources"
   # Tags to apply to the role
