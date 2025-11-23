@@ -4,5 +4,6 @@ kind: ClusterIssuer
 metadata:
   name: selfsigned-issuer
   namespace: cert-manager
+  labels: {}
 spec:
   selfSigned: {}
