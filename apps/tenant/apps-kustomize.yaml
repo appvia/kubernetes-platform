@@ -116,7 +116,7 @@ spec:
           - CreateNamespace=true
           - ServerSideApply=true
 
-  ## If a kustomize.repository is defines we use the environment as the targetRevision. Its
+  ## If a kustomize.repositor is defines we use the environment as the targetRevision. Its
   ## the responsibility of the repository to control the floating revisions.
   templatePatch: |
     {{- $index := 0 }}
@@ -130,7 +130,7 @@ spec:
     {{- $context := toJson . | fromJson }}
     spec:
       destination:
-        namespace: {{ $namespace }}
+        namespace: "{{ $namespace }}"
         server: "{{ .server }}"
 
       sources:
@@ -139,11 +139,11 @@ spec:
           path: "apps/tenant/namespace"
           kustomize:
             commonLabels:
-              {{- range $k, $v := default .kustomize.commonLabels {} }}
+              {{- range $k, $v := .kustomize.commonLabels }}
               {{ $k }}: {{ $v }}
               {{- end }}
             commonAnnotations:
-              {{- range $k, $v := default .kustomize.commonAnnotations {} }}
+              {{- range $k, $v := .kustomize.commonAnnotations }}
               {{ $k }}: {{ $v }}
               {{- end }}
             patches:
@@ -155,40 +155,39 @@ spec:
                     path: /metadata/name
                     value: "{{ $namespace }}"
 
-            {{- if and .kustomize.patches (gt (len .kustomize.patches) 0) }}
-            ## Save the context for the dig function
-            {{- range $change := .kustomize.patches }}
-            - target:
-                kind: {{ $change.target.kind }}
-                name: {{ $change.target.name }}
-              {{- range $patch := $change.patch }}
-              {{- $params := splitList "." (trimPrefix "." $patch.key) }}
-              {{- $value := $patch.default }}
-              patch: |
-                - op: {{ $patch.op }}
-                  path: {{ $patch.path }}
-                  {{- if eq (len $params) 1 }}
-                  {{- $value = dig (index $params 0) "" $context }}
-                  {{- else if eq (len $params) 2 }}
-                  {{- $value = dig (index $params 0) (index $params 1) "" $context }}
-                  {{- else if eq (len $params) 3 }}
-                  {{- $value = dig (index $params 0) (index $params 1) (index $params 2) "" $context }}
-                  {{- else if eq (len $params) 4 }}
-                  {{- $value = dig (index $params 0) (index $params 1) (index $params 2) (index $params 3) "" $context }}
-                  {{- end }}
-                  value: {{ default $patch.default $value }}
-              {{- end }}
-            {{- end }}
-            {{- end }}
-
-        ## We either use the tenant repository of the kustomize.repository
-        - repoURL: "{{ default .metadata.annotations.tenant_repository .kustomize.repository }}"
-          ## We either use the tenant revision of the kustomize.revision (external revision)
-          targetRevision: "{{ default .metadata.annotations.tenant_revision .kustomize.revision }}"
-          ## We either use the tenant path of the kustomize.path (external path)
-          {{- if .kustomize.repository }}
-          path: "{{ .kustomize.path }}"
-          {{- else }}
-          path: "{{ printf "%s/%s" .path.path .kustomize.path }}"
-          {{- end }}
-          kustomize: {}
+#        ## We either use the tenant repository of the kustomize.repository
+#        - repoURL: "{{ default .metadata.annotations.tenant_repository .kustomize.repository }}"
+#          ## We either use the tenant revision of the kustomize.revision (external revision)
+#          targetRevision: "{{ default .metadata.annotations.tenant_revision .kustomize.revision }}"
+#          ## We either use the tenant path of the kustomize.path (external path)
+#          {{- if .kustomize.repository }}
+#          path: "{{ .kustomize.path }}"
+#          {{- else }}
+#          path: "{{ printf "%s/%s" .path.path .kustomize.path }}"
+#          {{- end }}
+#          {{- if and .kustomize.patches (gt (len .kustomize.patches) 0) }}
+#          kustomize:
+#            ## Save the context for the dig function
+#            {{- range $change := .kustomize.patches }}
+#            - target:
+#                kind: {{ $change.target.kind }}
+#                name: {{ $change.target.name }}
+#              {{- range $patch := $change.patch }}
+#              {{- $params := splitList "." (trimPrefix "." $patch.key) }}
+#              {{- $value := $patch.default }}
+#              patch: |
+#                - op: {{ $patch.op }}
+#                  path: {{ $patch.path }}
+#                  {{- if eq (len $params) 1 }}
+#                  {{- $value = dig (index $params 0) "" $context }}
+#                  {{- else if eq (len $params) 2 }}
+#                  {{- $value = dig (index $params 0) (index $params 1) "" $context }}
+#                  {{- else if eq (len $params) 3 }}
+#                  {{- $value = dig (index $params 0) (index $params 1) (index $params 2) "" $context }}
+#                  {{- else if eq (len $params) 4 }}
+#                  {{- $value = dig (index $params 0) (index $params 1) (index $params 2) (index $params 3) "" $context }}
+#                  {{- end }}
+#                  value: {{ default $patch.default $value }}
+#              {{- end }}
+#            {{- end }}
+#          {{- end }}
