@@ -8,7 +8,7 @@ kustomize:
   patches:
     - target:
         kind: Deployment
-        name: tenant-kustomize-app
+        name: kustomize-app
       patch:
         - op: add
           path: /metadata/labels/parameter_metadata
@@ -21,7 +21,7 @@ kustomize:
           path: /metadata/labels/parameter_metadata_missing_prefix
           key: metadata.labels.cluster_name_missing
           default: "missing"
-          prefix: "prefix-"
+          prefix: "prefix"
 
 ## The namespace options
 namespace:

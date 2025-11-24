@@ -3,9 +3,9 @@ cluster_path = "../release/standalone-aws/clusters/dev.yaml"
 ## Override revision or branch for the platform and tenant repositories
 revision_overrides = {
   # The revision to use for the platform repository
-  platform_revision = "main"
+  platform_revision = "dev"
   # The revision to use for the tenant repository
-  tenant_revision = "main"
+  tenant_revision = "dev"
 }
 
 # Network configuration

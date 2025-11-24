@@ -155,16 +155,16 @@ spec:
                     path: /metadata/labels/platform.local~1namespace-type
                     value: "tenant-system"
 
-            {{- if and .kustomize.patches (gt (len .kustomize.patches) 0) }}
+            {{- if and (.kustomize.patches) (gt (len .kustomize.patches) 0) }}
             ## Save the context for the dig function
             {{- range $change := .kustomize.patches }}
             - target:
                 kind: {{ $change.target.kind }}
                 name: {{ $change.target.name }}
+              patch: |
               {{- range $patch := $change.patch }}
               {{- $params := splitList "." $patch.key }}
-              {{- $value := $patch.default }}
-              patch: |
+              {{- $value := default $patch.default "" }}
                 - op: {{ $patch.op }}
                   path: {{ $patch.path }}
                   {{- if eq (len $params) 1 }}
