@@ -16,19 +16,31 @@ retry() {
   shift
   cmd=$1
   shift
+  subcmd="${1:-}"  # Get subcmd if provided, otherwise empty
 
   local delay=5
   local i
   local result
+  local cmd_status
 
   for ((i = 1; i <= attempts; i++)); do
     run bash -c "$cmd"
+    cmd_status=${status}
     result="${output}"
 
-    run bash -c "${subcmd}" < <(echo -n "${result}")
-    if [[ ${status} -eq 0   ]]; then
-      echo "${output}"
-      return 0
+    # If subcmd is provided, run it on the output
+    if [[ -n "${subcmd}" ]]; then
+      run bash -c "${subcmd}" < <(echo -n "${result}")
+      if [[ ${status} -eq 0 ]]; then
+        echo "${output}"
+        return 0
+      fi
+    else
+      # No subcmd, just check if the original command succeeded
+      if [[ ${cmd_status} -eq 0 ]]; then
+        echo "${result}"
+        return 0
+      fi
     fi
 
     if [[ $i -lt $attempts ]]; then
@@ -41,7 +53,7 @@ retry() {
 }
 
 runit() {
-  retry 5 "$@"
+  retry 3 "$@"
 }
 
 kubectl_argocd() {
