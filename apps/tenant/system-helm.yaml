@@ -168,7 +168,11 @@ spec:
             {{- if and (.helm.parameters) (gt (len .helm.parameters) 0) }}
             parameters:
             {{- range $param := .helm.parameters }}
-            {{- $params := splitList "." $param.value }}
+            {{- if not (hasPrefix "." $param.value) }}  
+              - name: {{ $param.name }}
+                value: "{{ $param.value }}"
+            {{- else }}
+              {{- $params := splitList "." $param.value }}
               - name: {{ $param.name }}
                 {{- if eq (len $params) 1 }}
                 value: "{{ dig (index $params 0) $param.value $context }}"
@@ -179,7 +183,8 @@ spec:
                 {{- else if eq (len $params) 4 }}
                 value: "{{ dig (index $params 0) (index $params 1) (index $params 2) (index $params 3) "" $context }}"
                 {{- end }}
-            {{- end }}
+              {{- end }}
+              {{- end }}
             {{- end }}
 
         # Source the platform values

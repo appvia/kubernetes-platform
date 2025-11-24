@@ -141,7 +141,11 @@ spec:
             {{- if and (.parameters) (gt (len .parameters) 0) }}
             parameters:
             {{- range $param := .parameters }}
-              {{- $params := splitList "." (trimPrefix "." $param.value) }}
+            {{- if not (hasPrefix "." $param.value) }}
+              - name: {{ $param.name }}
+                value: "{{ $param.value }}"
+            {{- else }}
+              {{- $params := splitList "." $param.value }}
               {{- $value := default $param.default "" }}
               - name: {{ $param.name }}
                 {{- if eq (len $params) 1 }}
@@ -154,7 +158,8 @@ spec:
                 {{- $value = dig (index $params 0) (index $params 1) (index $params 2) (index $params 3) "" $context }}
                 {{- end }}
                 value: {{ default $param.default $value }}
-            {{- end }}
+              {{- end }}
+              {{- end }}
             {{- end }}
 
         - repoURL: "{{ .metadata.annotations.platform_repository }}"

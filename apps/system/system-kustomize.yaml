@@ -151,10 +151,14 @@ spec:
                 name: {{ $change.target.name }}
               patch: |
               {{- range $patch := $change.patch }}
-              {{- $params := splitList "." (trimPrefix "." $patch.key) }}
+              {{- $params := splitList "." $patch.key }}
               {{- $value := default $patch.default "" }}
                 - op: {{ $patch.op }}
                   path: {{ $patch.path }}
+                  {{- if not (hasPrefix "." $patch.key) }}
+                  {{- $value = printf "%s%s" $patch.prefix $value }}
+                  value: "{{ $value }}"
+                  {{- else }}
                   {{- if eq (len $params) 1 }}
                   {{- $value = dig (index $params 0) "" $context }}
                   {{- else if eq (len $params) 2 }}
@@ -168,6 +172,7 @@ spec:
                   {{- $value = printf "%s%s" $patch.prefix $value }}
                   {{- end }}
                   value: {{ default $patch.default $value }}
+                  {{- end }}
               {{- end }}
             {{- end }}
     {{- end }}
