@@ -142,17 +142,17 @@ spec:
             {{- range $k, $v := .kustomize.commonAnnotations }}
             {{ $k }}: {{ $v }}
             {{- end }}
-    {{- if and .kustomize.patches (gt (len .kustomize.patches) 0) }}
-    ## Save the context for the dig function
+          {{- if and .kustomize.patches (gt (len .kustomize.patches) 0) }}
+          ## Save the context for the dig function
           patches:
             {{- range $change := .kustomize.patches }}
             - target:
                 kind: {{ $change.target.kind }}
                 name: {{ $change.target.name }}
               patch: |
-              {{- range $patch := $change.patch }}
-              {{- $params := splitList "." $patch.key }}
-              {{- $value := default $patch.default "" }}
+                {{- range $patch := $change.patch }}
+                {{- $params := splitList "." $patch.key }}
+                {{- $value := default $patch.default "" }}
                 - op: {{ $patch.op }}
                   path: {{ $patch.path }}
                   {{- if not (hasPrefix "." $patch.key) }}
@@ -172,7 +172,7 @@ spec:
                   {{- $value = printf "%s%s" $patch.prefix $value }}
                   {{- end }}
                   value: {{ default $patch.default $value }}
-                  {{- end }}
-              {{- end }}
-            {{- end }}
-    {{- end }}
+                  {{- end }} # End of if hasPrefix
+                {{- end }} # End of range patch
+            {{- end }} # End of range patches
+          {{- end }} # End of if patches exists

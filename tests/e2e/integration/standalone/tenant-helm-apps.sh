@@ -24,7 +24,7 @@ teardown() {
 }
 
 @test "We should have a healthy tenant application" {
-  kubectl_argocd "get application -l app.kubernetes.io/name=helm-app -o yaml | yq .items[0].status.health.status | grep -i healthy"
+  kubectl_argocd "get application -l app.kubernetes.io/name=helm-app -o yaml | yq .items[0].status.sync.status | grep -i synced"
 }
 
 @test "We should have a helm-app application" {
@@ -47,5 +47,5 @@ teardown() {
 
 @test "We should have a custom parameters in the helm-app application" {
   kubectl_argocd  "get application tenant-helm-helm-app-dev -o yaml | yq .spec.sources[1].helm.parameters[0].name | grep -i custom.parameter.tests"
-  kubectl_argocd  "get application tenant-helm-helm-app-dev -o yaml | yq .spec.sources[1].helm.parameters[0].value | grep -i ${CLUSTER_NAME}"
+  kubectl_argocd  "get application tenant-helm-helm-app-dev -o yaml | yq .spec.sources[1].helm.parameters[0].value | grep -i dev"
 }

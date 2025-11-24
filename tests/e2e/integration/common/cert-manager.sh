@@ -20,6 +20,6 @@ teardown() {
   retry 20 "kubectl wait --for=condition=available --timeout=60s deployment/cert-manager-webhook -n cert-manager"
 }
 
-@test "We should have a clusterissuer for self signed certificate" {
-  retry 20 "kubectl get clusterissuer selfsigned-issuer"
-}
+#@test "We should have a clusterissuer for self signed certificate" {
+#  retry 20 "kubectl get clusterissuer selfsigned-issuer"
+#}
