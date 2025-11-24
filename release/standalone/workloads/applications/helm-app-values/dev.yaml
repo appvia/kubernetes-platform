@@ -12,4 +12,4 @@ helm:
     - name: serviceAccount.annotations.by_metadata
       value: .metadata.annotations.cloud_vendor
     - name: serviceAccount.annotations.by_value
-      value: "test_value"
+      value: test_value

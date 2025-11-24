@@ -12,14 +12,14 @@ kustomize:
       patch:
         - op: add
           path: /metadata/labels/parameter_metadata
-          key: metadata.labels.cluster_name
+          key: .metadata.labels.cluster_name
         - op: add
           path: /metadata/labels/parameter_metadata_missing
-          key: metadata.labels.cluster_name_missing
+          key: .metadata.labels.cluster_name_missing
           default: "missing"
         - op: add
           path: /metadata/labels/parameter_metadata_missing_prefix
-          key: metadata.labels.cluster_name_missing
+          key: .metadata.labels.cluster_name_missing
           default: "missing"
           prefix: "prefix"
 
