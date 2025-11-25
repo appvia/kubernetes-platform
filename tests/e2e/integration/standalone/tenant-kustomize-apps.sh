@@ -1,4 +1,4 @@
-# Description: these tests verify the tenant kustomize application is correctly configured 
+# Description: these tests verify the tenant kustomize application is correctly configured
 
 load ../../lib/helper
 
@@ -15,11 +15,11 @@ teardown() {
 }
 
 @test "We should have a kustomize-app application" {
-  kubectl_argocd "get application kustomize-app-dev -n argocd"
+  kubectl_argocd "get application tenant-kust-kustomize-app-dev  -n argocd"
 }
 
 @test "We should have a healthy kustomize-app application" {
-  kubectl_argocd "get application kustomize-app-dev -n argocd -o yaml | yq .status.health.status | grep -i healthy"
+  kubectl_argocd "get application tenant-kust-kustomize-app-dev  -n argocd -o yaml | yq .status.sync.status | grep -i synced"
 }
 
 @test "We should have a kustomize-app deployment" {
@@ -34,6 +34,10 @@ teardown() {
   kubectl "get deployment kustomize-app -n kustomize-app -o yaml | yq .metadata.labels | grep -i 'parameter_metadata_missing: missing'"
 }
 
+@test "We should have a kustomize-app label using a metadata key with prefix and metadata key" {
+  kubectl "get deployment kustomize-app -n kustomize-app -o yaml | yq .metadata.labels | grep -i 'parameter_metadata_with_prefix: prefix-dev'"
+}
+
 @test "We should have a kustomize-app deployment label using a metadata key with a missing value and a prefix" {
-  kubectl "get deployment kustomize-app -n kustomize-app -o yaml | yq .metadata.labels | grep -i 'parameter_metadata_missing_prefix: prefix-dev'"
+  kubectl "get deployment kustomize-app -n kustomize-app -o yaml | yq .metadata.labels | grep -i 'parameter_metadata_with_prefix_missing: prefix'"
 }

@@ -184,7 +184,7 @@ spec:
                 {{- $value = dig (index $params 0) (index $params 1) (index $params 2) (index $params 3) "" $context }}
                 {{- end }}
                 value: {{ default $param.default $value }}
-            {{- end }} 
+            {{- end }}
             {{- end }}
             {{- end }}
 
