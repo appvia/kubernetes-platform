@@ -90,10 +90,14 @@ spec:
           - CreateNamespace=false
           - RespectIgnoreDifferences=true
           - ServerSideApply=true
-      ## Ignore the following differences during sync
+
+  ## If the helm chart permits the values to be overridden, we apply a patch
+  ## allowing for the tenant values to be used.
+  templatePatch: |
+    spec:
       ignoreDifferences:
         - group: ""
           kind: Secret
-          name: clusetr-{{ .metadata.labels.cluster_name }}
+          name: cluster-{{ .metadata.labels.cluster_name }}
           jsonPointers:
             - /data
