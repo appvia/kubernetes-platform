@@ -15,7 +15,7 @@ teardown() {
 }
 
 @test "We should have a healthy Kyverno application" {
-  retry 20 "kubectl get application system-kyverno-dev -n argocd -o yaml | yq .status.health.status | grep -i healthy" || {
+  retry 20 "kubectl get application system-kyverno-dev -n argocd -o yaml | yq .status.sync.status | grep -i synced" || {
     echo "Application is not healthy, checking pod logs"
     kubectl -n argocd get application system-kyverno-dev -o yaml
     return 1

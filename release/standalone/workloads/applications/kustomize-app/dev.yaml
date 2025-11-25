@@ -18,7 +18,12 @@ kustomize:
           key: .metadata.labels.cluster_name_missing
           default: "missing"
         - op: add
-          path: /metadata/labels/parameter_metadata_missing_prefix
+          path: /metadata/labels/parameter_metadata_with_prefix
+          key: .metadata.labels.cluster_name
+          default: "missing"
+          prefix: "prefix-"
+        - op: add
+          path: /metadata/labels/parameter_metadata_with_prefix_missing
           key: .metadata.labels.cluster_name_missing
           default: "missing"
           prefix: "prefix"
