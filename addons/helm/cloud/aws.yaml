@@ -9,6 +9,8 @@
       value: .metadata.labels.cluster_name
     - name: region
       value: .metadata.annotations.region
+    - name: vpcId
+      value: .metadata.annotations.vpc_id
     - name: serviceAccount.name
       value: aws-load-balancer
 
