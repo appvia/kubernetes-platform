@@ -98,6 +98,6 @@ spec:
       ignoreDifferences:
         - group: ""
           kind: Secret
-          name: cluster-{{ .metadata.labels.cluster_name }}
+          name: cluster-{{ .cluster_name }}
           jsonPointers:
             - /data
