@@ -10,6 +10,6 @@ helm:
   ## Custom values
   parameters:
     - name: serviceAccount.annotations.by_metadata
-      value: .metadata.annotations.cloud_vendor
+      value: .metadata.labels.cluster_name
     - name: serviceAccount.annotations.by_value
       value: test_value
