@@ -88,4 +88,12 @@ spec:
             maxDuration: 3m
         syncOptions:
           - CreateNamespace=false
+          - RespectIgnoreDifferences=true
           - ServerSideApply=true
+      ## Ignore the following differences during sync
+      ignoreDifferences:
+        - group: ""
+          kind: Secret
+          name: clusetr-{{ .metadata.labels.cluster_name }}
+          jsonPointers:
+            - /data
