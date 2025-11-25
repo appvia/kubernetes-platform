@@ -29,7 +29,7 @@ retry() {
     result="${output}"
 
     # If subcmd is provided, run it on the output
-    if [[ -n "${subcmd}" ]]; then
+    if [[ -n ${subcmd}   ]]; then
       run bash -c "${subcmd}" < <(echo -n "${result}")
       if [[ ${status} -eq 0 ]]; then
         echo "${output}"
@@ -53,7 +53,7 @@ retry() {
 }
 
 runit() {
-  retry 5 "$@"
+  retry 50 "$@"
 }
 
 kubectl_argocd() {

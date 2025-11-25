@@ -45,9 +45,9 @@ run_checks() {
     "${UNITS}/common/bootstrap.sh"
     "${UNITS}/common/platform.sh"
     "${UNITS}/${CLUSTER_TYPE}/registration.sh"
+    "${UNITS}/${CLUSTER_TYPE}/applicationsets.sh"
     "${UNITS}/common/applicationsets.sh"
-    "${UNITS}/common/priorityclasses.sh"
-    "${UNITS}/common/cert-manager.sh"
+    "${UNITS}/${CLUSTER_TYPE}/priorityclasses.sh"
     "${UNITS}/${CLUSTER_TYPE}/tenant-namespace.sh"
     "${UNITS}/${CLUSTER_TYPE}/tenant-helm-apps-psa.sh"
     "${UNITS}/${CLUSTER_TYPE}/tenant-helm-apps.sh"
@@ -58,6 +58,8 @@ run_checks() {
     "${UNITS}/${CLUSTER_TYPE}/cilium.sh"
     "${UNITS}/${CLUSTER_TYPE}/${CLOUD}/storage-classes.sh"
     "${UNITS}/${CLUSTER_TYPE}/${CLOUD}/cilium.sh"
+    "${UNITS}/${CLUSTER_TYPE}/kyverno.sh"
+    "${UNITS}/common/cert-manager.sh"
   )
 
   # Run in the installation

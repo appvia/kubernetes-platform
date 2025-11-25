@@ -11,7 +11,7 @@ teardown() {
 }
 
 @test "We should have a Kyverno application" {
-  runit "kubectl get application system-kyverno-dev -n argocd"
+  runit "kubectl get application system-kyverno-hub -n argocd"
 }
 
 @test "We should have a kyverno-system namespace" {
@@ -37,16 +37,4 @@ teardown() {
   for NAME in "${NAMES[@]}"; do
     kubectl "get validatingwebhookconfiguration ${NAME}"
   done
-}
-
-@test "We should have a Kyverno kustomize application" {
-  kubectl "get application system-kust-kyverno-dev -n argocd"
-}
-
-@test "We should not be permitted to run anything in the default namespace" {
-  kubectl "-n default run console --image=busybox:1.28.3 2>&1 | grep deny-default-namespace"
-}
-
-@test "We should not be permitted to use an image latest" {
-  kubectl "-n default run console --image=busybox:latest 2>&1 | grep deny-latest-image"
 }

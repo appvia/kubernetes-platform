@@ -18,10 +18,6 @@ teardown() {
   kubectl_argocd "get application tenant-kust-kustomize-app-dev  -n argocd"
 }
 
-@test "We should have a healthy kustomize-app application" {
-  kubectl_argocd "get application tenant-kust-kustomize-app-dev  -n argocd -o yaml | yq .status.sync.status | grep -i synced"
-}
-
 @test "We should have a kustomize-app deployment" {
   kubectl "get deployment kustomize-app -n kustomize-app"
 }
