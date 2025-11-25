@@ -167,24 +167,25 @@ spec:
               - "$values/{{ .path.path }}/values/all.yaml"
             {{- if and (.helm.parameters) (gt (len .helm.parameters) 0) }}
             parameters:
-            {{- range $param := .helm.parameters }}
-            {{- if not (hasPrefix "." $param.value) }}
+            {{- range $param := .parameters }}
               - name: {{ $param.name }}
+            {{- if not (hasPrefix "." $param.value) }}
                 value: "{{ $param.value }}"
             {{- else }}
-              {{- $params := splitList "." $param.value }}
-              - name: {{ $param.name }}
+            {{- $params := splitList "." (trimPrefix "." $param.value) }}
+            {{- $value := default $param.default "" }}
                 {{- if eq (len $params) 1 }}
-                value: "{{ dig (index $params 0) $param.value $context }}"
+                {{- $value = dig (index $params 0) "" $context }}
                 {{- else if eq (len $params) 2 }}
-                value: "{{ dig (index $params 0) (index $params 1) "" $context }}"
+                {{- $value = dig (index $params 0) (index $params 1) "" $context }}
                 {{- else if eq (len $params) 3 }}
-                value: "{{ dig (index $params 0) (index $params 1) (index $params 2) "" $context }}"
+                {{- $value = dig (index $params 0) (index $params 1) (index $params 2) "" $context }}
                 {{- else if eq (len $params) 4 }}
-                value: "{{ dig (index $params 0) (index $params 1) (index $params 2) (index $params 3) "" $context }}"
+                {{- $value = dig (index $params 0) (index $params 1) (index $params 2) (index $params 3) "" $context }}
                 {{- end }}
-              {{- end }}
-              {{- end }}
+                value: {{ default $param.default $value }}
+            {{- end }} 
+            {{- end }}
             {{- end }}
 
         # Source the platform values

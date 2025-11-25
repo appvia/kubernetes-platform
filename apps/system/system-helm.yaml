@@ -145,7 +145,7 @@ spec:
             {{- if not (hasPrefix "." $param.value) }}
                 value: "{{ $param.value }}"
             {{- else }}
-            {{- $params := splitList "." $param.value }}
+            {{- $params := splitList "." (trimPrefix "." $param.value) }}
             {{- $value := default $param.default "" }}
                 {{- if eq (len $params) 1 }}
                 {{- $value = dig (index $params 0) "" $context }}
@@ -157,9 +157,9 @@ spec:
                 {{- $value = dig (index $params 0) (index $params 1) (index $params 2) (index $params 3) "" $context }}
                 {{- end }}
                 value: {{ default $param.default $value }}
-            {{- end }} # End of if hasPrefix
-            {{- end }} # End of range parameters
-            {{- end }} # End of if parameters
+            {{- end }} 
+            {{- end }}
+            {{- end }}
 
         - repoURL: "{{ .metadata.annotations.platform_repository }}"
           targetRevision: "{{ .metadata.annotations.platform_revision }}"

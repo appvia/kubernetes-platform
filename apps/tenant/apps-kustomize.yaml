@@ -175,7 +175,6 @@ spec:
                   name: {{ $change.target.name }}
                 patch: |
                 {{- range $patch := $change.patch }}
-                {{- $params := splitList "." $patch.key }}
                 {{- $value := default $patch.default "" }}
                   - op: {{ $patch.op }}
                     path: {{ $patch.path }}
@@ -183,6 +182,7 @@ spec:
                     {{- $value = printf "%s%s" $patch.prefix $value }}
                     value: "{{ $patch.value }}"
                     {{- else }}
+                    {{- $params := splitList "." (trimPrefix "." $patch.key) }}
                     {{- if eq (len $params) 1 }}
                     {{- $value = dig (index $params 0) "" $context }}
                     {{- else if eq (len $params) 2 }}

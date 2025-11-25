@@ -151,28 +151,28 @@ spec:
                 name: {{ $change.target.name }}
               patch: |
                 {{- range $patch := $change.patch }}
-                {{- $params := splitList "." $patch.key }}
                 {{- $value := default $patch.default "" }}
-                - op: {{ $patch.op }}
-                  path: {{ $patch.path }}
-                  {{- if not (hasPrefix "." $patch.key) }}
-                  {{- $value = printf "%s%s" $patch.prefix $value }}
-                  value: "{{ $value }}"
-                  {{- else }}
-                  {{- if eq (len $params) 1 }}
-                  {{- $value = dig (index $params 0) "" $context }}
-                  {{- else if eq (len $params) 2 }}
-                  {{- $value = dig (index $params 0) (index $params 1) "" $context }}
-                  {{- else if eq (len $params) 3 }}
-                  {{- $value = dig (index $params 0) (index $params 1) (index $params 2) "" $context }}
-                  {{- else if eq (len $params) 4 }}
-                  {{- $value = dig (index $params 0) (index $params 1) (index $params 2) (index $params 3) "" $context }}
-                  {{- end }}
-                  {{- if $patch.prefix }}
-                  {{- $value = printf "%s%s" $patch.prefix $value }}
-                  {{- end }}
-                  value: {{ default $patch.default $value }}
-                  {{- end }} # End of if hasPrefix
-                {{- end }} # End of range patch
-            {{- end }} # End of range patches
-          {{- end }} # End of if patches exists
+                  - op: {{ $patch.op }}
+                    path: {{ $patch.path }}
+                    {{- if not (hasPrefix "." $patch.key) }}
+                    {{- $value = printf "%s%s" $patch.prefix $value }}
+                    value: "{{ $patch.value }}"
+                    {{- else }}
+                    {{- $params := splitList "." (trimPrefix "." $patch.key) }}
+                    {{- if eq (len $params) 1 }}
+                    {{- $value = dig (index $params 0) "" $context }}
+                    {{- else if eq (len $params) 2 }}
+                    {{- $value = dig (index $params 0) (index $params 1) "" $context }}
+                    {{- else if eq (len $params) 3 }}
+                    {{- $value = dig (index $params 0) (index $params 1) (index $params 2) "" $context }}
+                    {{- else if eq (len $params) 4 }}
+                    {{- $value = dig (index $params 0) (index $params 1) (index $params 2) (index $params 3) "" $context }}
+                    {{- end }}
+                    {{- if $patch.prefix }}
+                    {{- $value = printf "%s%s" $patch.prefix $value }}
+                    {{- end }}
+                    value: {{ default $patch.default $value }}
+                    {{- end }}
+                {{- end }}
+              {{- end }}
+            {{- end }}
