@@ -19,6 +19,11 @@ teardown() {
   kubectl_argocd "get application -l app.kubernetes.io/name=helm-app-values | grep -q 'Synced'"
 }
 
+@test "We should have a custom parameters in the helm-app application" {
+  kubectl_argocd  "get application tenant-helm-helm-app-dev -o yaml | yq .spec.sources[1].helm.parameters[0].name | grep -i custom.parameter.tests"
+  kubectl_argocd  "get application tenant-helm-helm-app-dev -o yaml | yq .spec.sources[1].helm.parameters[0].value | grep -i dev"
+}
+
 @test "We should have a service account with attributes from the parameters" {
   kubectl "get serviceaccount -n helm-app-values helm-app-values-hello-world"
   kubectl "get serviceaccount -n helm-app-values helm-app-values-hello-world -o yaml | yq .metadata.annotations.by_metadata | grep -i ${CLOUD}"

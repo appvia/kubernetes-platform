@@ -1,4 +1,4 @@
-# Description: these tests verify the tenant ingress controller is correctly configured 
+# Description: these tests verify the tenant ingress controller is correctly configured
 
 load ../../lib/helper
 
@@ -10,7 +10,7 @@ teardown() {
   [[ -n $BATS_TEST_COMPLETED   ]] || touch "${BATS_PARENT_TMPNAME}.skip"
 }
 
-@test "We should have a ingress-system namespace" { 
+@test "We should have a ingress-system namespace" {
   kubectl "get namespace ingress-system"
 }
 
@@ -19,7 +19,7 @@ teardown() {
 }
 
 @test "We should have a ingress-nginx-controller deployment" {
-  kubectl "get deployment ingress-system-ingress-nginx-controller -n ingress-system"
+  kubectl "get deployment ingress-system-hello-world -n ingress-system"
 }
 
 @test "We should have a psa labels on the namespace" {

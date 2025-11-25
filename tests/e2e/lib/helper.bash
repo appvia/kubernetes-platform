@@ -53,7 +53,7 @@ retry() {
 }
 
 runit() {
-  retry 3 "$@"
+  retry 5 "$@"
 }
 
 kubectl_argocd() {
