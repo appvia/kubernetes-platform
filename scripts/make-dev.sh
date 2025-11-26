@@ -8,7 +8,7 @@ set -euo pipefail
 CLUSTER_NAME="dev"
 CLUSTER_TYPE="standalone"
 CREDENTIALS=false
-ARGOCD_VERSION="9.0.0"
+ARGOCD_VERSION="9.1.4"
 GITHUB_USER=""
 GIT_BRANCH=$(git rev-parse --abbrev-ref HEAD)
 GIT_COMMIT=$(git rev-parse HEAD)
@@ -29,7 +29,7 @@ Options:
   -r, --revision REVISION      Set the revision to use for the platform repository
   -h, --help                   Show this help message and exit
 EOF
-  if [[ "${#}" -gt 0   ]]; then
+  if [[ ${#} -gt 0     ]]; then
     echo -e "Error: ${*}"
     exit 1
   fi
@@ -45,7 +45,7 @@ setup_cluster() {
   ## Check if the cluster already exists
   if kind get clusters 2>&1 | grep -q "${cluster_name}"; then
     echo "Cluster: \"${cluster_name}\" already exists"
-  else 
+  else
     # Create cluster
     if ! error_output=$(kind create cluster --name "${cluster_name}" 2>&1); then
       # shellcheck disable=SC2028

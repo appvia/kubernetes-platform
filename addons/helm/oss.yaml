@@ -2,7 +2,7 @@
 - feature: argocd
   chart: argo-cd
   repository: https://argoproj.github.io/argo-helm
-  version: "9.0.0"
+  version: "9.1.4"
   namespace: argocd
 
 - feature: argo_events
