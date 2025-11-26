@@ -8,6 +8,35 @@ global:
     ## Deny all ingress traffic by default
     defaultDenyIngress: true
 
+## Configuration for redis high availability
+redis-ha:
+  ## Enable redis high availability
+  enabled: true
+
+## Configuration for the argocd application controller
+controller:
+  ## Set the number of replicas for the argocd application controller
+  replicas: 1
+
+## Configuration for the argocd server
+server:
+  ## Enable autoscaling for the argocd server
+  autoscaling:
+    enabled: true
+    minReplicas: 2
+
+## Configuration for the repo server
+repoServer:
+  autoscaling:
+    enabled: true
+    minReplicas: 2
+
+## Configuration for the application set controller
+applicationSet:
+  ## Set the number of replicas for the application set controller
+  replicas: 2
+
+## Configuration options for argocd
 configs:
   ## Set the timeout for the reconciliation to 180 seconds
   timeout:
