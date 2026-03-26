@@ -86,7 +86,7 @@ module "platform" {
   cluster_name = local.cluster_name
   ## The type of cluster
   cluster_type = local.cluster_type
-  ## Any rrepositories to be provisioned
+  ## Any repositories to be provisioned
   repositories = var.argocd_repositories
   ## Revision overrides
   revision_overrides = var.revision_overrides
