@@ -1,3 +1,4 @@
+{{- if .Values.policies.denyEksResources.enabled }}
 ---
 apiVersion: kyverno.io/v1
 kind: ClusterPolicy
@@ -12,7 +13,7 @@ metadata:
       Used to deny the use of EKS resources that are not allowed in the cluster.
       These resources can only be provisioned in the ack-system namespace.
 spec:
-  validationFailureAction: Enforce
+  validationFailureAction: {{ .Values.policies.denyEksResources.validationFailureAction }}
   background: true
   rules:
     - name: deny-eks-resources
@@ -32,6 +33,7 @@ spec:
         deny:
           conditions:
             any:
-              - key: "{{ request.object.metadata.namespace || '' }}"
+              - key: "{{ "{{ request.object.metadata.namespace || '' }}" }}"
                 operator: NotEquals
                 value: "ack-system"
+{{- end }}

@@ -1,3 +1,4 @@
+{{- if .Values.policies.denyNoLimits.enabled }}
 ---
 apiVersion: kyverno.io/v1
 kind: ClusterPolicy
@@ -16,7 +17,7 @@ metadata:
       This policy validates that all containers have something specified for memory and CPU
       requests and memory limits.
 spec:
-  validationFailureAction: Enforce
+  validationFailureAction: {{ .Values.policies.denyNoLimits.validationFailureAction }}
   background: true
   rules:
     - name: deny-no-limits
@@ -28,8 +29,7 @@ spec:
       exclude:
         resources:
           namespaces:
-            - kube-system
-            - kyverno-system
+            {{- include "kyverno-policies.excludedNamespaces" . | nindent 12 }}
       validate:
         message: "CPU and memory resource requests and limits are required."
         pattern:
@@ -41,3 +41,4 @@ spec:
                     cpu: "?*"
                   limits:
                     memory: "?*"
+{{- end }}

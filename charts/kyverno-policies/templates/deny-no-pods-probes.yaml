@@ -1,3 +1,4 @@
+{{- if .Values.policies.denyNoPodProbes.enabled }}
 ---
 apiVersion: kyverno.io/v1
 kind: ClusterPolicy
@@ -18,7 +19,7 @@ metadata:
       This policy validates that all containers have one of livenessProbe, readinessProbe,
       or startupProbe defined.
 spec:
-  validationFailureAction: Enforce
+  validationFailureAction: {{ .Values.policies.denyNoPodProbes.validationFailureAction }}
   background: true
   rules:
     - name: deny-no-pod-probes
@@ -30,10 +31,10 @@ spec:
       exclude:
         resources:
           namespaces:
-            - kube-system
+            {{- include "kyverno-policies.excludedNamespaces" . | nindent 12 }}
       preconditions:
         all:
-          - key: "{{ request.operation || 'BACKGROUND' }}"
+          - key: "{{ "{{ request.operation || 'BACKGROUND' }}" }}"
             operator: AnyIn
             value:
               - CREATE
@@ -41,16 +42,17 @@ spec:
       validate:
         message: "Liveness, readiness, or startup probes are required for all containers."
         foreach:
-          - list: request.object.spec.containers[]
+          - list: "{{ "{{ request.object.spec.containers[] }}" }}"
             deny:
               conditions:
                 all:
                   - key: livenessProbe
                     operator: AllNotIn
-                    value: "{{ element.keys(@)[] }}"
+                    value: "{{ "{{ element.keys(@)[] }}" }}"
                   - key: startupProbe
                     operator: AllNotIn
-                    value: "{{ element.keys(@)[] }}"
+                    value: "{{ "{{ element.keys(@)[] }}" }}"
                   - key: readinessProbe
                     operator: AllNotIn
-                    value: "{{ element.keys(@)[] }}"
+                    value: "{{ "{{ element.keys(@)[] }}" }}"
+{{- end }}

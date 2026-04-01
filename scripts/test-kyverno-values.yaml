@@ -1,0 +1,66 @@
+globalExclusions:
+  additional:
+    - cert-manager
+    - external-secrets
+
+policies:
+  denyDefaultNamespace:
+    enabled: true
+    validationFailureAction: audit
+  
+  denyEksResources:
+    enabled: true
+    validationFailureAction: audit
+  
+  denyEmptyIngress:
+    enabled: true
+    validationFailureAction: audit
+  
+  denyExternalSecrets:
+    enabled: true
+    validationFailureAction: audit
+  
+  denyLatestImage:
+    enabled: true
+    validationFailureAction: audit
+  
+  denyNoLabels:
+    enabled: true
+    validationFailureAction: audit
+  
+  denyNoLimits:
+    enabled: true
+    validationFailureAction: audit
+  
+  denyNoPodProbes:
+    enabled: true
+    validationFailureAction: audit
+  
+  denyNoTrafficDistribution:
+    enabled: false
+    validationFailureAction: audit
+  
+  denyNodeportService:
+    enabled: true
+    validationFailureAction: audit
+  
+  mutateEcrCache:
+    enabled: false
+    validationFailureAction: audit
+  
+  mutatePsaLabels:
+    enabled: true
+    validationFailureAction: audit
+  
+  mutateTrafficDistribution:
+    enabled: false
+    validationFailureAction: audit
+  
+  # Test both simple and complex registry policy
+  restrictImageRegistries:
+    enabled: true
+    useComplexConfig: false
+    validationFailureAction: audit
+    allowedRegistries:
+      - gcr.io
+      - docker.io

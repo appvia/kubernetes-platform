@@ -32,6 +32,8 @@ labels:
   enable_karpenter_nodepools: "true"
   # Enable the kyverno feature
   enable_kyverno: "true"
+  # Enable the kyverno policies feature
+  enable_kyverno_policies: "true"
 ## Annotations are using for additional metadata about the tenant cluster
 annotations:
   # The tenant name

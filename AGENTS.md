@@ -284,6 +284,80 @@ ApplicationSet context. Common examples:
 
 If the path does not exist, provide a `default`.
 
+### Customize Kyverno policies
+
+Kyverno policies are deployed via a Helm chart at `charts/kyverno-policies/`. They are feature-flagged
+with `enable_kyverno_policies` (separate from `enable_kyverno` which installs the controller).
+
+**Enable policies in cluster definition:**
+
+```yaml
+metadata:
+  labels:
+    enable_kyverno: "true"           # Install Kyverno controller
+    enable_kyverno_policies: "true"  # Deploy policies
+```
+
+**Customize policies at tenant level:**
+
+1. **Global environment defaults** - `config/kyverno_policies/all.yaml`:
+   - Enable/disable policies cluster-wide
+   - Set global namespace exclusions (e.g., exclude `cert-manager` from all policies)
+
+2. **Cloud-specific defaults** - `config/kyverno_policies/aws.yaml`:
+   - AWS-specific policy settings (e.g., enable `denyEksResources`)
+
+3. **Cluster-specific overrides** - `config/kyverno_policies/<cluster_name>.yaml`:
+   - Override policies for a specific cluster
+   - Configure registry restrictions with allowed registries
+
+**Example: Enable registry restriction policy in simple mode**
+
+```yaml
+# release/standalone-aws/config/kyverno_policies/dev.yaml
+policies:
+  restrictImageRegistries:
+    enabled: true
+    useComplexConfig: false
+    validationFailureAction: audit
+    allowedRegistries:
+      - gcr.io
+      - docker.io
+      - ecr.aws
+```
+
+**Example: Enable registry restriction with per-registry namespace rules (complex mode)**
+
+```yaml
+policies:
+  restrictImageRegistries:
+    enabled: true
+    useComplexConfig: true
+    validationFailureAction: enforce
+    registries:
+      - name: gcr.io
+        allowedNamespaces:
+          - prod
+          - staging
+      - name: docker.io
+        allowedNamespaces: []  # Empty = allowed in all namespaces (minus global exclusions)
+      - name: ecr.aws
+        allowedNamespaces:
+          - prod
+```
+
+**How policies resolve configuration:**
+
+Policy values are resolved in this order (first match wins):
+
+1. Tenant cluster-specific: `config/kyverno_policies/<cluster_name>.yaml`
+2. Tenant cloud-specific: `config/kyverno_policies/<cloud_vendor>.yaml`
+3. Tenant global: `config/kyverno_policies/all.yaml`
+4. Platform cloud-specific: `config/kyverno_policies/<cloud_vendor>.yaml` (in this repo)
+5. Platform global: `config/kyverno_policies/all.yaml` (in this repo)
+
+This allows tenant repositories to override any policy setting while inheriting platform defaults.
+
 ## Development And Validation
 
 Useful commands from `Makefile`:

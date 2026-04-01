@@ -1,0 +1,7 @@
+{{- if .Values.policies.restrictImageRegistries.enabled }}
+{{- if .Values.policies.restrictImageRegistries.useComplexConfig }}
+{{ include "kyverno-policies.restrictImageRegistriesComplex" . }}
+{{- else }}
+{{ include "kyverno-policies.restrictImageRegistriesSimple" . }}
+{{- end }}
+{{- end }}

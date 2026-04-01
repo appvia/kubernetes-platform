@@ -1,3 +1,4 @@
+{{- if .Values.policies.denyDefaultNamespace.enabled }}
 ---
 apiVersion: kyverno.io/v1
 kind: ClusterPolicy
@@ -18,7 +19,7 @@ metadata:
       due to Pod controllers need to specify the `namespace` field under the top-level `metadata`
       object and not at the Pod template level.
 spec:
-  validationFailureAction: Enforce
+  validationFailureAction: {{ .Values.policies.denyDefaultNamespace.validationFailureAction }}
   background: true
   rules:
     - name: deny-default-namespace
@@ -46,3 +47,4 @@ spec:
         pattern:
           metadata:
             namespace: "!default"
+{{- end }}

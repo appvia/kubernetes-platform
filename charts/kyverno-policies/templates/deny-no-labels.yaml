@@ -1,3 +1,4 @@
+{{- if .Values.policies.denyNoLabels.enabled }}
 apiVersion: kyverno.io/v1
 kind: ClusterPolicy
 metadata:
@@ -14,7 +15,7 @@ metadata:
       all tools can understand. The recommended labels describe applications in a way that can be
       queried. This policy validates that the labels `app.kubernetes.io/name`, `app.kubernetes.io/version`, and `app.kubernetes.io/part-of` are specified with some value.
 spec:
-  validationFailureAction: Audit
+  validationFailureAction: {{ .Values.policies.denyNoLabels.validationFailureAction }}
   background: true
   rules:
     - name: check-for-labels
@@ -51,3 +52,4 @@ spec:
                   app.kubernetes.io/name: "?*"
                   app.kubernetes.io/version: "?*"
                   app.kubernetes.io/part-of: "?*"
+{{- end }}
