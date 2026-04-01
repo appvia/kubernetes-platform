@@ -36,10 +36,29 @@ examples:
 	$(MAKE) format
 	$(MAKE) documentation
 
-environment: 
+environment:
 	@echo "--> Running \"${ENVIRONMENT}\" environment"
 	@echo "--> ENVIRONMENT=(dev|prod|hub|spoke) make environment"
 	@terraform apply -var-file=variables/${ENVIRONMENT}.tfvars -var-file=variables/appvia.tfvars
+
+eks-region:
+	@$(MAKE) init >/dev/null
+	@terraform output -raw region
+
+eks-list:
+	@echo "--> Listing EKS clusters in the \"${ENVIRONMENT}\" environment"
+	@aws eks list-clusters \
+	  $(if $(AWS_REGION),--region "$(AWS_REGION)") \
+	  --output json | jq -r '.clusters[]'
+
+eks-login:
+	@if [ -z "$(CLUSTER_NAME)" ]; then \
+		echo "Error: CLUSTER_NAME is required. Example: CLUSTER_NAME=dev make eks-login"; \
+		exit 1; \
+	fi
+	@echo "--> Updating kubeconfig for EKS cluster \"$(CLUSTER_NAME)\""
+	@aws eks update-kubeconfig --name "$(CLUSTER_NAME)" \
+		$(if $(AWS_REGION),--region "$(AWS_REGION)")
 
 destroy-environment:
 	@echo "--> Destroying \"${ENVIRONMENT}\" environment"

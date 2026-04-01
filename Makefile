@@ -21,6 +21,12 @@ destroy-standalone-aws:
 	@cd terraform && make init
 	@cd terraform && ENVIRONMENT=dev make destroy-environment
 
+eks-list:
+	@$(MAKE) -C terraform eks-list ENVIRONMENT="$(ENVIRONMENT)"
+
+eks-login:
+	@$(MAKE) -C terraform eks-login CLUSTER_NAME="$(CLUSTER_NAME)"
+
 hub:
 	@echo "--> Provisioning Hub Cluster (hub)"
 	@scripts/make-dev.sh \
