@@ -1,10 +1,10 @@
 # Kubernetes Platform
 
-This repository contains a pattern for the configuration of management of a collection of Kubernetes clusters, using ArgoCD as the deployment framework.
+This repository contains a reference pattern for managing a collection of Kubernetes clusters using Argo CD as the deployment framework.
 
 ## Documentation
 
-You can find the documentation for the platform in the [https://appvia.github.io/kubernetes-platform](https://appvia.github.io/kubernetes-platform/)
+You can find the documentation for the platform at [appvia.github.io/kubernetes-platform](https://appvia.github.io/kubernetes-platform/).
 
 ## Why This Pattern?
 
@@ -14,7 +14,7 @@ Managing multiple Kubernetes clusters across different environments presents cha
 - Gitops-based management – Declarative, version-controlled deployments using ArgoCD.
 - Flexible architectures – Support for both distributed and hub-and-spoke models.
 - Secure multi-cluster operations – Enforce policies, RBAC, and secrets management at scale.
-- Tenants Applications - Provides tenants consumers an easy way to onboard their workloads.
+- Tenant applications – Provides an easy way for tenant teams to onboard their workloads.
 
 ## Operating Model
 
@@ -36,5 +36,5 @@ The following depicts the operating model for the platform.
 ### The Tenant (Development) Team
 
 - The `Tenant Repository` is owned by the development teams, and is used to deploy their applications to the platform.
-  - The consumer the platform repository as a software dependency.
-  - They are responsible iterating the platform repository the revisions through the software development life cycle i.e promoting the revisions though dev, test, and production to ensure the application stack is aligned.
+- They consume the platform repository as a software dependency.
+- They are responsible for promoting platform revisions through the software development lifecycle (e.g., dev → test → production) to ensure the application stack remains aligned.

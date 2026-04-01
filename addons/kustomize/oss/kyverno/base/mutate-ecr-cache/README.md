@@ -47,11 +47,11 @@ patches:
     patch: |-
       - op: replace
         path: /spec/rules/0/mutate/foreach/0/patchStrategicMerge/spec/containers/0/image
-        value: 123456789012.dkr.ecr.us-east-1.amazonaws.com/dockerhub.{{ element.image | regex_replace('^docker\\.io/', '') }}
+        value: 123456789012.dkr.ecr.us-east-1.amazonaws.com/dockerhub/{{ element.image | regex_replace('^docker\\.io/', '') }}
       
       - op: replace
         path: /spec/rules/0/mutate/foreach/1/patchStrategicMerge/spec/initContainers/0/image
-        value: 123456789012.dkr.ecr.us-east-1.amazonaws.com/dockerhub.{{ element.image | regex_replace('^docker\\.io/', '') }}
+        value: 123456789012.dkr.ecr.us-east-1.amazonaws.com/dockerhub/{{ element.image | regex_replace('^docker\\.io/', '') }}
   
   # Patch 2: Add custom image patterns
   - target:

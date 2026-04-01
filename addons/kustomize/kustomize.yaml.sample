@@ -2,10 +2,11 @@
 kustomize:
   ## Human friendly description (optional)
   description: ""
-  ## The feature flag used to enable the feature (required)
-  feature: enable_<FEATURE>
+  ## The feature name used for enablement (required)
+  ## Clusters enable the addon by setting label `enable_<feature>: "true"`.
+  feature: <FEATURE>
   ## The location of an external kustomize repository (optional)
-  repository = URL
+  repository: URL
   ## The revision of the external repository (optional)
   revision: BRANCH|TAG
   ## The path to the kustomize overlay (required)
@@ -15,14 +16,16 @@ kustomize:
     - target:
         kind: <KIND>
         name: <NAME>
-      path: /<PATH>
-      key: <KEY>
-      default: <DEFAULT>
-      # This will prefix the value from `default` and `key`
-      prefix: <OPTIONAL_PREFIX_TO_VALUE>
+      patch:
+        - op: replace
+          path: /<PATH>
+          key: <KEY>
+          default: <DEFAULT>
+          # This will prefix the value from `default` and `key`
+          prefix: <OPTIONAL_PREFIX_TO_VALUE>
 
   ## A collection of common labels to apply (optional)
-  commomLabels:
+  commonLabels:
     test: one
   ## A collection of common annotations (optional)
   commonAnnotations:

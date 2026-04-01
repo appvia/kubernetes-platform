@@ -12,7 +12,7 @@ You can deploy using a helm chart, by adding a `helm.yaml`.
 ```yaml
 helm:
   # (Required) A feature flag to enable/disable the deployment. The cluster
-  # labels are using to determine if the cluster should have the application
+  # labels are used to determine if the cluster should have the application
   # deployed to it.
   feature: enable_application
   ## (Optional) The chart to use for the deployment.
@@ -48,7 +48,7 @@ Similar to the helm deployment, create a folder for your deployments. Taking the
 1. Create a folder called for the application, e.g. `myapp`
 2. Create two folders inside the `myapp` folder, `frontend` and `backend`
 3. Add a `helm.yaml` file to the `frontend` folder.
-4. You can same format as above for the `helm.yaml` file.
+4. You can use the same format as above for the `helm.yaml` file.
 5. Add a `values` folder to the `frontend` folder, and add a `all.yaml` file to the values folder.
 6. Add a `values` folder to the `backend` folder, and add a `all.yaml` file to the values folder.
 
@@ -76,13 +76,13 @@ kustomize:
         - op: replace
           path: /spec/template/spec/containers/0/image
           ## This value is looked from the cluster definition.
-          value: metadata.annotations.image
+          key: metadata.annotations.image
           ## This is the default value to use if the value is not found.
           default: nginx:1.21.3
         - op: replace
           path: /spec/template/spec/containers/0/version
           ## This value is looked from the cluster definition.
-          value: metadata.annotations.version
+          key: metadata.annotations.version
           ## This is the default value to use if the value is not found.
           default: "1.21.3"
 ```

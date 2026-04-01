@@ -21,9 +21,10 @@ kustomize:
   ## Human friendly description (optional)
   description: "Brief description of what this addon does"
 
-  ## The feature flag used to enable this addon (required)
-  ## Must match a label in the cluster definition (e.g., labels: { enable_kyverno: "true" })
-  feature: enable_kyverno
+  ## The feature name used for enablement (required)
+  ## Clusters enable the addon by setting label `enable_<feature>: "true"`
+  ## Example: feature: kyverno  -> label: enable_kyverno: "true"
+  feature: kyverno
 
   ## The path to the kustomize overlay (required)
   ## This is relative to the addon directory
@@ -37,7 +38,8 @@ kustomize:
   ## Only used if 'repository' is specified
   revision: main
 
-  ## Optional patches to apply to the kustomize overlay (optional)
+  ## Optional patches to apply to the kustomize overlay (optional).
+  ## Patch operations can reference cluster definition values via `key`.
   patches:
     - target:
         kind: ClusterPolicy
@@ -86,7 +88,7 @@ sync:
 | Field               | Type   | Required | Description                                                         |
 | ------------------- | ------ | -------- | ------------------------------------------------------------------- |
 | `description`       | string | No       | Human-friendly description of the addon                             |
-| `feature`           | string | Yes      | Feature flag label to enable this addon (must start with `enable_`) |
+| `feature`           | string | Yes      | Feature name; enabled by label `enable_<feature>: "true"`           |
 | `path`              | string | Yes      | Path to the kustomize overlay relative to the addon directory       |
 | `repository`        | string | No       | Git URL of external kustomize repository                            |
 | `revision`          | string | No       | Git branch, tag, or commit SHA for external repository              |
@@ -126,7 +128,7 @@ sync:
 ---
 kustomize:
   description: "Policy engine for Kubernetes"
-  feature: enable_kyverno
+  feature: kyverno
   path: base
   patches:
     - target:
@@ -181,8 +183,8 @@ Addons can specify a deployment phase to control ordering:
 
 Addons are automatically discovered and enabled by the platform:
 
-1. Find the addon's feature name (e.g., `enable_kyverno`)
-2. Add it to your cluster definition's labels with value `"true"`:
+1. Find the addon's feature name (e.g., `kyverno`)
+2. Add `enable_<feature>: "true"` to your cluster definition's labels:
 
 ```yaml
 labels:

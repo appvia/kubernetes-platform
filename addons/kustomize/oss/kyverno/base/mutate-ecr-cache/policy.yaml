@@ -76,7 +76,7 @@ spec:
                     # Remove docker.io prefix if present, then prepend ECR cache prefix
                     # TO PATCH: Replace ECR_REGISTRY_PLACEHOLDER with your registry (e.g., "123456789012.dkr.ecr.us-east-1.amazonaws.com")
                     # Example: library/nginx:1.25 -> ECR_REGISTRY_PLACEHOLDER/dockerhub/library/nginx:1.25
-                    image: "ECR_REGISTRY_PLACEHOLDER/dockerhub.{{ element.image | regex_replace('^docker\\.io/', '') }}"
+                    image: "ECR_REGISTRY_PLACEHOLDER/dockerhub/{{ element.image | regex_replace('^docker\\.io/', '') }}"
           - list: "request.object.spec.initContainers"
             preconditions:
               all:
@@ -102,4 +102,4 @@ spec:
                     # Remove docker.io prefix if present, then prepend ECR cache prefix
                     # TO PATCH: Replace ECR_REGISTRY_PLACEHOLDER with your registry (e.g., "123456789012.dkr.ecr.us-east-1.amazonaws.com")
                     # Example: library/nginx:1.25 -> ECR_REGISTRY_PLACEHOLDER/dockerhub/library/nginx:1.25
-                    image: "ECR_REGISTRY_PLACEHOLDER/dockerhub.{{ element.image | regex_replace('^docker\\.io/', '') }}"
+                    image: "ECR_REGISTRY_PLACEHOLDER/dockerhub/{{ element.image | regex_replace('^docker\\.io/', '') }}"

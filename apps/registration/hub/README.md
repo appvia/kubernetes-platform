@@ -1,6 +1,6 @@
 # Hub Registration Application Sets
 
-These application sets are responsible for watching the cluster definitions from the tenant repository. The use the cluster definitions to provision a registration secret for each of the clusters which the hub is managing.
+These ApplicationSets watch cluster definitions from the tenant repository. They use those definitions to provision a registration secret for each cluster managed by the hub.
 
 ## How it works
 

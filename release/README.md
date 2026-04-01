@@ -1,6 +1,6 @@
 # Release Directory
 
-The `release` cab be used to mock a consuming tenant repository. Here we can point back at the development branch of the repository for testing purposes.
+The `release/` directory can be used to mock a consuming tenant repository. It allows you to point back at a development branch of this repository for testing purposes.
 
 ## Local Development
 
