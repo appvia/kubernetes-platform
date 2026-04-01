@@ -28,8 +28,6 @@ labels:
   enable_kubecost: "true"
   # Enable the cert-manager feature
   enable_cert_manager: "true"
-  # Enable the cilium CNI feature
-  enable_cilium: "true"
   # Enable the AWS Load Balancer Controller (ALB/NLB)
   enable_aws_load_balancer: "true"
   # Enable the external-secrets feature

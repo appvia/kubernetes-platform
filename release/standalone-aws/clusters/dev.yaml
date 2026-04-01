@@ -38,8 +38,6 @@ labels:
   enable_kubecost: "false"
   # Enable the cert-manager feature
   enable_cert_manager: "true"
-  # Enable the cilium CNI feature
-  enable_cilium: "true"
   # Enable the external-secrets feature
   enable_external_secrets: "true"
   # Enable the karpenter nodepools feature
