@@ -1,0 +1,57 @@
+---
+name: Update addon versions
+
+# yamllint disable-line rule:truthy
+on:
+  workflow_dispatch:
+  schedule:
+    # Weekly on Mondays at 06:00 UTC
+    - cron: "0 6 * * 1"
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  update:
+    name: Update Helm addon versions
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: dev
+
+      - name: Install tooling
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y yq
+
+      - name: Install Helm
+        uses: azure/setup-helm@v4
+
+      - name: Update AWS Versions (safe mode)
+        run: |
+          bash scripts/update-helm-addon-versions.sh --file addons/helm/cloud/aws.yaml
+
+      - name: Update OSS Versions (safe mode)
+        run: |
+          bash scripts/update-helm-addon-versions.sh --file addons/helm/oss.yaml
+
+      - name: Validate Helm addons
+        run: make validate-helm-addons
+
+      - name: Create pull request
+        uses: peter-evans/create-pull-request@v7
+        with:
+          base: dev
+          branch: chore/update-addon-versions
+          delete-branch: true
+          title: "chore: update addon chart versions"
+          commit-message: "chore: update addon chart versions"
+          body: |
+            ## Summary
+            - Automated weekly refresh of Helm addon chart versions.
+
+            ## Notes
+            - OCI/ECR-hosted charts are currently skipped by the updater.
+
