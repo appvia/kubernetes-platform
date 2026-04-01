@@ -25,6 +25,12 @@ We can use the `terraform` code to provision a EKS cluster for us, and onboard t
 5. At the point we should have a EKS cluster, which we can access using `kubectl`.
 
 ```shell
+$ CLUSTER_NAME=dev make eks-login
+```
+
+Or, using the AWS CLI directly:
+
+```shell
 $ aws eks update-kubeconfig --name dev
 Updated context arn:aws:eks:eu-west-2:xxx:cluster/dev in /Users/jest/.kube/config
 ```
