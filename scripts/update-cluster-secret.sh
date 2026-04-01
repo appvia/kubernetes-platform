@@ -14,7 +14,7 @@ usage() {
 Usage: ${0} [options]
 
 -p|--path PATH   The path to the cluster definition we need to update
--h|--help           Display this help message
+-h|--help        Display this help message
 
 EOF
   if [[ ${#} -gt 0 ]]; then
