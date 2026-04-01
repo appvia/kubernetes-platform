@@ -18,7 +18,7 @@ kustomize:
       path: /<PATH>
       key: <KEY>
       default: <DEFAULT>
-      # This will prefix the value from `default` and `key` 
+      # This will prefix the value from `default` and `key`
       prefix: <OPTIONAL_PREFIX_TO_VALUE>
 
   ## A collection of common labels to apply (optional)
@@ -37,3 +37,5 @@ namespace:
 sync:
   ## How to order the deployment of the resources (optional)
   phase: primary
+  ## Allows to control the sync wave
+  wave: NUMBER

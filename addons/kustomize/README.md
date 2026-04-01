@@ -20,23 +20,23 @@ A kustomize addon is defined using a `kustomize.yaml` file in the addon's direct
 kustomize:
   ## Human friendly description (optional)
   description: "Brief description of what this addon does"
-  
+
   ## The feature flag used to enable this addon (required)
   ## Must match a label in the cluster definition (e.g., labels: { enable_kyverno: "true" })
   feature: enable_kyverno
-  
+
   ## The path to the kustomize overlay (required)
   ## This is relative to the addon directory
   path: base
-  
+
   ## Location of an external kustomize repository (optional)
   ## If specified, kustomize overlays are fetched from this URL
   repository: https://github.com/example/kustomize-repo.git
-  
+
   ## The revision/branch/tag of the external repository (optional)
   ## Only used if 'repository' is specified
   revision: main
-  
+
   ## Optional patches to apply to the kustomize overlay (optional)
   patches:
     - target:
@@ -51,11 +51,11 @@ kustomize:
           default: "audit"
           ## Optional prefix to prepend to the resolved value
           prefix: "mode-"
-  
+
   ## Common labels to apply to all resources (optional)
   commonLabels:
     addon: kyverno
-    
+
   ## Common annotations to apply to all resources (optional)
   commonAnnotations:
     app.kubernetes.io/managed-by: platform
@@ -64,7 +64,7 @@ kustomize:
 namespace:
   ## The name of the namespace where this addon will be deployed (required)
   name: kyverno-system
-  
+
   ## Pod Security Standards level for this namespace (optional)
   ## Valid values: restricted, baseline, privileged
   pod_security: restricted
@@ -75,47 +75,50 @@ sync:
   ## Valid values: primary (default), secondary
   ## Use 'secondary' for addons that depend on others being deployed first
   phase: secondary
+  ## Allows the user to control the sync wave of the resulting application
+  wave: NUMBER
 ```
 
 ## Field Reference
 
 ### `kustomize` Section
 
-| Field | Type | Required | Description |
-|-------|------|----------|-------------|
-| `description` | string | No | Human-friendly description of the addon |
-| `feature` | string | Yes | Feature flag label to enable this addon (must start with `enable_`) |
-| `path` | string | Yes | Path to the kustomize overlay relative to the addon directory |
-| `repository` | string | No | Git URL of external kustomize repository |
-| `revision` | string | No | Git branch, tag, or commit SHA for external repository |
-| `patches` | array | No | Kustomize patches to apply |
-| `commonLabels` | object | No | Labels to apply to all resources |
-| `commonAnnotations` | object | No | Annotations to apply to all resources |
+| Field               | Type   | Required | Description                                                         |
+| ------------------- | ------ | -------- | ------------------------------------------------------------------- |
+| `description`       | string | No       | Human-friendly description of the addon                             |
+| `feature`           | string | Yes      | Feature flag label to enable this addon (must start with `enable_`) |
+| `path`              | string | Yes      | Path to the kustomize overlay relative to the addon directory       |
+| `repository`        | string | No       | Git URL of external kustomize repository                            |
+| `revision`          | string | No       | Git branch, tag, or commit SHA for external repository              |
+| `patches`           | array  | No       | Kustomize patches to apply                                          |
+| `commonLabels`      | object | No       | Labels to apply to all resources                                    |
+| `commonAnnotations` | object | No       | Annotations to apply to all resources                               |
 
 ### `patches` Item Reference
 
-| Field | Type | Required | Description |
-|-------|------|----------|-------------|
-| `target.kind` | string | Yes | Kubernetes resource kind to patch (e.g., Deployment, ClusterPolicy) |
-| `target.name` | string | No | Name of the specific resource to patch |
-| `patch.op` | string | Yes | JSON Patch operation: `add`, `replace`, `remove` |
-| `patch.path` | string | Yes | JSON Pointer path to the field (e.g., `/spec/validationFailureAction`) |
-| `patch.key` | string | No | Cluster definition path to lookup a value (e.g., `metadata.annotations.region`) |
-| `patch.default` | string | No | Default value if the key is not found or empty |
-| `patch.prefix` | string | No | String prefix to prepend to the resolved value |
+| Field           | Type   | Required | Description                                                                     |
+| --------------- | ------ | -------- | ------------------------------------------------------------------------------- |
+| `target.kind`   | string | Yes      | Kubernetes resource kind to patch (e.g., Deployment, ClusterPolicy)             |
+| `target.name`   | string | No       | Name of the specific resource to patch                                          |
+| `patch.op`      | string | Yes      | JSON Patch operation: `add`, `replace`, `remove`                                |
+| `patch.path`    | string | Yes      | JSON Pointer path to the field (e.g., `/spec/validationFailureAction`)          |
+| `patch.key`     | string | No       | Cluster definition path to lookup a value (e.g., `metadata.annotations.region`) |
+| `patch.default` | string | No       | Default value if the key is not found or empty                                  |
+| `patch.prefix`  | string | No       | String prefix to prepend to the resolved value                                  |
 
 ### `namespace` Section
 
-| Field | Type | Required | Description |
-|-------|------|----------|-------------|
-| `name` | string | Yes | Kubernetes namespace where the addon deploys |
-| `pod_security` | string | No | Pod Security Standards label: `restricted`, `baseline`, or `privileged` |
+| Field          | Type   | Required | Description                                                             |
+| -------------- | ------ | -------- | ----------------------------------------------------------------------- |
+| `name`         | string | Yes      | Kubernetes namespace where the addon deploys                            |
+| `pod_security` | string | No       | Pod Security Standards label: `restricted`, `baseline`, or `privileged` |
 
 ### `sync` Section
 
-| Field | Type | Required | Description |
-|-------|------|----------|-------------|
-| `phase` | string | No | Deployment order: `primary` (default) or `secondary` |
+| Field   | Type   | Required | Description                                          |
+| ------- | ------ | -------- | ---------------------------------------------------- |
+| `phase` | string | No       | Deployment order: `primary` (default) or `secondary` |
+| `wave`  | number | No       | Controls the sync wave of the resulting application  |
 
 ## Example: Kyverno Addon
 
@@ -164,7 +167,7 @@ This will resolve the value from the cluster definition at `metadata.annotations
 Multi-level paths are supported:
 
 ```yaml
-key: metadata.labels.environment  # Looks up .metadata.labels.environment
+key: metadata.labels.environment # Looks up .metadata.labels.environment
 ```
 
 ## Deployment Order (Phases)
@@ -198,4 +201,3 @@ labels:
 5. Test by adding the feature label to a cluster definition and deploying
 
 See `kustomize.yaml.sample` for a full template.
-
