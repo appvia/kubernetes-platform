@@ -146,7 +146,7 @@ resource "aws_spot_datafeed_subscription" "default" {
 module "spot_feed_pod_identity" {
   count   = var.opencost.enable_spot_feed ? 1 : 0
   source  = "terraform-aws-modules/eks-pod-identity/aws"
-  version = "2.2.0"
+  version = "2.7.0"
 
   name = "${local.cluster_name}-spot-feed"
   ## The description for the role assumed by the Spot Feed
