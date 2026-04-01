@@ -32,6 +32,7 @@ labels:
   enable_external_dns: "false"
   enable_external_secrets: "true"
   enable_kyverno: "true"
+  enable_kyverno_policies: "true"
   enable_metrics_server: "false"
   enable_pod_identity: "true"
 ## Annotations are using for additional metadata about the tenant cluster

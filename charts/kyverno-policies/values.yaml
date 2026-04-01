@@ -1,0 +1,103 @@
+# Global namespace exclusions applied to all policies
+globalExclusions:
+  # Always excluded - system namespaces (cannot be overridden)
+  always:
+    - kube-system
+    - argocd
+  # User-configurable exclusions (merged with always-excluded)
+  additional: []
+
+# Individual policy configurations
+policies:
+  # Deny usage of the default namespace
+  denyDefaultNamespace:
+    enabled: true
+    validationFailureAction: enforce
+
+  # Deny direct EKS resource manipulation
+  denyEksResources:
+    enabled: true
+    validationFailureAction: enforce
+
+  # Deny empty Ingress definitions
+  denyEmptyIngress:
+    enabled: true
+    validationFailureAction: enforce
+
+  # Deny External Secrets resources in non-standard namespaces
+  denyExternalSecrets:
+    enabled: true
+    validationFailureAction: enforce
+
+  # Deny images with 'latest' tag
+  denyLatestImage:
+    enabled: true
+    validationFailureAction: enforce
+
+  # Deny workloads without labels
+  denyNoLabels:
+    enabled: true
+    validationFailureAction: enforce
+
+  # Deny containers without resource limits
+  denyNoLimits:
+    enabled: true
+    validationFailureAction: enforce
+
+  # Deny containers without health probes
+  denyNoPodsProbes:
+    enabled: true
+    validationFailureAction: enforce
+
+  # Deny traffic distribution policies (deprecated/legacy)
+  denyNoTrafficDistribution:
+    enabled: false  # Disabled by default
+    validationFailureAction: audit
+
+  # Deny NodePort services
+  denyNodeportService:
+    enabled: true
+    validationFailureAction: enforce
+
+  # Mutate ECR images to use cache
+  mutateEcrCache:
+    enabled: false  # Disabled by default - requires ECR configuration
+    validationFailureAction: audit
+
+  # Mutate Pod Security Admission labels
+  mutatePsaLabels:
+    enabled: true
+    validationFailureAction: audit
+
+  # Mutate traffic distribution (deprecated/legacy)
+  mutateTrafficDistribution:
+    enabled: false  # Disabled by default
+    validationFailureAction: audit
+
+  # Restrict images to specific registries
+  restrictImageRegistries:
+    enabled: false  # Opt-in - requires configuration
+    validationFailureAction: audit
+    background: true
+
+    # Mode: simple or complex
+    # simple: Apply same registry list to all namespaces (minus exclusions)
+    # complex: Per-registry namespace rules
+    useComplexConfig: false
+
+    # Simple mode: List of allowed registries (glob patterns supported)
+    # Example: ["gcr.io", "docker.io", "quay.io"]
+    allowedRegistries: []
+
+    # Complex mode: Per-registry configuration with namespace rules
+    # Example:
+    #   - name: gcr.io
+    #     allowedNamespaces:
+    #       - prod
+    #       - staging
+    #   - name: docker.io
+    #     allowedNamespaces: []  # Empty = all except global exclusions
+    registries: []
+
+    # Additional namespaces to exclude (merged with globalExclusions)
+    excludeNamespaces: []

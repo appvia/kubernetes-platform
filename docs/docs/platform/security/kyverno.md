@@ -15,6 +15,284 @@ The following policies are shipped by default in this platform to enforce securi
 For detailed information about Kyverno's capabilities, refer to the [official documentation](https://kyverno.io/docs/) or [policy library](https://kyverno.io/policies/).
 
 ---
+
+## Enabling Kyverno Policies
+
+Kyverno policies are deployed as a Helm chart and are separate from the Kyverno controller installation.
+
+### Enable in Cluster Definition
+
+In your cluster definition, enable both the controller and the policies:
+
+```yaml
+metadata:
+  labels:
+    enable_kyverno: "true"              # Install Kyverno controller
+    enable_kyverno_policies: "true"     # Deploy policies
+```
+
+---
+
+## Customizing Kyverno Policies
+
+Kyverno policies can be customized at multiple levels using your tenant repository's `config/kyverno_policies/` directory. The configuration hierarchy allows progressively more specific overrides.
+
+### Configuration Resolution Order
+
+Policies are resolved in this order (first match wins):
+
+1. **Cluster-specific**: `config/kyverno_policies/<cluster_name>.yaml`
+2. **Cloud-specific**: `config/kyverno_policies/<cloud_vendor>.yaml`
+3. **Global tenant**: `config/kyverno_policies/all.yaml`
+4. **Platform cloud-specific**: Platform repo `config/kyverno_policies/<cloud_vendor>.yaml`
+5. **Platform global**: Platform repo `config/kyverno_policies/all.yaml`
+
+This means your tenant repository overrides platform defaults at all levels.
+
+### Global Configuration Options
+
+All policies inherit configuration from the global settings:
+
+```yaml
+# config/kyverno_policies/all.yaml
+globalExclusions:
+  # These namespaces are always excluded (cannot be overridden)
+  always:
+    - kube-system
+    - argocd
+  
+  # Additional namespaces to exclude globally
+  # (merged across all policies)
+  additional:
+    - cert-manager
+    - external-secrets
+```
+
+### Per-Policy Configuration
+
+Each policy can be individually enabled/disabled and configured:
+
+```yaml
+# config/kyverno_policies/all.yaml
+policies:
+  denyLatestImage:
+    enabled: true
+    validationFailureAction: enforce  # enforce | audit
+
+  denyNoLimits:
+    enabled: true
+    validationFailureAction: enforce
+
+  denyDefaultNamespace:
+    enabled: false  # Disable for this environment
+```
+
+### Example 1: Audit Mode by Environment
+
+Start with audit mode in development, enforce in production:
+
+```yaml
+# config/kyverno_policies/dev.yaml
+policies:
+  denyLatestImage:
+    validationFailureAction: audit    # Test first
+  denyNoLimits:
+    validationFailureAction: audit
+
+# config/kyverno_policies/prod.yaml
+policies:
+  denyLatestImage:
+    validationFailureAction: enforce  # Enforce in prod
+  denyNoLimits:
+    validationFailureAction: enforce
+```
+
+### Example 2: Cloud-Specific Defaults
+
+Enable AWS-specific policies in AWS environments:
+
+```yaml
+# config/kyverno_policies/aws.yaml
+policies:
+  denyEksResources:
+    enabled: true
+    validationFailureAction: enforce
+```
+
+### Example 3: Restrict Image Registries
+
+Configure which container registries are allowed. The registry restriction policy supports two modes.
+
+#### Simple Mode (Single Registry List)
+
+```yaml
+# config/kyverno_policies/all.yaml
+policies:
+  restrictImageRegistries:
+    enabled: true
+    useComplexConfig: false
+    validationFailureAction: audit
+    allowedRegistries:
+      - gcr.io
+      - docker.io
+      - quay.io
+```
+
+#### Complex Mode (Per-Registry Namespace Rules)
+
+```yaml
+# config/kyverno_policies/prod.yaml
+policies:
+  restrictImageRegistries:
+    enabled: true
+    useComplexConfig: true
+    validationFailureAction: enforce
+    registries:
+      # Only images from ECR allowed in prod/staging
+      - name: ecr.aws
+        allowedNamespaces:
+          - prod
+          - staging
+      
+      # Only images from GCR allowed in prod
+      - name: gcr.io
+        allowedNamespaces:
+          - prod
+      
+      # Docker Hub images allowed everywhere except global exclusions
+      - name: docker.io
+        allowedNamespaces: []  # Empty = all except exclusions
+```
+
+### Example 4: Cluster-Specific Customization
+
+Override settings for a specific cluster:
+
+```yaml
+# config/kyverno_policies/production-east-1.yaml
+globalExclusions:
+  additional:
+    - cert-manager
+    - external-secrets
+    - monitoring
+
+policies:
+  denyLatestImage:
+    validationFailureAction: enforce
+  
+  denyNoLabels:
+    validationFailureAction: enforce
+  
+  restrictImageRegistries:
+    enabled: true
+    useComplexConfig: true
+    validationFailureAction: enforce
+    registries:
+      - name: ecr.aws
+        allowedNamespaces:
+          - prod
+          - staging
+          - system
+```
+
+### Example 5: Disable Specific Policies
+
+Some policies may conflict with your workloads. Disable them as needed:
+
+```yaml
+# config/kyverno_policies/dev.yaml
+policies:
+  # Kyverno controllers need network raw capability
+  denyNetRaw:
+    enabled: false
+  
+  # Allow NodePort in development
+  denyNodeportService:
+    enabled: false
+  
+  # Allow latest images for development
+  denyLatestImage:
+    enabled: false
+```
+
+### Example 6: Multi-Environment Configuration
+
+Structure your config directory for multiple environments:
+
+```
+config/kyverno_policies/
+├── all.yaml              # Global defaults
+├── aws.yaml              # AWS-specific
+├── dev.yaml              # Development cluster
+├── staging.yaml          # Staging cluster
+├── prod.yaml             # Production cluster
+├── prod-east-1.yaml      # Specific prod cluster
+└── prod-west-2.yaml      # Another prod cluster
+```
+
+---
+
+## Namespace Exclusion Precedence
+
+Namespaces are excluded in this order:
+
+1. **Always excluded** (hardcoded, cannot override):
+   - `kube-system`
+   - `argocd`
+
+2. **Global additional exclusions**: `globalExclusions.additional`
+   - Applied to all policies
+
+3. **Per-policy exclusions**: `policies.<name>.excludeNamespaces`
+   - Applied only to that specific policy
+
+### Example: Complex Exclusion Strategy
+
+```yaml
+globalExclusions:
+  additional:
+    - cert-manager
+    - external-secrets
+
+policies:
+  denyLatestImage:
+    excludeNamespaces:
+      - development-tools
+
+  restrictImageRegistries:
+    excludeNamespaces:
+      - image-builder
+```
+
+Result: The following namespaces are excluded from all policies:
+- `kube-system` (always)
+- `argocd` (always)
+- `cert-manager` (global)
+- `external-secrets` (global)
+
+Additional exclusions by policy:
+- `deny-latest-image`: Also excludes `development-tools`
+- `restrict-image-registries`: Also excludes `image-builder`
+
+---
+
+## Validation
+
+Validate your Kyverno policy configuration before deployment:
+
+```bash
+# Run full validation including tests
+bash scripts/validate-kyverno.sh
+
+# Generate policy documentation
+bash scripts/generate-policies.sh > docs/policies.md
+```
+
+---
+
+## Policy Reference
+
+
 ## :material-shield-lock: Rule: deny-empty-ingress-host
 
 **Category:** Best Practices | **Severity:** medium | **Scope:** Cluster-wide
@@ -142,4 +420,4 @@ Capabilities permit privileged actions without giving full root access. The CAP_
 
 ---
 
-**Total Policies: 10**
+**Total Policies: 11**

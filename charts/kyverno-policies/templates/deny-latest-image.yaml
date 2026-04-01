@@ -1,3 +1,4 @@
+{{- if .Values.policies.denyLatestImage.enabled }}
 ---
 apiVersion: kyverno.io/v1
 kind: ClusterPolicy
@@ -14,7 +15,7 @@ metadata:
       a specific version of an application Pod. This policy validates that the image
       specifies a tag and that it is not called `latest`.
 spec:
-  validationFailureAction: Enforce
+  validationFailureAction: {{ .Values.policies.denyLatestImage.validationFailureAction }}
   background: true
   rules:
     - name: require-image-tag
@@ -26,12 +27,7 @@ spec:
       exclude:
         resources:
           namespaces:
-            - kube-system
-            - argocd
-            - cert-manager
-            - cilium-system
-            - external-secrets
-            - kyverno-system
+            {{- include "kyverno-policies.excludedNamespaces" . | nindent 12 }}
       validate:
         message: "An image tag is required."
         pattern:
@@ -47,15 +43,11 @@ spec:
       exclude:
         resources:
           namespaces:
-            - kube-system
-            - argocd
-            - cert-manager
-            - cilium-system
-            - external-secrets
-            - kyverno-system
+            {{- include "kyverno-policies.excludedNamespaces" . | nindent 12 }}
       validate:
         message: "Using a mutable image tag e.g. 'latest' is not allowed."
         pattern:
           spec:
             containers:
               - image: "!*:latest"
+{{- end }}

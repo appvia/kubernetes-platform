@@ -29,6 +29,7 @@ labels:
   enable_cert_manager: "true"
   enable_external_secrets: "true"
   enable_kyverno: "true"
+  enable_kyverno_policies: "true"
   enable_pod_identity: "true"
 ## Annotations are using for additional metadata about the tenant cluster
 annotations:

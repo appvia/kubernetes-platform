@@ -32,6 +32,7 @@ labels:
   enable_karpenter_nodepools: "true"
   enable_kro: "true"
   enable_kyverno: "true"
+  enable_kyverno_policies: "true"
 ## Annotations are using for additional metadata about the tenant cluster
 annotations:
   platform.local/tenant: tenant

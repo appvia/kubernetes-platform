@@ -1,0 +1,16 @@
+apiVersion: v2
+name: kyverno-policies
+description: A Helm chart for deploying Kyverno security policies with flexible configuration
+type: application
+version: 0.1.0
+appVersion: "0.1.0"
+keywords:
+  - kyverno
+  - policy
+  - security
+  - validation
+home: https://kyverno.io
+sources:
+  - https://github.com/appvia/kubernetes-platform
+maintainers:
+  - name: Appvia

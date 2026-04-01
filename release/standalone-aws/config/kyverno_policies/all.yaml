@@ -1,0 +1,17 @@
+# Release tenant-level Kyverno policy configuration
+# Global defaults for the standalone-aws environment
+# Inherited by all clusters unless overridden at cluster level
+
+globalExclusions:
+  additional:
+    - cert-manager
+    - external-secrets
+
+policies:
+  denyLatestImage:
+    enabled: true
+    validationFailureAction: audit
+
+  restrictImageRegistries:
+    enabled: false
+    validationFailureAction: audit

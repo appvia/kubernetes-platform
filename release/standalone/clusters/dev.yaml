@@ -42,6 +42,8 @@ labels:
   enable_kro: "true"
   # Enable the kyverno feature
   enable_kyverno: "true"
+  # Enable the kyverno policies feature
+  enable_kyverno_policies: "true"
   # Enable the gateway-api feature
   enable_gateway_api: "true"
   # Enable the metrics server feature

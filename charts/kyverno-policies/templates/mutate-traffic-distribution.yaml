@@ -1,3 +1,4 @@
+{{- if .Values.policies.mutateTrafficDistribution.enabled }}
 ---
 apiVersion: kyverno.io/v1
 kind: ClusterPolicy
@@ -23,10 +24,11 @@ spec:
                 - Service
       preconditions:
         any:
-          - key: "{{ request.object.spec.trafficDistribution || '' }}"
+          - key: "{{ "{{ request.object.spec.trafficDistribution || '' }}" }}"
             operator: Equals
             value: ""
       mutate:
         patchStrategicMerge:
           spec:
             trafficDistribution: PreferSameZone
+{{- end }}

@@ -1,0 +1,11 @@
+# Exclude Kyverno test fixtures from Helm packaging
+tests/
+
+# Standard Helm ignores
+.git
+.gitignore
+.helmignore
+*.swp
+*.swo
+*~
+.DS_Store

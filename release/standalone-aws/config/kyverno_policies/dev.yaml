@@ -1,0 +1,14 @@
+# Cluster-specific Kyverno policy configuration for dev cluster
+# Example showing:
+# 1. How to enable the registry restriction policy
+# 2. Simple mode configuration (single list of allowed registries)
+
+policies:
+  restrictImageRegistries:
+    enabled: true
+    useComplexConfig: false
+    validationFailureAction: audit
+    allowedRegistries:
+      - gcr.io
+      - docker.io
+      - quay.io

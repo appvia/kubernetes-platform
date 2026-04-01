@@ -72,6 +72,11 @@
   repository: https://kyverno.github.io/kyverno
   version: "3.7.1"
   namespace: kyverno-system
+- feature: kyverno_policies
+  chart: kyverno-policies
+  repository_path: charts/kyverno-policies
+  version: "0.1.0"
+  namespace: kyverno-system
 - feature: metrics_server
   chart: metrics-server
   repository: https://kubernetes-sigs.github.io/metrics-server

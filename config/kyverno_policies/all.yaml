@@ -1,0 +1,68 @@
+# Platform default Kyverno policy configuration
+# These defaults enable all standard security policies in enforce mode
+# Tenants can override via their own config/kyverno_policies/ directory
+
+globalExclusions:
+  additional: []
+
+policies:
+  denyDefaultNamespace:
+    enabled: true
+    validationFailureAction: enforce
+
+  denyEksResources:
+    enabled: true
+    validationFailureAction: enforce
+
+  denyEmptyIngress:
+    enabled: true
+    validationFailureAction: enforce
+
+  denyExternalSecrets:
+    enabled: true
+    validationFailureAction: enforce
+
+  denyLatestImage:
+    enabled: true
+    validationFailureAction: enforce
+
+  denyNoLabels:
+    enabled: true
+    validationFailureAction: audit
+
+  denyNoLimits:
+    enabled: true
+    validationFailureAction: enforce
+
+  denyNoPodProbes:
+    enabled: true
+    validationFailureAction: audit
+
+  denyNoTrafficDistribution:
+    enabled: false
+    validationFailureAction: audit
+
+  denyNodeportService:
+    enabled: true
+    validationFailureAction: enforce
+
+  mutateEcrCache:
+    enabled: false
+    validationFailureAction: audit
+
+  mutatePsaLabels:
+    enabled: true
+    validationFailureAction: audit
+
+  mutateTrafficDistribution:
+    enabled: false
+    validationFailureAction: audit
+
+  restrictImageRegistries:
+    enabled: false
+    validationFailureAction: audit
+    background: true
+    useComplexConfig: false
+    allowedRegistries: []
+    registries: []
+    excludeNamespaces: []
