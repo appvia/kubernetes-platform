@@ -15,8 +15,19 @@ GIT_COMMIT=$(git rev-parse HEAD)
 USE_GIT_COMMIT=false
 USE_REVISION=""
 
+ensure_helm_repo() {
+  local repo_name=$1
+  local repo_url=$2
+
+  if ! helm repo list 2>/dev/null | awk '{print $1}' | grep -qx "${repo_name}"; then
+    helm repo add "${repo_name}" "${repo_url}" > /dev/null
+  fi
+
+  helm repo update "${repo_name}" > /dev/null
+}
+
 usage() {
-  cat <<EOF
+  cat << EOF
 Usage: ${0} [options]
 
 Options:
@@ -55,11 +66,13 @@ setup_cluster() {
   fi
 
   # Check if ArgoCD deployments are already present
-  if kubectl get deployments -n argocd --context "${cluster_context}" 2>&1 | grep "No resources found" >/dev/null; then
+  if kubectl get deployments -n argocd --context "${cluster_context}" 2>&1 | grep "No resources found" > /dev/null; then
     echo "Provisioning ArgoCD on cluster: \"${cluster_name}\""
     # Create ArgoCD namespace
-    kubectl create namespace argocd --context "${cluster_context}" >/dev/null
+    kubectl get namespace argocd --context "${cluster_context}" > /dev/null 2>&1 || \
+      kubectl create namespace argocd --context "${cluster_context}" > /dev/null
     # Install ArgoCD
+    ensure_helm_repo "argo" "https://argoproj.github.io/argo-helm"
     if ! error_output=$(helm upgrade -n argocd --install argocd argo/argo-cd --version "${ARGOCD_VERSION}" 2>&1); then
       usage "Failed to install ArgoCD on cluster: \"${cluster_name}\", ensure you have the repository configured. \nError: $error_output"
     fi
@@ -70,7 +83,7 @@ setup_cluster() {
     --for=condition=Ready pods \
     --all -l app.kubernetes.io/name=argocd-repo-server \
     --timeout=90s \
-    --context "${cluster_context}" >/dev/null
+    --context "${cluster_context}" > /dev/null
 }
 
 ## Used to provision the credentials for the platform repository
@@ -81,7 +94,7 @@ setup_credentials() {
     usage "GitHub token is not set"
   fi
 
-  cat <<EOF | kubectl apply -f -
+  cat << EOF | kubectl apply -f -
 ---
 apiVersion: v1
 kind: Secret
@@ -135,9 +148,8 @@ setup_bootstrap() {
       usage "Failed to setup credentials for \"${CLUSTER_NAME}\""
     fi
   fi
-  fi
 
-  cat <<EOF | kubectl apply -f -
+  cat << EOF | kubectl apply -f -
 ---
 apiVersion: argoproj.io/v1alpha1
 kind: Application
@@ -200,41 +212,41 @@ EOF
 ## Parse the command line arguments
 while [[ ${#} -gt 0 ]]; do
   case "${1}" in
-  -h | --help)
-    usage
-    exit 0
-    ;;
-  -g | --github-token)
-    GITHUB_TOKEN="${2}"
-    shift 2
-    ;;
-  -G | --github-user)
-    GITHUB_USER="${2}"
-    shift 2
-    ;;
-  -c | --cluster)
-    CLUSTER_NAME="${2}"
-    shift 2
-    ;;
-  -C | --credentials)
-    CREDENTIALS=true
-    shift 1
-    ;;
-  -I | --use-git-commit)
-    USE_GIT_COMMIT="true"
-    shift 1
-    ;;
-  -r | --use-revision)
-    USE_REVISION="${2}"
-    shift 2
-    ;;
-  -t | --cluster-type)
-    CLUSTER_TYPE="${2}"
-    shift 2
-    ;;
-  *)
-    shift
-    ;;
+    -h | --help)
+      usage
+      exit 0
+      ;;
+    -g | --github-token)
+      GITHUB_TOKEN="${2}"
+      shift 2
+      ;;
+    -G | --github-user)
+      GITHUB_USER="${2}"
+      shift 2
+      ;;
+    -c | --cluster)
+      CLUSTER_NAME="${2}"
+      shift 2
+      ;;
+    -C | --credentials)
+      CREDENTIALS=true
+      shift 1
+      ;;
+    -I | --use-git-commit)
+      USE_GIT_COMMIT="true"
+      shift 1
+      ;;
+    -r | --use-revision)
+      USE_REVISION="${2}"
+      shift 2
+      ;;
+    -t | --cluster-type)
+      CLUSTER_TYPE="${2}"
+      shift 2
+      ;;
+    *)
+      shift
+      ;;
   esac
 done
 
