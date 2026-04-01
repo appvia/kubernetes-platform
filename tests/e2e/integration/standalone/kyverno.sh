@@ -44,6 +44,10 @@ teardown() {
 }
 
 @test "We should not be permitted to run anything in the default namespace" {
+  # Ensure the Kyverno admission controller and webhook service have ready endpoints
+  # before checking enforcement. This reduces long convergence waits in e2e.
+  kubectl "wait --for=condition=available --timeout=120s deployment/kyverno-admission-controller -n kyverno-system"
+  kubectl "get endpoints kyverno-svc -n kyverno-system -o jsonpath='{.subsets[*].addresses[*].ip}' | grep -q ."
   kubectl "-n default run console --image=busybox:1.28.3 2>&1 | grep deny-default-namespace"
 }
 

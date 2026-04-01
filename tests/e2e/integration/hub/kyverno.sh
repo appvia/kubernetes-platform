@@ -38,3 +38,8 @@ teardown() {
     kubectl "get validatingwebhookconfiguration ${NAME}"
   done
 }
+
+@test "Kyverno should be ready to enforce policies" {
+  kubectl "wait --for=condition=available --timeout=120s deployment/kyverno-admission-controller -n kyverno-system"
+  kubectl "get endpoints kyverno-svc -n kyverno-system -o jsonpath='{.subsets[*].addresses[*].ip}' | grep -q ."
+}
