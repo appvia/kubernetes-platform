@@ -60,6 +60,7 @@ clean:
 	@kind delete cluster --name dev 2>/dev/null || true
 	@kind delete cluster --name hub 2>/dev/null || true
 	@kind delete cluster --name spoke 2>/dev/null || true
+	@rm -f .skip
 
 changelog:
 	@echo "--> Generating the changelog..."
