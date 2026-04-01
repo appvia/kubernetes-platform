@@ -18,43 +18,43 @@ spec:
   background: true
   rules:
     - name: require-image-tag
-       match:
-         any:
-           - resources:
-               kinds:
-                 - Pod
-       exclude:
-         resources:
-           namespaces:
-             - kube-system
-             - argocd
-             - cert-manager
-             - cilium-system
-             - external-secrets
-             - kyverno-system
-       validate:
-         message: "An image tag is required."
+      match:
+        any:
+          - resources:
+              kinds:
+                - Pod
+      exclude:
+        resources:
+          namespaces:
+            - kube-system
+            - argocd
+            - cert-manager
+            - cilium-system
+            - external-secrets
+            - kyverno-system
+      validate:
+        message: "An image tag is required."
         pattern:
           spec:
             containers:
               - image: "*:*"
-     - name: validate-image-tag
-       match:
-         any:
-           - resources:
-               kinds:
-                 - Pod
-       exclude:
-         resources:
-           namespaces:
-             - kube-system
-             - argocd
-             - cert-manager
-             - cilium-system
-             - external-secrets
-             - kyverno-system
-       validate:
-         message: "Using a mutable image tag e.g. 'latest' is not allowed."
+    - name: validate-image-tag
+      match:
+        any:
+          - resources:
+              kinds:
+                - Pod
+      exclude:
+        resources:
+          namespaces:
+            - kube-system
+            - argocd
+            - cert-manager
+            - cilium-system
+            - external-secrets
+            - kyverno-system
+      validate:
+        message: "Using a mutable image tag e.g. 'latest' is not allowed."
         pattern:
           spec:
             containers:
