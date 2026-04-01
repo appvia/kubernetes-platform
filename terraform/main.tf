@@ -35,7 +35,7 @@ module "network" {
 ## Provision a EKS cluster for the hub
 module "eks" {
   source  = "appvia/eks/aws"
-  version = "1.2.13"
+  version = "1.2.14"
 
   access_entries         = local.access_entries
   cluster_name           = local.cluster_name
