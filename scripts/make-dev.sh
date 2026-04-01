@@ -81,11 +81,16 @@ setup_cluster() {
     # Wait for ArgoCD to be ready
   fi
   echo "Waiting for ArgoCD to be ready..."
-  kubectl -n argocd wait \
-    --for=condition=Ready pods \
-    --all -l app.kubernetes.io/name=argocd-repo-server \
-    --timeout=90s \
-    --context "${cluster_context}" > /dev/null
+  # Waiting on pods can hang on re-runs if old pods are terminating but still match
+  # the label selector. Waiting on deployments is stable across upgrades/reconciles.
+  for d in argocd-repo-server argocd-server argocd-application-controller argocd-dex-server; do
+    if kubectl -n argocd get "deployment/${d}" --context "${cluster_context}" > /dev/null 2>&1; then
+      kubectl -n argocd wait \
+        --for=condition=Available "deployment/${d}" \
+        --timeout=180s \
+        --context "${cluster_context}" > /dev/null
+    fi
+  done
 }
 
 ## Used to provision the credentials for the platform repository
