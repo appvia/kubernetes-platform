@@ -30,6 +30,8 @@ labels:
   enable_cert_manager: "true"
   # Enable the cilium CNI feature
   enable_cilium: "true"
+  # Enable the AWS Load Balancer Controller (ALB/NLB)
+  enable_aws_load_balancer: "true"
   # Enable the external-secrets feature
   enable_external_secrets: "true"
   # Enable the karpenter nodepools feature
@@ -46,6 +48,8 @@ labels:
   enable_terranetes: "false"
   # Enable the terranetes CRs feature
   enable_terranetes_crs: "false"
+  # Enable the gateway-api feature
+  enable_gateway_api: "true"
 ## Annotations are using for additional metadata about the tenant cluster
 annotations:
   ## The EBS provisioner to use for the storage class
