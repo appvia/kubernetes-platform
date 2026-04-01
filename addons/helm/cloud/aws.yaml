@@ -2,7 +2,7 @@
 - feature: aws_load_balancer
   chart: aws-load-balancer-controller
   repository: https://aws.github.io/eks-charts
-  version: "1.16.0"
+  version: "1.17.1"
   namespace: ingress-system
   parameters:
     - name: clusterName
@@ -13,103 +13,86 @@
       value: .metadata.annotations.vpc_id
     - name: serviceAccount.name
       value: aws-load-balancer
-
 - feature: aws_ebs_csi_resources
   chart: aws-ebs-csi-classes
   repository: https://gitops-bridge-dev.github.io/gitops-bridge-helm-charts
   version: "1.0.0"
   namespace: kube-system
-
 - feature: aws_cloudwatch_metrics
   chart: aws-cloudwatch-metrics
   repository: https://aws.github.io/eks-charts
   version: "0.0.11"
   namespace: kube-system
-
 - feature: aws_efs_csi_driver
   chart: aws-efs-csi-driver
   repository: https://kubernetes-sigs.github.io/aws-efs-csi-driver
-  version: "3.0.7"
+  version: "3.4.1"
   namespace: kube-system
-
 - feature: aws_fsx_csi_driver
   chart: aws-fsx-csi-driver
   repository: https://kubernetes-sigs.github.io/aws-fsx-csi-driver
-  version: "1.9.0"
+  version: "1.15.0"
   namespace: kube-system
-
 - feature: aws_for_fluentbit
   chart: aws-for-fluent-bit
   repository: https://aws.github.io/eks-charts
-  version: "0.1.34"
+  version: "0.1.35"
   namespace: kube-system
-
 - feature: aws_fargate_fluentbit
   chart: aws-fargate-fluentbit
   repository: https://gitops-bridge-dev.github.io/gitops-bridge-helm-charts
   version: "1.0.0"
   namespace: kube-system
-
 - feature: aws_gateway_api_controller
   chart: aws-gateway-controller-chart
   repository: public.ecr.aws
   version: "v1.1.7"
   namespace: kube-system
-
 - feature: aws_node_termination_handler
   chart: aws-node-termination-handler
   repository: https://aws.github.io/eks-charts
   version: "0.21.0"
   namespace: kube-system
-
 - feature: aws_argo_workflows_ingress
   chart: argo-workflows
   repository: https://argoproj.github.io/argo-helm
   version: "0.41.14"
   namespace: argocd
-
 - feature: aws_argocd
   chart: argo-cd
   repository: https://argoproj.github.io/argo-helm
-  version: "7.4.1"
+  version: "7.9.1"
   namespace: argocd
-
 - feature: aws_argocd_ingress
   chart: argo-cd
   repository: https://argoproj.github.io/argo-helm
-  version: "7.4.1"
+  version: "7.9.1"
   namespace: argocd
-
 - feature: aws_crossplane_provider
   chart: crossplane-aws
   repository: https://gitops-bridge-dev.github.io/gitops-bridge-helm-charts
   version: "2.2.0"
   namespace: crossplane-system
-
 - feature: aws_crossplane_upbound_provider
   chart: crossplane-aws-upbound
   repository: https://gitops-bridge-dev.github.io/gitops-bridge-helm-charts
   version: "3.0.0"
   namespace: crossplane-system
-
 - feature: aws_privateca_issuer
   chart: aws-privateca-issuer
   repository: https://cert-manager.github.io/aws-privateca-issuer
-  version: "v1.3.0"
+  version: "v1.8.1"
   namespace: cert-manager
-
 - feature: aws_velero
   chart: velero
   repository: https://vmware-tanzu.github.io/helm-charts
-  version: "7.1.4"
+  version: "7.2.2"
   namespace: velero
-
 - feature: aws_secrets_store_csi_driver_provider
   chart: secrets-store-csi-driver-provider-aws
   repository: https://aws.github.io/secrets-store-csi-driver-provider-aws
-  version: "2.1.1"
+  version: "2.2.2"
   namespace: kube-system
-
 - feature: aws_ack_apigatewayv2
   chart: aws-controllers-k8s/apigatewayv2-chart
   repository: public.ecr.aws
@@ -118,7 +101,6 @@
   parameters:
     - name: aws.region
       value: .metadata.annotations.region
-
 - feature: aws_ack_dynamodb
   chart: aws-controllers-k8s/dynamodb-chart
   repository: public.ecr.aws
@@ -127,7 +109,6 @@
   parameters:
     - name: aws.region
       value: .metadata.annotations.region
-
 - feature: aws_ack_prometheusservice
   chart: aws-controllers-k8s/prometheusservice-chart
   repository: public.ecr.aws
@@ -136,7 +117,6 @@
   parameters:
     - name: aws.region
       value: .metadata.annotations.region
-
 - feature: aws_ack_eventbridge
   chart: aws-controllers-k8s/eventbridge-chart
   repository: public.ecr.aws
@@ -145,7 +125,6 @@
   parameters:
     - name: aws.region
       value: .metadata.annotations.region
-
 - feature: aws_ack_rds
   chart: aws-controllers-k8s/rds-chart
   repository: public.ecr.aws
@@ -154,7 +133,6 @@
   parameters:
     - name: aws.region
       value: .metadata.annotations.region
-
 - feature: aws_ack_s3
   chart: aws-controllers-k8s/s3-chart
   repository: public.ecr.aws
@@ -163,7 +141,6 @@
   parameters:
     - name: aws.region
       value: .metadata.annotations.region
-
 - feature: aws_ack_iam
   chart: aws-controllers-k8s/iam-chart
   repository: public.ecr.aws
@@ -172,7 +149,6 @@
   parameters:
     - name: aws.region
       value: .metadata.annotations.region
-
 - feature: aws_ack_sns
   chart: aws-controllers-k8s/sns-chart
   repository: public.ecr.aws
@@ -181,7 +157,6 @@
   parameters:
     - name: aws.region
       value: .metadata.annotations.region
-
 - feature: aws_ack_sqs
   chart: aws-controllers-k8s/sqs-chart
   repository: public.ecr.aws
@@ -190,7 +165,6 @@
   parameters:
     - name: aws.region
       value: .metadata.annotations.region
-
 - feature: aws_ack_ses
   chart: aws-controllers-k8s/ses-chart
   repository: public.ecr.aws
@@ -199,7 +173,6 @@
   parameters:
     - name: aws.region
       value: .metadata.annotations.region
-
 - feature: aws_ack_sfn
   chart: aws-controllers-k8s/sfn-chart
   repository: public.ecr.aws
@@ -208,7 +181,6 @@
   parameters:
     - name: aws.region
       value: .metadata.annotations.region
-
 - feature: aws_ack_eks
   chart: aws-controllers-k8s/eks-chart
   repository: public.ecr.aws
