@@ -80,7 +80,7 @@ module "eks" {
 ## Provision and bootstrap the platform using an tenant repository
 module "platform" {
   source  = "appvia/eks/aws//modules/platform"
-  version = "1.2.13"
+  version = "1.2.14"
 
   ## Name of the cluster
   cluster_name = local.cluster_name
