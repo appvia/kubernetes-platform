@@ -39,6 +39,7 @@ encryption:
 
 ## Mutual TLS configuration (spire)
 authentication:
+  enabled: true
   ## Indicates if the mutual TLS is enabled
   mutual:
     ## Indicates if the spire is enabled
