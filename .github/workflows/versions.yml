@@ -1,5 +1,5 @@
 ---
-name: Update addon versions
+name: Update Addons
 
 # yamllint disable-line rule:truthy
 on:
@@ -14,7 +14,7 @@ permissions:
 
 jobs:
   update:
-    name: Update Helm addon versions
+    name: Update Addons
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
