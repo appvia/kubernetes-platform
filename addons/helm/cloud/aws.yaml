@@ -2,7 +2,7 @@
 - feature: aws_load_balancer
   chart: aws-load-balancer-controller
   repository: https://aws.github.io/eks-charts
-  version: "1.17.1"
+  version: "3.1.0"
   namespace: ingress-system
   parameters:
     - name: clusterName
@@ -13,6 +13,10 @@
       value: .metadata.annotations.vpc_id
     - name: serviceAccount.name
       value: aws-load-balancer
+    - name: controllerConfig.featureGates.ALBGatewayAPI
+      value: "true"
+    - name: controllerConfig.featureGates.NLBGatewayAPI
+      value: "true"
 - feature: aws_ebs_csi_resources
   chart: aws-ebs-csi-classes
   repository: https://gitops-bridge-dev.github.io/gitops-bridge-helm-charts
