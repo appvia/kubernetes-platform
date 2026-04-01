@@ -24,7 +24,11 @@ jobs:
       - name: Install tooling
         run: |
           sudo apt-get update
-          sudo apt-get install -y yq
+          sudo apt-get install -y ca-certificates curl
+          YQ_VERSION="v4.52.5"
+          sudo curl -fsSL "https://github.com/mikefarah/yq/releases/download/${YQ_VERSION}/yq_linux_amd64" -o /usr/local/bin/yq
+          sudo chmod +x /usr/local/bin/yq
+          yq --version
 
       - name: Install Helm
         uses: azure/setup-helm@v4
