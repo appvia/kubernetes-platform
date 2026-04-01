@@ -50,13 +50,9 @@ spec:
       - RespectIgnoreDifferences=true
       - ServerSideApply=true
 
-  ## If the helm chart permits the values to be overridden, we apply a patch
-  ## allowing for the tenant values to be used.
-  templatePatch: |
-    spec:
-      ignoreDifferences:
-        - group: ""
-          kind: Secret
-          name: cluster-{{ .cluster_name }}
-          jsonPointers:
-            - /data
+  ignoreDifferences:
+    - group: ""
+      kind: Secret
+      name: NEED_TO_PATCH
+      jsonPointers:
+        - /data

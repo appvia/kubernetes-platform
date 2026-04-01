@@ -91,6 +91,9 @@ spec:
                     path: /spec/sources/0/helm/valueFiles/0
                     value: "$values/{{ .tenant_path }}/clusters/{{ .cluster_name }}.yaml"
                   - op: replace
+                    path: /spec/ignoreDifferences/0/name
+                    value: "cluster-{{ .cluster_name }}"
+                  - op: replace
                     path: /spec/sources/1/repoURL
                     value: "{{ .tenant_repository }}"
                   - op: replace

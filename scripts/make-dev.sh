@@ -8,7 +8,7 @@ set -euo pipefail
 CLUSTER_NAME="dev"
 CLUSTER_TYPE="standalone"
 CREDENTIALS=false
-ARGOCD_VERSION="9.1.4"
+ARGOCD_VERSION="9.4.17"
 GITHUB_USER=""
 GIT_BRANCH=$(git rev-parse --abbrev-ref HEAD)
 GIT_COMMIT=$(git rev-parse HEAD)
@@ -19,7 +19,9 @@ ensure_helm_repo() {
   local repo_name=$1
   local repo_url=$2
 
-  if ! helm repo list 2>/dev/null | awk '{print $1}' | grep -qx "${repo_name}"; then
+  echo "Ensuring Helm repository: \"${repo_name}\" is configured"
+
+  if ! helm repo list 2> /dev/null | awk '{print $1}' | grep -qx "${repo_name}"; then
     helm repo add "${repo_name}" "${repo_url}" > /dev/null
   fi
 
@@ -69,8 +71,8 @@ setup_cluster() {
   if kubectl get deployments -n argocd --context "${cluster_context}" 2>&1 | grep "No resources found" > /dev/null; then
     echo "Provisioning ArgoCD on cluster: \"${cluster_name}\""
     # Create ArgoCD namespace
-    kubectl get namespace argocd --context "${cluster_context}" > /dev/null 2>&1 || \
-      kubectl create namespace argocd --context "${cluster_context}" > /dev/null
+    kubectl get namespace argocd --context "${cluster_context}" > /dev/null 2>&1 \
+                                                                                 || kubectl create namespace argocd --context "${cluster_context}" > /dev/null
     # Install ArgoCD
     ensure_helm_repo "argo" "https://argoproj.github.io/argo-helm"
     if ! error_output=$(helm upgrade -n argocd --install argocd argo/argo-cd --version "${ARGOCD_VERSION}" 2>&1); then
