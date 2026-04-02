@@ -39,8 +39,8 @@ teardown() {
   done
 }
 
-@test "We should have a Kyverno kustomize application" {
-  kubectl "get application system-kust-kyverno-dev -n argocd"
+@test "We should have a Kyverno policies application" {
+  kubectl "get application system-kyverno-policies-dev -n argocd"
 }
 
 @test "We should not be permitted to run anything in the default namespace" {
