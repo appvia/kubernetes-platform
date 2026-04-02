@@ -93,10 +93,11 @@ spec:
           selfHeal: true
           prune: true
         retry:
-          backoff:
-            duration: '{{ default "30s" .sync.duration }}'
-            maxDuration: '{{ default "5m" .sync.max_duration }}'
           limit: 10
+          backoff:
+            duration: '{{ default "20s" .sync.duration }}'
+            factor: 2
+            maxDuration: '{{ default "3m" .sync.max_duration }}'
 
         ## Namespace metadata configuration, for when CreateNamespace=true
         managedNamespaceMetadata:
