@@ -45,7 +45,7 @@ policies:
     validationFailureAction: enforce
 
   # Deny containers without health probes
-  denyNoPodsProbes:
+  denyNoPodProbes:
     enabled: true
     validationFailureAction: enforce
 
