@@ -74,9 +74,13 @@
   namespace: kyverno-system
 - feature: kyverno_policies
   chart: kyverno-policies
+  repository: platform
   repository_path: charts/kyverno-policies
   version: "0.1.0"
   namespace: kyverno-system
+  sync:
+    wave: 40
+    phase: secondary
 - feature: metrics_server
   chart: metrics-server
   repository: https://kubernetes-sigs.github.io/metrics-server

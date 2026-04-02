@@ -83,7 +83,7 @@ spec:
         app.kubernetes.io/managed-by: argocd
         app.kubernetes.io/name: "{{ normalize .feature }}"
         app.kubernetes.io/type: helm
-        phase: primary
+        phase: '{{ default "primary" .sync.phase }}'
         platform.local/type: platform
 
     spec:
@@ -103,10 +103,11 @@ spec:
           selfHeal: true
           prune: true
         retry:
-          backoff:
-            duration: '{{ default "60s" .sync.duration }}'
-            maxDuration: '{{ default "3m" .sync.max_duration }}'
           limit: 10
+          backoff:
+            duration: '{{ default "20s" .sync.duration }}'
+            factor: 2
+            maxDuration: '{{ default "3m" .sync.max_duration }}'
         # Use server-side apply for better efficiency and interop
         # between controllers making partial changes to manifests.
         # Also enable apply out of sync only rather than trying to
@@ -121,9 +122,14 @@ spec:
     {{- $context := toJson . | fromJson }}
     spec:
       sources:
+        {{- if eq .repository "platform" }}
+        - repoURL: "{{ .metadata.annotations.platform_repository }}"
+          targetRevision: "{{ .metadata.annotations.platform_revision }}"
+        {{- else }}
         - repoURL: "{{ .repository }}"
           targetRevision: "{{ .version }}"
           chart: '{{ default "" .chart }}'
+        {{- end }}
           path: '{{ default "" .repository_path }}'
           helm:
             releaseName: "{{ normalize (default .feature .release_name) }}"

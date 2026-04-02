@@ -22,7 +22,9 @@ The helm entry format is as follows:
       value: .metadata.labels.cluster_name
       default: mydefault_value
   values: |
-    my_value: hello    
+    my_value: hello
+  sync:
+    wave: NUMBER
 ```
 
 The following fields are supported:
@@ -38,5 +40,7 @@ The following fields are supported:
   - `value`: Literal value, or a reference into cluster metadata using dot notation (e.g., `.metadata.annotations.region`).
   - `default`: Value to use if the referenced metadata is empty or missing.
 - `values`: A multi-line string of Helm values to add to the Application.
+- `sync`: Sync options for the resulting Argo CD Application.
+  - `wave`: Optional wave number to set for the Application. Applications with lower wave numbers are deployed first.
 
 At minimum, each entry must include `feature`, `repository`, `namespace`, `version`, and one of `chart` or `path`.
