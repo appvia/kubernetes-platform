@@ -1,24 +1,26 @@
-# validate-schemas
+# Validate Schema Github Action
 
 A composite GitHub Action that validates cluster definition and workload YAML files against the platform JSON schemas using [`check-jsonschema`](https://github.com/python-jsonschema/check-jsonschema).
 
 ## Inputs
 
-| Input          | Required | Default                        | Description                                                                                       |
-|----------------|----------|--------------------------------|---------------------------------------------------------------------------------------------------|
-| `version`      | No       | `main`                         | Git ref (branch, tag, or commit) of the platform repository to fetch schemas from.                |
-| `clusters`     | No       | _(empty)_                      | Newline-separated list of paths to cluster definition YAML files or directories.                  |
-| `workloads`    | No       | _(empty)_                      | Newline-separated list of paths to workload/application YAML files or directories.                |
-| `schema_repo`  | No       | `appvia/kubernetes-platform`   | Owner/repo of the platform repository containing the schemas.                                     |
+| Input           | Required | Default                      | Description                                                                        |
+| --------------- | -------- | ---------------------------- | ---------------------------------------------------------------------------------- |
+| `version`       | No       | `main`                       | Git ref (branch, tag, or commit) of the platform repository to fetch schemas from. |
+| `clusters`      | No       | _(empty)_                    | Newline-separated list of paths to cluster definition YAML files or directories.   |
+| `workloads`     | No       | _(empty)_                    | Newline-separated list of paths to workload/application YAML files or directories. |
+| `exclude-dirs`  | No       | _(empty)_                    | Newline-separated list of directory names to skip during recursive discovery.      |
+| `exclude-files` | No       | _(empty)_                    | Newline-separated list of file names to skip during recursive discovery.           |
+| `schema_repo`   | No       | `appvia/kubernetes-platform` | Owner/repo of the platform repository containing the schemas.                      |
 
 At least one of `clusters` or `workloads` must be provided, otherwise the action does nothing.
 
 ## What gets validated
 
-| Input       | Schema used              | Expected YAML shape                                                                 |
-|-------------|--------------------------|-------------------------------------------------------------------------------------|
-| `clusters`  | `schemas/clusters.json`  | Cluster definitions with `cluster_name`, `cloud_vendor`, `environment`, `labels`, … |
-| `workloads` | `schemas/applications.json` | Tenant application definitions with `helm` and/or `kustomize` blocks.            |
+| Input       | Schema used                 | Expected YAML shape                                                                 |
+| ----------- | --------------------------- | ----------------------------------------------------------------------------------- |
+| `clusters`  | `schemas/clusters.json`     | Cluster definitions with `cluster_name`, `cloud_vendor`, `environment`, `labels`, … |
+| `workloads` | `schemas/applications.json` | Tenant application definitions with `helm` and/or `kustomize` blocks.               |
 
 ## Usage
 

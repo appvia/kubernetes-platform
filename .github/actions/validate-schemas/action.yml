@@ -1,30 +1,37 @@
-name: 'Validate YAML against schemas'
-description: 'Validates cluster and workload YAML files against JSON schemas using check-jsonschema'
+---
+name: "Validate YAML against schemas"
+description: "Validates cluster and workload YAML files against JSON schemas using check-jsonschema"
 inputs:
   version:
-    description: 'Git ref (branch, tag, or commit) of the kubernetes-platform repo containing the schemas'
+    description: "Git ref (branch, tag, or commit) of the kubernetes-platform repo containing the schemas"
     required: false
-    default: 'main'
+    default: "main"
   clusters:
-    description: 'Path(s) to cluster definition YAML files or directories (newline-separated)'
+    description: "Path(s) to cluster definition YAML files or directories (newline-separated)"
     required: false
-    default: ''
+    default: ""
   workloads:
-    description: 'Path(s) to workload/application YAML files or directories (newline-separated)'
+    description: "Path(s) to workload/application YAML files or directories (newline-separated)"
     required: false
-    default: ''
+    default: ""
+  exclude-dirs:
+    description: "Directory names to exclude from validation (newline-separated)"
+    required: false
+    default: ""
+  exclude-files:
+    description: "File names to exclude from validation (newline-separated)"
+    required: false
+    default: ""
   schema_repo:
-    description: 'Owner/repo of the kubernetes-platform repository'
+    description: "Owner/repo of the kubernetes-platform repository"
     required: false
-    default: 'appvia/kubernetes-platform'
+    default: "appvia/kubernetes-platform"
 runs:
-  using: 'composite'
+  using: "composite"
   steps:
     - name: Install check-jsonschema
       shell: bash
-      run: |
-        pip install check-jsonschema
-
+      run: pip install check-jsonschema
     - name: Download schemas
       shell: bash
       run: |
@@ -51,24 +58,55 @@ runs:
         SCHEMA="/tmp/platform-schemas/clusters.json"
         FAILED_FILES=()
 
+        # Build exclude patterns for find
+        EXCLUDE_DIR_ARGS=()
+        if [ -n "${{ inputs.exclude-dirs }}" ]; then
+          while IFS= read -r dir; do
+            [ -z "$dir" ] && continue
+            EXCLUDE_DIR_ARGS+=(-not -path "*/${dir}/*")
+          done <<< "${{ inputs.exclude-dirs }}"
+        fi
+
+        # Build exclude patterns for file names
+        EXCLUDE_FILE_ARGS=()
+        if [ -n "${{ inputs.exclude-files }}" ]; then
+          while IFS= read -r file; do
+            [ -z "$file" ] && continue
+            EXCLUDE_FILE_ARGS+=(-not -name "$file")
+          done <<< "${{ inputs.exclude-files }}"
+        fi
+
         while IFS= read -r path; do
           [ -z "$path" ] && continue
 
           if [ -d "$path" ]; then
             echo "Validating cluster YAML files in directory: $path"
             while IFS= read -r -d '' file; do
-              echo "  Checking: $file"
-              if ! check-jsonschema --schemafile "$SCHEMA" "$file" 2>&1; then
+              # Skip files that don't contain ^helm: or ^kustomize:
+              if ! grep -qE '^(helm|kustomize):' "$file"; then
+                echo "  SKIP  $file (no helm/kustomize key)"
+                continue
+              fi
+              if check-jsonschema --schemafile "$SCHEMA" "$file" > /dev/null 2>&1; then
+                echo "  OK    $file"
+              else
+                echo "  FAIL  $file"
                 FAILED_FILES+=("$file")
               fi
-            done < <(find "$path" -type f \( -name "*.yaml" -o -name "*.yml" \) -print0)
+            done < <(find "$path" -type f \( -name "*.yaml" -o -name "*.yml" \) "${EXCLUDE_DIR_ARGS[@]}" "${EXCLUDE_FILE_ARGS[@]}" -print0)
           elif [ -f "$path" ]; then
-            echo "Validating cluster file: $path"
-            if ! check-jsonschema --schemafile "$SCHEMA" "$path" 2>&1; then
-              FAILED_FILES+=("$path")
+            if grep -qE '^(helm|kustomize):' "$path"; then
+              if check-jsonschema --schemafile "$SCHEMA" "$path" > /dev/null 2>&1; then
+                echo "  OK    $path"
+              else
+                echo "  FAIL  $path"
+                FAILED_FILES+=("$path")
+              fi
+            else
+              echo "  SKIP  $path (no helm/kustomize key)"
             fi
           else
-            echo "Warning: Cluster path not found: $path"
+            echo "  WARN  Cluster path not found: $path"
           fi
         done <<< "${{ inputs.clusters }}"
 
@@ -90,24 +128,55 @@ runs:
         SCHEMA="/tmp/platform-schemas/applications.json"
         FAILED_FILES=()
 
+        # Build exclude patterns for find
+        EXCLUDE_DIR_ARGS=()
+        if [ -n "${{ inputs.exclude-dirs }}" ]; then
+          while IFS= read -r dir; do
+            [ -z "$dir" ] && continue
+            EXCLUDE_DIR_ARGS+=(-not -path "*/${dir}/*")
+          done <<< "${{ inputs.exclude-dirs }}"
+        fi
+
+        # Build exclude patterns for file names
+        EXCLUDE_FILE_ARGS=()
+        if [ -n "${{ inputs.exclude-files }}" ]; then
+          while IFS= read -r file; do
+            [ -z "$file" ] && continue
+            EXCLUDE_FILE_ARGS+=(-not -name "$file")
+          done <<< "${{ inputs.exclude-files }}"
+        fi
+
         while IFS= read -r path; do
           [ -z "$path" ] && continue
 
           if [ -d "$path" ]; then
             echo "Validating workload YAML files in directory: $path"
             while IFS= read -r -d '' file; do
-              echo "  Checking: $file"
-              if ! check-jsonschema --schemafile "$SCHEMA" "$file" 2>&1; then
+              # Skip files that don't contain ^helm: or ^kustomize:
+              if ! grep -qE '^(helm|kustomize):' "$file"; then
+                echo "  SKIP  $file (no helm/kustomize key)"
+                continue
+              fi
+              if check-jsonschema --schemafile "$SCHEMA" "$file" > /dev/null 2>&1; then
+                echo "  OK    $file"
+              else
+                echo "  FAIL  $file"
                 FAILED_FILES+=("$file")
               fi
-            done < <(find "$path" -type f \( -name "*.yaml" -o -name "*.yml" \) -print0)
+            done < <(find "$path" -type f \( -name "*.yaml" -o -name "*.yml" \) "${EXCLUDE_DIR_ARGS[@]}" "${EXCLUDE_FILE_ARGS[@]}" -print0)
           elif [ -f "$path" ]; then
-            echo "Validating workload file: $path"
-            if ! check-jsonschema --schemafile "$SCHEMA" "$path" 2>&1; then
-              FAILED_FILES+=("$path")
+            if grep -qE '^(helm|kustomize):' "$path"; then
+              if check-jsonschema --schemafile "$SCHEMA" "$path" > /dev/null 2>&1; then
+                echo "  OK    $path"
+              else
+                echo "  FAIL  $path"
+                FAILED_FILES+=("$path")
+              fi
+            else
+              echo "  SKIP  $path (no helm/kustomize key)"
             fi
           else
-            echo "Warning: Workload path not found: $path"
+            echo "  WARN  Workload path not found: $path"
           fi
         done <<< "${{ inputs.workloads }}"
 

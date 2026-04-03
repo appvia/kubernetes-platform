@@ -74,8 +74,17 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - run: pip install check-jsonschema
-      - run: make validate-schemas
+      - uses: appvia/kubernetes-platform/.github/actions/validate-schemas@main
+        with:
+          clusters: |
+            release/hub/clusters
+            release/hub-aws/clusters
+            release/standalone/clusters
+            release/standalone-aws/clusters
+          workloads: |
+            release/hub-aws/workloads
+            release/standalone/workloads
+            release/standalone-aws/workloads
 
   validate-docs-spelling:
     name: Validate Docs Spelling
