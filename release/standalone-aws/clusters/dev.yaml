@@ -42,7 +42,7 @@ labels:
   enable_external_secrets: "true"
   # Enable the karpenter nodepools feature
   enable_karpenter_nodepools: "true"
-  # Enable the karpenter feature
+  # Enable the karpenter feature (we use auto mode)
   enable_karpenter: "false"
   # Enable the kro feature
   enable_kro: "true"
