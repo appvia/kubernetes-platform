@@ -94,6 +94,7 @@ validate:
 	@$(MAKE) validate-kustomize
 	@$(MAKE) validate-helm-charts
 	@$(MAKE) validate-kyverno
+	@$(MAKE) validate-schema
 
 validate-cluster-definitions:
 	@echo "--> Validating the cluster definitions..."
@@ -118,6 +119,10 @@ validate-kustomize:
 validate-helm-charts:
 	@echo "--> Validating Helm Charts..."
 	@scripts/validate-helm-charts.sh
+
+validate-schema:
+	@echo "--> Validating cluster and workload schemas..."
+	@scripts/validate-schema.sh
 
 validate-docs:
 	@echo "--> Validating the documentation..."
