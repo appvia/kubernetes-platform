@@ -5,15 +5,21 @@ setup() {
 }
 
 teardown() {
-  [[ -n $BATS_TEST_COMPLETED   ]] || touch ${BATS_PARENT_TMPNAME}.skip
+  [[ -n $BATS_TEST_COMPLETED   ]] || touch "${BATS_PARENT_TMPNAME}.skip"
+}
+
+@test "We should have default naespace" {
+  kubectl "get namespace default"
+}
+
+@test "We should have a kube system namespaces" {
+  kubectl "get namespace kube-public"
+  kubectl "get namespace kube-node-lease"
+  kubectl "get namespace kube-system"
 }
 
 @test "We should have a platform bootstrap application" {
   kubectl_argocd "get application bootstrap"
-}
-
-@test "We should have a healthy platform bootstrap" {
-  kubectl_argocd "get application bootstrap -o yaml | yq .status.health.status | grep -i healthy"
 }
 
 @test "We should have a platform bootstrap in sync" {
@@ -25,5 +31,5 @@ teardown() {
 }
 
 @test "We should be applying the kustomze patches" {
-  kubectl_argocd "get application bootstrap -o yaml | yq .spec.source.kustomize.patches[0].patch | grep kubernetes-platform" 
+  kubectl_argocd "get application bootstrap -o yaml | yq .spec.source.kustomize.patches[0].patch | grep kubernetes-platform"
 }

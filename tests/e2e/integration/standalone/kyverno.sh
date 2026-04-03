@@ -25,6 +25,18 @@ teardown() {
   kubectl "get deployment kyverno-reports-controller -n kyverno-system"
 }
 
+@test "We should have running deployments in the kyverno-system namespace" {
+  kubectl "wait --for=condition=available --timeout=120s deployment/kyverno-admission-controller -n kyverno-system"
+  kubectl "wait --for=condition=available --timeout=120s deployment/kyverno-background-controller -n kyverno-system"
+  kubectl "wait --for=condition=available --timeout=120s deployment/kyverno-cleanup-controller -n kyverno-system"
+  kubectl "wait --for=condition=available --timeout=120s deployment/kyverno-reports-controller -n kyverno-system"
+}
+
+@test "We should have the kyverno crds" {
+  kubectl "get crd clusterpolicies.kyverno.io"
+  kubectl "get crd policies.kyverno.io"
+}
+
 @test "We should have a kyverno-system validating webhook" {
   NAMES=(
     kyverno-cleanup-validating-webhook-cfg
@@ -41,6 +53,22 @@ teardown() {
 
 @test "We should have a Kyverno policies application" {
   kubectl "get application system-kyverno-policies-dev -n argocd"
+}
+
+@test "We should be able to force a resync of the kyverno application" {
+  OPTIONS="argocd.argoproj.io/sync-options=Force=true,Replace=true argocd.argoproj.io/refresh=hard"
+
+  kubectl "-n argocd annotate application system-kyverno-policies-dev ${OPTIONS} --overwrite"
+}
+
+@test "We should have a deny-default-namespace policy" {
+  kubectl "get clusterpolicy deny-default-namespace"
+}
+
+@test "We should be able to force again a resync of the kyverno application" {
+  OPTIONS="argocd.argoproj.io/sync-options=Force=true,Replace=true argocd.argoproj.io/refresh=hard"
+
+  kubectl "-n argocd annotate application system-kyverno-policies-dev ${OPTIONS} --overwrite"
 }
 
 @test "We should not be permitted to run anything in the default namespace" {

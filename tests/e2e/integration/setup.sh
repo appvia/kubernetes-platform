@@ -9,21 +9,21 @@ setup() {
 }
 
 teardown() {
-  [[ -n $BATS_TEST_COMPLETED   ]] || touch ${BATS_PARENT_TMPNAME}.skip
+  [[ -n $BATS_TEST_COMPLETED   ]] || touch "${BATS_PARENT_TMPNAME}.skip"
 }
 
 @test "Ensure we have the argocd namespace" {
-  run kubectl get namespace argocd
+  kubectl "get namespace argocd"
 }
 
 @test "Ensure we have the argocd application pods" {
-  run kubectl get pods -n argocd
+  kubectl "get pods -n argocd"
 }
 
 @test "Ensure we have the argocd application service" {
-  run kubectl get service -n argocd
+  kubectl "get service -n argocd"
 }
 
 @test "Ensure all the services are ready" {
-  run kubectl -n argocd wait --for=condition=Ready pods --all -l app.kubernetes.io/name=argocd-repo-server --timeout=90s
+  kubectl "-n argocd wait --for=condition=Ready pods --all -l app.kubernetes.io/name=argocd-repo-server --timeout=90s"
 }

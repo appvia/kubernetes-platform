@@ -57,9 +57,9 @@ runit() {
 }
 
 kubectl_argocd() {
-  runit "kubectl -n argocd $@"
+  runit "kubectl -n argocd ${*}"
 }
 
 kubectl() {
-  runit "kubectl $@"
+  runit "kubectl ${*}"
 }
