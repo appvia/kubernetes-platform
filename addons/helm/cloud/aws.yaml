@@ -17,6 +17,8 @@
       value: "true"
     - name: controllerConfig.featureGates.NLBGatewayAPI
       value: "true"
+    - name: webhookConfig.disableIngressValidation
+      value: "true"
 - feature: aws_ebs_csi_resources
   chart: aws-ebs-csi-classes
   repository: https://gitops-bridge-dev.github.io/gitops-bridge-helm-charts
