@@ -27,8 +27,8 @@ In your cluster definition, enable both the controller and the policies:
 ```yaml
 metadata:
   labels:
-    enable_kyverno: "true"              # Install Kyverno controller
-    enable_kyverno_policies: "true"     # Deploy policies
+    enable_kyverno: "true" # Install Kyverno controller
+    enable_kyverno_policies: "true" # Deploy policies
 ```
 
 ---
@@ -43,9 +43,9 @@ To turn individual policies on or off (or change enforce vs audit), edit the `po
 
 Use two files in your workloads repo to scope changes:
 
-| File | Purpose |
-|------|---------|
-| `config/kyverno_policies/all.yaml` | Defaults for **every** cluster that uses this tenant path—shared baseline. |
+| File                                          | Purpose                                                                                                                                                                  |
+| --------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `config/kyverno_policies/all.yaml`            | Defaults for **every** cluster that uses this tenant path—shared baseline.                                                                                               |
 | `config/kyverno_policies/<cluster_name>.yaml` | Overrides for **one** cluster only. `<cluster_name>` is the cluster’s `cluster_name` field from its cluster definition (for example `dev`, `prod`, `production-east-1`). |
 
 You only need to declare policies you want to change; those settings are merged over broader layers (see below). Set `enabled: false` to stop deploying a policy, or `enabled: true` to opt in (for example `restrictImageRegistries`).
@@ -96,7 +96,7 @@ globalExclusions:
   always:
     - kube-system
     - argocd
-  
+
   # Additional namespaces to exclude globally
   # (merged across all policies)
   additional:
@@ -113,14 +113,14 @@ Each policy can be individually enabled/disabled and configured:
 policies:
   denyLatestImage:
     enabled: true
-    validationFailureAction: enforce  # enforce | audit
+    validationFailureAction: enforce # enforce | audit
 
   denyNoLimits:
     enabled: true
     validationFailureAction: enforce
 
   denyDefaultNamespace:
-    enabled: false  # Disable for this environment
+    enabled: false # Disable for this environment
 ```
 
 ### Example 1: Audit Mode by Environment
@@ -189,15 +189,15 @@ policies:
         allowedNamespaces:
           - prod
           - staging
-      
+
       # Only images from GCR allowed in prod
       - name: gcr.io
         allowedNamespaces:
           - prod
-      
+
       # Docker Hub images allowed everywhere except global exclusions
       - name: docker.io
-        allowedNamespaces: []  # Empty = all except exclusions
+        allowedNamespaces: [] # Empty = all except exclusions
 ```
 
 ### Example 4: Cluster-Specific Customization
@@ -215,10 +215,10 @@ globalExclusions:
 policies:
   denyLatestImage:
     validationFailureAction: enforce
-  
+
   denyNoLabels:
     validationFailureAction: enforce
-  
+
   restrictImageRegistries:
     enabled: true
     useComplexConfig: true
@@ -241,7 +241,7 @@ policies:
   # Allow NodePort in development
   denyNodeportService:
     enabled: false
-  
+
   # Allow latest images for development
   denyLatestImage:
     enabled: false
@@ -297,12 +297,14 @@ policies:
 ```
 
 Result: The following namespaces are excluded from all policies:
+
 - `kube-system` (always)
 - `argocd` (always)
 - `cert-manager` (global)
 - `external-secrets` (global)
 
 Additional exclusions by policy:
+
 - `deny-latest-image`: Also excludes `development-tools`
 - `restrict-image-registries`: Also excludes `image-builder`
 
@@ -312,11 +314,17 @@ Additional exclusions by policy:
 
 Validate your Kyverno policy configuration before deployment:
 
-```bash
+```shell
 # Run full validation including tests
 bash scripts/validate-kyverno.sh
+```
 
+```shell
 # Generate policy documentation
 bash scripts/generate-policies.sh > docs/policies.md
 ```
+
+```
 ---
+```
+
