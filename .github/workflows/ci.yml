@@ -19,7 +19,7 @@ jobs:
     name: Validate Chart
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
       - uses: helm/chart-testing-action@v2.8.0
       - run: make validate-helm-charts
 
@@ -27,7 +27,7 @@ jobs:
     name: Validate YAML
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
       - run: pip install yamllint
       - run: make lint-yaml
 
@@ -35,7 +35,7 @@ jobs:
     name: Validate Helm Addons
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
       - run: sudo apt install -y yq
       - run: make validate-helm-addons
 
@@ -43,7 +43,7 @@ jobs:
     name: Validate Scripts
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
       - name: shellcheck
         uses: reviewdog/action-shellcheck@v1
         with:
@@ -54,7 +54,7 @@ jobs:
     name: Validate Kustomize
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
       - uses: azure/setup-kubectl@v5
       - run: make validate-kustomize
 
@@ -62,7 +62,7 @@ jobs:
     name: Validate Kyverno Policies
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
       - name: Install Kyverno CLI
         uses: kyverno/action-install-cli@v0.2.0
         with:
@@ -73,7 +73,7 @@ jobs:
     name: Validate Artifacts
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
       - uses: appvia/kubernetes-platform/.github/actions/validate-schemas@main
         with:
           clusters: |
@@ -90,7 +90,7 @@ jobs:
     name: Validate Docs Spelling
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
       - uses: reviewdog/action-misspell@v1
         with:
           github_token: ${{ secrets.github_token }}
@@ -114,7 +114,7 @@ jobs:
       run:
         working-directory: ./docs
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
       - name: Configure Git Credentials
         run: |
           git config user.name github-actions[bot]
