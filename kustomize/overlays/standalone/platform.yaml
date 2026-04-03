@@ -20,7 +20,9 @@ spec:
         ## the branch. Locally this is "OK" but it complicates the CI process i.e during e2e,
         ## where we need to validate a branch.
         values:
+          # Allows you to override the revision of the plaform repository.
           override_platform: ignore
+          # Allows you to override the revision of the tenant repository.
           override_tenant: ignore
 
   ## Sync Policy for the ApplicationSet
