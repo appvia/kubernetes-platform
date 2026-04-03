@@ -1,0 +1,21 @@
+{{- $pools := .Values.nodePools | default dict }}
+{{- range $name := keys $pools | sortAlpha }}
+{{- $pool := index $pools $name }}
+---
+apiVersion: karpenter.sh/v1
+kind: NodePool
+metadata:
+  name: {{ $name }}
+  {{- if $pool.metadata }}
+  {{- with $pool.metadata.labels }}
+  labels:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+  {{- with $pool.metadata.annotations }}
+  annotations:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+  {{- end }}
+spec:
+  {{- toYaml $pool.spec | nindent 2 }}
+{{- end }}

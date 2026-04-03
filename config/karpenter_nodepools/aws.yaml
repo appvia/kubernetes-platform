@@ -1,0 +1,97 @@
+---
+# Merged after config/karpenter_nodepools/all.yaml (and before tenant value files).
+# Override only the pools or fields you need; Helm deep-merges maps under nodePools.<poolName>.
+
+# Top-level map: Kubernetes NodePool metadata.name is the key (here: amd64, arm64).
+nodePools:
+  amd64:
+    # metadata: optional labels and annotations on the NodePool object.
+    metadata:
+      # labels: surfaced on the NodePool resource; often used for selection/reporting.
+      labels:
+        # Logical pool id used in scheduler hints and ops tooling.
+        karpenter.sh/nodepool: amd64
+        # Arbitrary class label for grouping pools (e.g. default vs GPU).
+        karpenter.sh/nodepool-class: default
+      # annotations: non-identifying metadata (versions, provider hints).
+      annotations:
+        karpenter.sh/nodepool-version: "1.2.1"
+        karpenter.sh/nodepool-provider: aws
+    # spec: Karpenter NodePool spec (template, weight, disruption, limits, etc.).
+    spec:
+      # template.spec: pod-like template for nodes this pool may create.
+      template:
+        spec:
+          # nodeClassRef: links to the EC2NodeClass / NodeClass that defines subnets, AMIs, etc.
+          nodeClassRef:
+            group: eks.amazonaws.com
+            kind: NodeClass
+            name: default
+          # requirements: AND of scheduling-style constraints on instance attributes.
+          requirements:
+            # Instance family category (e.g. compute, memory, general).
+            - key: eks.amazonaws.com/instance-category
+              operator: In
+              values: ["c", "m", "r"]
+            # vCPU count for launched instances.
+            - key: eks.amazonaws.com/instance-cpu
+              operator: In
+              values: ["4", "8", "16", "32"]
+            # Minimum hardware generation within the family.
+            - key: eks.amazonaws.com/instance-generation
+              operator: Gt
+              values: ["4"]
+            # spot, on-demand, or reserved capacity selection.
+            - key: karpenter.sh/capacity-type
+              operator: In
+              values: ["spot", "on-demand"]
+            # CPU architecture for the node.
+            - key: kubernetes.io/arch
+              operator: In
+              values: ["amd64"]
+      # weight: relative preference when multiple pools can satisfy a pod (higher = preferred).
+      weight: 100
+      # disruption: how and when nodes may be consolidated or replaced.
+      disruption:
+        # WhenEmptyOrUnderutilized: allow consolidation when idle or underused.
+        consolidationPolicy: WhenEmptyOrUnderutilized
+        # consolidateAfter: delay before consolidation actions (e.g. 30s, 10m).
+        consolidateAfter: 30s
+
+  # Same fields as amd64; typical differences are labels (e.g. graviton), arch, and weight.
+  arm64:
+    metadata:
+      labels:
+        karpenter.sh/nodepool: graviton
+        karpenter.sh/nodepool-class: default
+      annotations:
+        karpenter.sh/nodepool-version: "1.2.1"
+        karpenter.sh/nodepool-provider: aws
+    spec:
+      template:
+        spec:
+          nodeClassRef:
+            group: eks.amazonaws.com
+            kind: NodeClass
+            name: default
+          requirements:
+            - key: eks.amazonaws.com/instance-category
+              operator: In
+              values: ["c", "m", "r"]
+            - key: eks.amazonaws.com/instance-cpu
+              operator: In
+              values: ["4", "8", "16", "32"]
+            - key: eks.amazonaws.com/instance-generation
+              operator: Gt
+              values: ["4"]
+            - key: karpenter.sh/capacity-type
+              operator: In
+              values: ["spot", "on-demand"]
+            # Arch constraint for Graviton / ARM nodes.
+            - key: kubernetes.io/arch
+              operator: In
+              values: ["arm64"]
+      weight: 50
+      disruption:
+        consolidationPolicy: WhenEmptyOrUnderutilized
+        consolidateAfter: 30s

@@ -193,3 +193,12 @@
   parameters:
     - name: aws.region
       value: .metadata.annotations.region
+- feature: karpenter_nodepools
+  chart: karpenter-nodepools
+  repository: platform
+  repository_path: charts/karpenter-nodepools
+  version: "0.1.0"
+  namespace: kube-system
+  sync:
+    phase: secondary
+    wave: 35

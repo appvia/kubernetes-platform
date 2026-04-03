@@ -1,0 +1,4 @@
+# NodePools keyed by metadata.name. Platform and tenant value files merge on top (see
+# apps/system/system-helm.yaml). Empty here so CI `helm template` is valid; platform
+# defaults live in config/karpenter_nodepools/*.yaml.
+nodePools: {}
