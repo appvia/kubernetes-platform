@@ -1,0 +1,238 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Tenant Application Definition",
+  "description": "Schema for validating tenant Helm and/or Kustomize application definitions in the workloads/applications directory",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "helm": {
+      "$ref": "#/definitions/helm"
+    },
+    "kustomize": {
+      "$ref": "#/definitions/kustomize"
+    },
+    "namespace": {
+      "$ref": "#/definitions/namespace"
+    },
+    "sync": {
+      "$ref": "#/definitions/sync"
+    }
+  },
+  "anyOf": [{ "required": ["helm"] }, { "required": ["kustomize"] }],
+  "definitions": {
+    "helm": {
+      "type": "object",
+      "description": "Helm application configuration",
+      "additionalProperties": false,
+      "properties": {
+        "chart": {
+          "type": "string",
+          "description": "The chart name (for remote repos) or local chart path"
+        },
+        "path": {
+          "type": "string",
+          "description": "Path inside the repository to the chart"
+        },
+        "repository": {
+          "type": "string",
+          "description": "URL of the Helm chart repository",
+          "format": "uri"
+        },
+        "release_name": {
+          "type": "string",
+          "description": "Helm release name (defaults to folder basename if omitted)"
+        },
+        "version": {
+          "type": "string",
+          "description": "Chart version to deploy"
+        },
+        "namespace": {
+          "type": "string",
+          "description": "Target Kubernetes namespace (defaults to folder name)"
+        },
+        "values": {
+          "type": "string",
+          "description": "Inline YAML Helm values"
+        },
+        "parameters": {
+          "type": "array",
+          "description": "Helm parameters, can reference cluster metadata via dot-notation paths",
+          "items": {
+            "$ref": "#/definitions/helmParameter"
+          }
+        }
+      },
+      "required": ["version"]
+    },
+    "helmParameter": {
+      "type": "object",
+      "description": "A Helm parameter with optional cluster metadata reference",
+      "additionalProperties": false,
+      "properties": {
+        "name": {
+          "type": "string",
+          "description": "Helm parameter name (e.g., serviceAccount.annotations.test)"
+        },
+        "value": {
+          "type": "string",
+          "description": "Static value or dot-notation path to cluster metadata (e.g., metadata.labels.cluster_name)"
+        },
+        "default": {
+          "type": "string",
+          "description": "Default value used when metadata path does not resolve"
+        }
+      },
+      "required": ["name", "value"]
+    },
+    "kustomize": {
+      "type": "object",
+      "description": "Kustomize application configuration",
+      "additionalProperties": false,
+      "properties": {
+        "path": {
+          "type": "string",
+          "description": "Path to the Kustomize overlay or base directory"
+        },
+        "repository": {
+          "type": "string",
+          "description": "External Git repository URL (if not using tenant repository)"
+        },
+        "revision": {
+          "type": "string",
+          "description": "Git revision: commit SHA, branch, or tag"
+        },
+        "namespace": {
+          "type": "string",
+          "description": "Override the target namespace"
+        },
+        "commonLabels": {
+          "type": "object",
+          "description": "Labels applied to all Kustomize resources",
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
+        "commonAnnotations": {
+          "type": "object",
+          "description": "Annotations applied to all Kustomize resources",
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
+        "patches": {
+          "type": "array",
+          "description": "JSON patches to apply to Kustomize resources",
+          "items": {
+            "$ref": "#/definitions/kustomizePatch"
+          }
+        }
+      },
+      "required": ["path"]
+    },
+    "kustomizePatch": {
+      "type": "object",
+      "description": "A Kustomize patch targeting specific resources",
+      "additionalProperties": false,
+      "properties": {
+        "target": {
+          "type": "object",
+          "description": "Target resource selector",
+          "additionalProperties": false,
+          "properties": {
+            "kind": {
+              "type": "string",
+              "description": "Kubernetes resource kind (e.g., Deployment)"
+            },
+            "name": {
+              "type": "string",
+              "description": "Resource name to target"
+            }
+          },
+          "required": ["kind", "name"]
+        },
+        "patch": {
+          "type": "array",
+          "description": "JSON Patch operations (RFC 6902)",
+          "items": {
+            "$ref": "#/definitions/jsonPatchOperation"
+          }
+        }
+      },
+      "required": ["target", "patch"]
+    },
+    "jsonPatchOperation": {
+      "type": "object",
+      "description": "A single JSON Patch operation",
+      "additionalProperties": false,
+      "properties": {
+        "op": {
+          "type": "string",
+          "enum": ["add", "remove", "replace", "copy", "move", "test"],
+          "description": "JSON Patch operation type"
+        },
+        "path": {
+          "type": "string",
+          "description": "JSON Pointer path (e.g., /spec/template/spec/containers/0/image)"
+        },
+        "value": {
+          "description": "Static value for the patch"
+        },
+        "key": {
+          "type": "string",
+          "description": "Dot-notation path to cluster metadata (e.g., metadata.labels.cluster_name). Use instead of 'value' for dynamic lookups."
+        },
+        "default": {
+          "type": "string",
+          "description": "Default value when metadata key does not resolve"
+        },
+        "prefix": {
+          "type": "string",
+          "description": "Optional prefix prepended to the resolved value"
+        }
+      },
+      "required": ["op", "path"],
+      "oneOf": [{ "required": ["value"] }, { "required": ["key"] }]
+    },
+    "namespace": {
+      "type": "object",
+      "description": "Namespace configuration (primarily for system Kustomize addons)",
+      "additionalProperties": false,
+      "properties": {
+        "name": {
+          "type": "string",
+          "description": "Target namespace name"
+        },
+        "pod_security": {
+          "type": "string",
+          "enum": ["privileged", "baseline", "restricted"],
+          "description": "Pod Security Standards level for the namespace (defaults to 'restricted')"
+        }
+      },
+      "required": ["name"]
+    },
+    "sync": {
+      "type": "object",
+      "description": "Synchronization options controlling deployment ordering and retries",
+      "additionalProperties": false,
+      "properties": {
+        "phase": {
+          "type": "string",
+          "enum": ["primary", "secondary"],
+          "description": "Deployment phase for RollingSync ordering"
+        },
+        "duration": {
+          "type": "string",
+          "pattern": "^[0-9]+(s|m|h)$",
+          "description": "Retry backoff duration (e.g., 20s, 1m)",
+          "default": "20s"
+        },
+        "max_duration": {
+          "type": "string",
+          "pattern": "^[0-9]+(s|m|h)$",
+          "description": "Maximum retry duration (e.g., 3m, 5m)",
+          "default": "3m"
+        }
+      }
+    }
+  }
+}

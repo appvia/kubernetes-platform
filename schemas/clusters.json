@@ -1,0 +1,221 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Cluster Definition",
+  "description": "Schema for validating Kubernetes cluster definitions used by the GitOps platform",
+  "type": "object",
+  "required": [
+    "cluster_name",
+    "cloud_vendor",
+    "environment",
+    "tenant_repository",
+    "tenant_revision",
+    "tenant_path",
+    "platform_repository",
+    "platform_revision",
+    "platform_path",
+    "cluster_type",
+    "tenant",
+    "labels"
+  ],
+  "properties": {
+    "enabled": {
+      "type": "boolean",
+      "description": "Indicates whether the cluster is enabled (required for hub/spoke clusters)",
+      "default": true
+    },
+    "cluster_name": {
+      "type": "string",
+      "description": "The name of the tenant cluster",
+      "minLength": 1,
+      "examples": ["dev", "prod", "spoke", "hub"]
+    },
+    "cloud_vendor": {
+      "type": "string",
+      "description": "The cloud vendor to use for the tenant cluster",
+      "enum": ["aws", "azure", "azurerm", "gcp", "google", "kind"]
+    },
+    "environment": {
+      "type": "string",
+      "description": "The environment to use for the tenant cluster",
+      "minLength": 1,
+      "examples": ["release", "dev", "staging", "prod"]
+    },
+    "tenant_repository": {
+      "type": "string",
+      "description": "The repository containing the tenant configuration",
+      "format": "uri",
+      "pattern": "^https://.*\\.git$",
+      "examples": ["https://github.com/appvia/kubernetes-platform.git"]
+    },
+    "tenant_revision": {
+      "type": "string",
+      "description": "The revision to use for the tenant repository",
+      "minLength": 1,
+      "examples": ["main", "v1.0.0"]
+    },
+    "tenant_path": {
+      "type": "string",
+      "description": "The path inside the tenant repository to use for the tenant cluster",
+      "minLength": 1,
+      "examples": ["release/standalone", "release/hub"]
+    },
+    "tenant_cost_center": {
+      "type": "string",
+      "description": "The cost center to use for the tenant cluster",
+      "examples": ["123456"]
+    },
+    "platform_repository": {
+      "type": "string",
+      "description": "The repository containing the platform configuration",
+      "format": "uri",
+      "pattern": "^https://.*\\.git$",
+      "examples": ["https://github.com/appvia/kubernetes-platform.git"]
+    },
+    "platform_revision": {
+      "type": "string",
+      "description": "The revision to use for the platform repository",
+      "minLength": 1,
+      "examples": ["main", "v1.0.0"]
+    },
+    "platform_path": {
+      "type": "string",
+      "description": "The path to the kustomize overlay to use for the tenant cluster",
+      "minLength": 1,
+      "examples": ["overlays/release", "overlays/release/hub"]
+    },
+    "cluster_type": {
+      "type": "string",
+      "description": "The type of cluster",
+      "enum": ["standalone", "spoke", "hub"]
+    },
+    "tenant": {
+      "type": "string",
+      "description": "The name of the tenant",
+      "minLength": 1,
+      "examples": ["tenant", "test"]
+    },
+    "labels": {
+      "type": "object",
+      "description": "Labels to enable/disable features in the tenant cluster. Feature flags must start with 'enable_' and have values 'true' or 'false' (as strings)",
+      "additionalProperties": {
+        "type": "string",
+        "enum": ["true", "false"]
+      },
+      "examples": [
+        {
+          "enable_kube_prometheus_stack": "true",
+          "enable_cert_manager": "true",
+          "enable_cilium": "true",
+          "enable_kyverno": "true",
+          "enable_kyverno_policies": "true",
+          "enable_gateway_api": "true",
+          "metrics_server": "true"
+        }
+      ]
+    },
+    "annotations": {
+      "type": "object",
+      "description": "Additional metadata annotations about the tenant cluster",
+      "additionalProperties": true,
+      "properties": {
+        "platform.local/tenant": {
+          "type": "string",
+          "description": "The tenant name"
+        },
+        "region": {
+          "type": "string",
+          "description": "The region the cluster resides in"
+        },
+        "storage_ebs_provisioner": {
+          "type": "string",
+          "description": "The EBS provisioner to use for the storage class"
+        }
+      },
+      "examples": [
+        {
+          "platform.local/tenant": "tenant",
+          "region": "eu-west-2"
+        }
+      ]
+    },
+    "cluster_authentication": {
+      "type": ["object", "null"],
+      "description": "The authentication details for the cluster (required for spoke clusters in hub-and-spoke topology)",
+      "properties": {
+        "server": {
+          "type": "string",
+          "description": "The API server URL for the cluster",
+          "format": "uri"
+        },
+        "config": {
+          "type": "object",
+          "description": "Configuration to assume the role using the cross account role",
+          "properties": {
+            "awsAuthConfig": {
+              "type": "object",
+              "properties": {
+                "clusterName": {
+                  "type": "string",
+                  "description": "The EKS cluster name"
+                },
+                "roleARN": {
+                  "type": "string",
+                  "description": "The IAM role ARN for cross-account access",
+                  "pattern": "^arn:aws:iam::[0-9]+:role/.+$"
+                }
+              }
+            },
+            "tlsClientConfig": {
+              "type": "object",
+              "properties": {
+                "insecure": {
+                  "type": "boolean",
+                  "description": "Whether to skip TLS verification"
+                }
+              }
+            }
+          }
+        }
+      },
+      "examples": [
+        {
+          "server": "https://7EF904D8F3EFC0EA2954AA97B7444664.yl4.eu-west-2.eks.amazonaws.com",
+          "config": {
+            "awsAuthConfig": {
+              "clusterName": "spoke",
+              "roleARN": "arn:aws:iam::390403866963:role/argocd-cross-account-spoke"
+            },
+            "tlsClientConfig": {
+              "insecure": true
+            }
+          }
+        }
+      ]
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "cluster_type": {
+            "const": "hub"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "labels": {
+            "properties": {
+              "enable_argocd": {
+                "const": "true"
+              },
+              "enable_cert_manager": {
+                "const": "true"
+              }
+            }
+          }
+        }
+      }
+    }
+  ]
+}
