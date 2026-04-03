@@ -9,8 +9,8 @@
       value: .metadata.labels.cluster_name
     - name: region
       value: .metadata.annotations.region
-    - name: vpcId
-      value: .metadata.annotations.vpc_id
+    - name: vpcTags.Name
+      value: .metadata.labels.cluster_name
     - name: serviceAccount.name
       value: aws-load-balancer
     - name: controllerConfig.featureGates.ALBGatewayAPI
