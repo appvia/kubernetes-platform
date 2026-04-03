@@ -35,7 +35,7 @@ module "network" {
 ## Provision a EKS cluster for the hub
 module "eks" {
   source  = "appvia/eks/aws"
-  version = "1.2.15"
+  version = "1.2.16"
 
   access_entries         = local.access_entries
   cluster_name           = local.cluster_name
@@ -75,12 +75,16 @@ module "eks" {
   terranetes = {
     enable = false
   }
+  ## AWS Load Balancer configuration
+  aws_load_balancer = {
+    enable = true
+  }
 }
 
 ## Provision and bootstrap the platform using an tenant repository
 module "platform" {
   source  = "appvia/eks/aws//modules/platform"
-  version = "1.2.15"
+  version = "1.2.16"
 
   ## Name of the cluster
   cluster_name = local.cluster_name
