@@ -9,6 +9,12 @@ CLUSTER_TYPE="standalone"
 UNITS="tests/e2e/integration"
 GIT_COMMIT=$(git rev-parse HEAD)
 
+cleanup_skip_files() {
+  rm -f -- ".skip"
+}
+
+trap cleanup_skip_files EXIT
+
 usage() {
   cat << EOF
 Usage: $0 [options]
@@ -58,6 +64,7 @@ run_checks() {
     "${UNITS}/${CLUSTER_TYPE}/cilium.sh"
     "${UNITS}/${CLUSTER_TYPE}/cert-manager.sh"
     "${UNITS}/${CLUSTER_TYPE}/kyverno.sh"
+    "${UNITS}/${CLUSTER_TYPE}/kyverno-policies.sh"
     "${UNITS}/${CLUSTER_TYPE}/${CLOUD}/storage-classes.sh"
     "${UNITS}/${CLUSTER_TYPE}/${CLOUD}/cilium.sh"
     "${UNITS}/common/cert-manager.sh"
