@@ -10,7 +10,7 @@ The following walks through the steps required to provision a standalone cluster
 
 - Creating a feature branch for development
 - Provisioning a standalone AWS cluster for testing
-- Validating the changes in an isolated environment  
+- Validating the changes in an isolated environment
 - Submitting pull requests once testing is complete
 
 ## :octicons-rocket-24: Provision the cluster
@@ -20,8 +20,8 @@ We can use the `terraform` code to provision a EKS cluster for us, and onboard t
 1. Create a branch to commit your changes i.e `git checkout -b feat/my_change`.
 2. Open the `terraform/variables/dev.tfvars`, this can be used to provision a cluster from or copied as a template.
 3. Provision a cluster using terraform; note if you are reusing the `dev.tfvars` you can simply run `make standalone-aws`.
-    1. If using another `variables` file, you must run terraform manually via `terraform apply -var-file=variables/FILE.tfvars`
-4. Similar to the local development proccess using kind the branch the cluster is provisioned with is overrided, and uses the current branch, as oppposed one defined within the cluster definition.
+   1. If using another `variables` file, you must run terraform manually via `terraform apply -var-file=variables/FILE.tfvars`
+4. Similar to the local development process using kind the branch the cluster is provisioned with is overrides, and uses the current branch, as opposed one defined within the cluster definition.
 5. At the point we should have a EKS cluster, which we can access using `kubectl`.
 
 ```shell

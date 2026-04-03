@@ -98,7 +98,7 @@ module "platform" {
 }
 ```
 
-The creates the primary Application witn the cluster, which is used to source in the Platform and the tenant repository.
+The creates the primary Application with the cluster, which is used to source in the Platform and the tenant repository.
 
 ```shell
 $ kubectl -n argocd get applications bootstrap
@@ -148,4 +148,4 @@ system-registration   Synced        Healthy
 
 This used the [charts/cluster-registration](https://github.com/appvia/kubernetes-platform/tree/main/charts/cluster-registration), creating the ArgoCD cluster secret from the values.
 
-The bootstap also sources in the rest of the Platform application sets which are repository for providing tenant functionality as well sourcing in the platform applications themselves.
+The bootstrap also sources in the rest of the Platform application sets which are repository for providing tenant functionality as well sourcing in the platform applications themselves.
