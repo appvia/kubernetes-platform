@@ -20,7 +20,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: helm/chart-testing-action@v2.7.0
+      - uses: helm/chart-testing-action@v2.8.0
       - run: make validate-helm-charts
 
   validate-yaml:
