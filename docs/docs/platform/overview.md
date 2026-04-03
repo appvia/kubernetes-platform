@@ -15,3 +15,5 @@ This section provides an overview of the core features and capabilities of the K
 - **Developer Experience**: Streamlined workflows and tools for application teams
 
 The following sections detail the specific components and features available in the platform.
+
+For optional **Karpenter node pools**, start with [Node pools](nodepools/overview.md) (overview) or go straight to [configuration](nodepools/karpenter.md).

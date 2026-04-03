@@ -20,6 +20,9 @@ nav:
       - Hub & Spoke: getting-started/central.md
   - Platform:
       - Overview: platform/overview.md
+      - Node Pools:
+          - Overview: platform/nodepools/overview.md
+          - Karpenter: platform/nodepools/karpenter.md
       - Security:
           - Network Security:
               - Cilium: platform/security/cilium.md
