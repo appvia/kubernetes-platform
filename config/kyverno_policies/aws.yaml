@@ -1,7 +1,0 @@
-# AWS-specific Kyverno policy configuration
-# Inherits from all.yaml and applies AWS-specific policy defaults
-
-policies:
-  denyEksResources:
-    enabled: true
-    validationFailureAction: enforce
