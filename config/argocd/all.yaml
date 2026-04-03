@@ -11,12 +11,12 @@ global:
 ## Configuration for redis high availability
 redis-ha:
   ## Enable redis high availability
-  enabled: true
+  enabled: false
 
 ## Configuration for the argocd application controller
 controller:
   ## Set the number of replicas for the argocd application controller
-  replicas: 1
+  replicas: 2
 
 ## Configuration for the argocd server
 server:
