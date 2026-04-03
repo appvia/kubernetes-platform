@@ -58,7 +58,7 @@ spec:
   ## Sync Policy for the ApplicationSet
   syncPolicy:
     # Prevents ApplicationSet controller from modifying Applications. Delete is allowed.
-    applicationsSync: create-delete
+    applicationsSync: sync
 
   ## Template out an application for each of the tenant applications
   template:
