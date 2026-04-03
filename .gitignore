@@ -34,3 +34,6 @@ Thumbs.db
 
 # Bats
 .skip
+
+# mkdocs
+docs/site/
