@@ -69,6 +69,14 @@ jobs:
           release: v1.13.4
       - run: make validate-kyverno
 
+  validate-schemas:
+    name: Validate Artifacts
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: pip install check-jsonschema
+      - run: make validate-schemas
+
   validate-docs-spelling:
     name: Validate Docs Spelling
     runs-on: ubuntu-latest
@@ -90,6 +98,7 @@ jobs:
       - validate-helm-addons
       - validate-kustomize
       - validate-kyverno
+      - validate-schemas
       - validate-scripts
       - validate-yaml
     defaults:
