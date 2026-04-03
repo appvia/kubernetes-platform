@@ -88,7 +88,7 @@ data "aws_iam_policy_document" "spot_feed_bucket_policy" {
 module "spot_feed_bucket" {
   count   = var.opencost.enable_spot_feed ? 1 : 0
   source  = "terraform-aws-modules/s3-bucket/aws"
-  version = "5.11.0"
+  version = "5.12.0"
 
   bucket                                = local.spot_feed_bucket_name
   attach_deny_insecure_transport_policy = true
