@@ -57,6 +57,7 @@ runs:
       run: |
         SCHEMA="/tmp/platform-schemas/clusters.json"
         FAILED_FILES=()
+        FAILED_ERRORS=()
 
         # Build exclude patterns for find
         EXCLUDE_DIR_ARGS=()
@@ -87,20 +88,24 @@ runs:
                 echo "  SKIP  $file (no helm/kustomize key)"
                 continue
               fi
-              if check-jsonschema --schemafile "$SCHEMA" "$file" > /dev/null 2>&1; then
+              ERROR_OUTPUT=$(check-jsonschema --schemafile "$SCHEMA" "$file" 2>&1)
+              if [ $? -eq 0 ]; then
                 echo "  OK    $file"
               else
                 echo "  FAIL  $file"
                 FAILED_FILES+=("$file")
+                FAILED_ERRORS+=("$ERROR_OUTPUT")
               fi
             done < <(find "$path" -type f \( -name "*.yaml" -o -name "*.yml" \) "${EXCLUDE_DIR_ARGS[@]}" "${EXCLUDE_FILE_ARGS[@]}" -print0)
           elif [ -f "$path" ]; then
             if grep -qE '^(helm|kustomize):' "$path"; then
-              if check-jsonschema --schemafile "$SCHEMA" "$path" > /dev/null 2>&1; then
+              ERROR_OUTPUT=$(check-jsonschema --schemafile "$SCHEMA" "$path" 2>&1)
+              if [ $? -eq 0 ]; then
                 echo "  OK    $path"
               else
                 echo "  FAIL  $path"
                 FAILED_FILES+=("$path")
+                FAILED_ERRORS+=("$ERROR_OUTPUT")
               fi
             else
               echo "  SKIP  $path (no helm/kustomize key)"
@@ -116,6 +121,13 @@ runs:
           for f in "${FAILED_FILES[@]}"; do
             echo "  - $f"
           done
+          echo ""
+          echo "=== Validation Errors ==="
+          for i in "${!FAILED_FILES[@]}"; do
+            echo ""
+            echo "--- ${FAILED_FILES[$i]} ---"
+            echo "${FAILED_ERRORS[$i]}"
+          done
           exit 1
         fi
 
@@ -127,6 +139,7 @@ runs:
       run: |
         SCHEMA="/tmp/platform-schemas/applications.json"
         FAILED_FILES=()
+        FAILED_ERRORS=()
 
         # Build exclude patterns for find
         EXCLUDE_DIR_ARGS=()
@@ -157,20 +170,24 @@ runs:
                 echo "  SKIP  $file (no helm/kustomize key)"
                 continue
               fi
-              if check-jsonschema --schemafile "$SCHEMA" "$file" > /dev/null 2>&1; then
+              ERROR_OUTPUT=$(check-jsonschema --schemafile "$SCHEMA" "$file" 2>&1)
+              if [ $? -eq 0 ]; then
                 echo "  OK    $file"
               else
                 echo "  FAIL  $file"
                 FAILED_FILES+=("$file")
+                FAILED_ERRORS+=("$ERROR_OUTPUT")
               fi
             done < <(find "$path" -type f \( -name "*.yaml" -o -name "*.yml" \) "${EXCLUDE_DIR_ARGS[@]}" "${EXCLUDE_FILE_ARGS[@]}" -print0)
           elif [ -f "$path" ]; then
             if grep -qE '^(helm|kustomize):' "$path"; then
-              if check-jsonschema --schemafile "$SCHEMA" "$path" > /dev/null 2>&1; then
+              ERROR_OUTPUT=$(check-jsonschema --schemafile "$SCHEMA" "$path" 2>&1)
+              if [ $? -eq 0 ]; then
                 echo "  OK    $path"
               else
                 echo "  FAIL  $path"
                 FAILED_FILES+=("$path")
+                FAILED_ERRORS+=("$ERROR_OUTPUT")
               fi
             else
               echo "  SKIP  $path (no helm/kustomize key)"
@@ -185,6 +202,13 @@ runs:
           echo "Validation failed for the following files:"
           for f in "${FAILED_FILES[@]}"; do
             echo "  - $f"
+          done
+          echo ""
+          echo "=== Validation Errors ==="
+          for i in "${!FAILED_FILES[@]}"; do
+            echo ""
+            echo "--- ${FAILED_FILES[$i]} ---"
+            echo "${FAILED_ERRORS[$i]}"
           done
           exit 1
         fi
