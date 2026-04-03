@@ -1,0 +1,7 @@
+# Release tenant-level Kyverno policy configuration
+# Global defaults for the standalone environment
+
+policies:
+  denyEksResources:
+    enabled: false
+    validationFailureAction: audit
