@@ -26,15 +26,12 @@ jobs:
         uses: actions/checkout@v6
         with:
           fetch-depth: 0
-      - name: Previous Release
-        id: previous_release
-        run: |
-          LAST_TAG=$(git tag --sort=-version:refname | head -n 2 | tail -n 1)
-          echo "LAST_TAG=${LAST_TAG}" >> "${GITHUB_OUTPUT}"
       - name: Generate a changelog
         uses: orhun/git-cliff-action@v4
         with:
-          args: "--verbose ${{ steps.previous_release.outputs.LAST_TAG }}..HEAD"
+          # Commits since the tag before HEAD; avoids maintaining PREV_TAG..HEAD manually.
+          # https://git-cliff.org/docs/usage/args/
+          args: "--verbose --latest"
           config: .cliff/cliff.toml
           github-token: "${{ secrets.GITHUB_TOKEN }}"
         env:
