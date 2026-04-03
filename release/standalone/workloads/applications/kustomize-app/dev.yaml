@@ -1,7 +1,5 @@
 ---
 kustomize:
-  ## Human friendly description
-  description: "Deploy a test application"
   ## The path to the kustomize overlay
   path: base
   ## Optional patches to apply to the kustomize overlay
