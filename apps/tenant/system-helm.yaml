@@ -162,10 +162,10 @@ spec:
             releaseName: "{{ default .path.basenameNormalized .helm.release_name }}"
             ignoreMissingValueFiles: true
             valueFiles:
-              - "$values/{{ .path.path }}/values/{{ .metadata.labels.cluster_name }}.yaml"
-              - "$values/{{ .path.path }}/values/{{ .metadata.labels.environment }}.yaml"
-              - "$values/{{ .path.path }}/values/{{ .metadata.annotations.tenant }}.yaml"
               - "$values/{{ .path.path }}/values/all.yaml"
+              - "$values/{{ .path.path }}/values/{{ .metadata.annotations.tenant }}.yaml"
+              - "$values/{{ .path.path }}/values/{{ .metadata.labels.environment }}.yaml"
+              - "$values/{{ .path.path }}/values/{{ .metadata.labels.cluster_name }}.yaml"
             {{- if and (.helm.parameters) (gt (len .helm.parameters) 0) }}
             parameters:
             {{- range $param := .parameters }}
