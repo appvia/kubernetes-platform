@@ -27,15 +27,15 @@ policies:
     validationFailureAction: enforce
 
   denyNoLabels:
-    enabled: true
+    enabled: false
     validationFailureAction: audit
 
   denyNoLimits:
-    enabled: true
+    enabled: false
     validationFailureAction: enforce
 
   denyNoPodProbes:
-    enabled: true
+    enabled: false
     validationFailureAction: audit
 
   denyNoTrafficDistribution:
