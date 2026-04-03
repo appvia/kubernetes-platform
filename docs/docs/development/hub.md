@@ -185,4 +185,4 @@ system-registration-hub              Synced        Healthy
 system-registration-spoke            Synced        Healthy
 ```
 
-To start deploying applications to the spoke cluster, you can use the `workloads` directory in the `release/hub-aws` directory. View the [workloads](/platform/tenant/applications/) documentation for more information.
+To start deploying applications to the spoke cluster, you can use the `workloads` directory in the `release/hub-aws` directory. View the [workloads](../platform/tenant/applications.md) documentation for more information.

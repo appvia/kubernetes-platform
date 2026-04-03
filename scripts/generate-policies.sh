@@ -27,7 +27,7 @@ Kyverno is a policy engine designed for Kubernetes that validates, mutates, and 
 - Audit logging and reporting
 - Admission control webhooks
 
-The following policies are shipped by default in this platform to enforce security best practices, resource management, and operational standards.
+The following policies are shipped by default in this platform to enforce security best practices, resource management, and operational standards. Note these can be selectively enabled or disabled by [customizing the Helm values](/platform/security/kyverno/#customizing-kyverno-policies).
 
 For detailed information about Kyverno's capabilities, refer to the [official documentation](https://kyverno.io/docs/) or [policy library](https://kyverno.io/policies/).
 

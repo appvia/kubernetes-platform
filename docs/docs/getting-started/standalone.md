@@ -30,7 +30,7 @@ Using the following scenario, we have
 We need to provision a repository to house the tenant application stack, we can use the template [EKS Tenant](https://github.com/appvia/eks-tenant). Clone repository via
 
 ```shell
-gh repo clone appvia/provision-tenant
+gh repo clone appvia/kubernetes-platform-tenant
 ```
 
 The folder structure of a tenant repository is as follows.
@@ -41,10 +41,11 @@ The folder structure of a tenant repository is as follows.
 - **workloads/platform** - contains the application definitions for system applications, which run under a higher privilege.
 - **terraform** - contains the Terraform code to provision the tenant cluster/s.
 - **terraform/variables** - contains the Terraform variables for the tenant cluster/s.
+- **config** - contains configuration which can be used to override the platform defaults.
 
 ## Cluster Definitions
 
-A typical [cluster definition](https://github.com/appvia/platform-tenant/blob/main/clusters/dev.yaml) is as follows
+A typical [cluster definition](https://github.com/appvia/kubernetes-platform-tenant/blob/main/clusters/dev.yaml) is as follows
 
 ```yaml
 ## The name of the tenant cluster
@@ -75,7 +76,11 @@ labels:
   enable_external_dns: "false"
   enable_external_secrets: "true"
   enable_kro: "true"
+  # Enable the Kyverno admission controller 
   enable_kyverno: "true"
+  # Enable the default policies 
+  enable_kyverno_policies: "true"
+  # Enable the metrics service
   enable_metrics_server: "true"
 ```
 

@@ -26,6 +26,7 @@ nav:
               - Examples: platform/security/cilium-examples.md
           - Admission Policy:
               - Kyverno: platform/security/kyverno.md
+              - Policies: platform/security/kyverno-policies.md
               - Pod Security: platform/security/pod-security.md
       - Workloads:
           - Tenant Applications: platform/tenant/applications.md
@@ -58,7 +59,7 @@ extra:
       link: https://github.com/appvia
 
 ## Copyright
-copyright: Copyright &copy; 2025 Rohith Jayawardene
+copyright: Copyright &copy; 2026 Appvia Ltd.
 
 markdown_extensions:
   - attr_list
