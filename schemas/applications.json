@@ -16,6 +16,9 @@
     },
     "sync": {
       "$ref": "#/definitions/sync"
+    },
+    "ignoreDifferences": {
+      "$ref": "#/definitions/ignoreDifferences"
     }
   },
   "anyOf": [{ "required": ["helm"] }, { "required": ["kustomize"] }],
@@ -233,6 +236,58 @@
           "default": "3m"
         }
       }
+    },
+    "ignoreDifferences": {
+      "type": "array",
+      "description": "Argo CD Application spec.ignoreDifferences; see https://argo-cd.readthedocs.io/en/stable/user-guide/diffing/",
+      "items": {
+        "$ref": "#/definitions/ignoreDifferenceEntry"
+      }
+    },
+    "ignoreDifferenceEntry": {
+      "type": "object",
+      "description": "Single resource diff ignore rule (mirrors Argo CD Application ignoreDifferences item)",
+      "additionalProperties": false,
+      "properties": {
+        "group": {
+          "type": "string",
+          "description": "API group without version (empty string for core); use '*' to match all groups"
+        },
+        "kind": {
+          "type": "string",
+          "description": "Resource kind (e.g., Deployment); use '*' for all kinds"
+        },
+        "name": {
+          "type": "string",
+          "description": "Optional resource name to narrow the rule"
+        },
+        "namespace": {
+          "type": "string",
+          "description": "Optional resource namespace to narrow the rule"
+        },
+        "jsonPointers": {
+          "type": "array",
+          "description": "RFC 6902 JSON Pointer paths to ignore (escape '/' in path segments as ~1)",
+          "items": {
+            "type": "string"
+          }
+        },
+        "jqPathExpressions": {
+          "type": "array",
+          "description": "JQ path expressions identifying fields to ignore",
+          "items": {
+            "type": "string"
+          }
+        },
+        "managedFieldsManagers": {
+          "type": "array",
+          "description": "Ignore differences on fields owned by these managedFields managers",
+          "items": {
+            "type": "string"
+          }
+        }
+      },
+      "required": ["kind"]
     }
   }
 }
