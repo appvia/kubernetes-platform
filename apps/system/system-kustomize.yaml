@@ -128,6 +128,37 @@ spec:
   templatePatch: |
     {{- $context := toJson . | fromJson }}
     spec:
+      {{- if and .ignoreDifferences (gt (len .ignoreDifferences) 0) }}
+      ignoreDifferences:
+      {{- range $e := .ignoreDifferences }}
+        - group: {{ default "" $e.group | quote }}
+          kind: {{ $e.kind | quote }}
+          {{- if $e.name }}
+          name: {{ $e.name | quote }}
+          {{- end }}
+          {{- if $e.namespace }}
+          namespace: {{ $e.namespace | quote }}
+          {{- end }}
+          {{- if $e.jsonPointers }}
+          jsonPointers:
+          {{- range $p := $e.jsonPointers }}
+            - {{ $p | quote }}
+          {{- end }}
+          {{- end }}
+          {{- if $e.jqPathExpressions }}
+          jqPathExpressions:
+          {{- range $p := $e.jqPathExpressions }}
+            - {{ $p | quote }}
+          {{- end }}
+          {{- end }}
+          {{- if $e.managedFieldsManagers }}
+          managedFieldsManagers:
+          {{- range $m := $e.managedFieldsManagers }}
+            - {{ $m | quote }}
+          {{- end }}
+          {{- end }}
+      {{- end }}
+      {{- end }}
       source:
         ## If a kustomize.repository we don't use the .path.path
         {{- if .kustomize.repository }}
