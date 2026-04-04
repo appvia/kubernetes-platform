@@ -1,6 +1,6 @@
 # :material-application-cog: Tenant ArgoCD Application Sets
 
-All tenant application sets can be found in the [apps/tenant](https://github.com/gambol99/kubernetes-platform/tree/main/apps/tenant) directory. Similar to the system application sets, these are responsible for sourcing the tenant application definitions and applying kustomize patches where required. Indeed the application definition for applications are almost identical.
+All tenant application sets can be found in the [apps/tenant](https://github.com/appvia/kubernetes-platform/tree/main/apps/tenant) directory. Similar to the system application sets, these are responsible for sourcing the tenant application definitions and applying kustomize patches where required. Indeed the application definition for applications are almost identical.
 
 ## :material-projector-screen-outline: ArgoCD Projects
 
@@ -8,7 +8,7 @@ While the bulk of the system applications run under the `default` ArgoCD project
 
 ## :material-application-array-outline: Tenant Helm Application Set
 
-The [tenant helm application](https://github.com/gambol99/kubernetes-platform/blob/main/apps/tenant/apps-helm.yaml) set is similar to the system helm application set, but is responsible for installing the tenant applications. The tenant applications are sourced from the tenant repository.
+The [tenant helm application](https://github.com/appvia/kubernetes-platform/blob/main/apps/tenant/apps-helm.yaml) set is similar to the system helm application set, but is responsible for installing the tenant applications. The tenant applications are sourced from the tenant repository.
 
 Applications for tenants can be deployed using a GitOps approach directly from the tenant repository. The workloads folder contains two main directories:
 
@@ -59,7 +59,7 @@ In order to use helm values, you need to create a `values.yaml` file.
 
 ## :material-application-array-outline: Tenant Kustomize Application Set
 
-The [tenant kustomize application](https://github.com/gambol99/kubernetes-platform/blob/main/apps/tenant/apps-kustomize.yaml) set is responsible for provisioning any kustomize related functionality from the tenant. The application set use's a [git generator](https://argo-cd.readthedocs.io/en/stable/operator-manual/applicationset/Generators-Git/) to source all the `kustomize.yml` from the [workloads](
+The [tenant kustomize application](https://github.com/appvia/kubernetes-platform/blob/main/apps/tenant/apps-kustomize.yaml) set is responsible for provisioning any kustomize related functionality from the tenant. The application set use's a [git generator](https://argo-cd.readthedocs.io/en/stable/operator-manual/applicationset/Generators-Git/) to source all the `kustomize.yml` from the [workloads](
 
 Kustomize applications are defined in a similar manner to helm applications, with the following fields:
 
@@ -102,6 +102,6 @@ kustomize:
 
 The platform will also deploy an additional applications for tenant system applications i.e. applications created in the `workspace/system` folder. These applications are deployed under the `tenant-system` ArgoCD project, which has elevated permissions. Note, these application sets are identical the above but are deployed under a different project, the only reason they are duplicated is at present ArgoCD does not permit to template the project name.
 
-:material-arrow-right-bold-circle-outline: [tenant-system-helm](https://github.com/gambol99/kubernetes-platform/blob/main/apps/tenant/system-helm.yaml) - Deploys system applications from the tenant repository.
+:material-arrow-right-bold-circle-outline: [tenant-system-helm](https://github.com/appvia/kubernetes-platform/blob/main/apps/tenant/system-helm.yaml) - Deploys system applications from the tenant repository.
 
-:material-arrow-right-bold-circle-outline: [tenant-system-kustomize](https://github.com/gambol99/kubernetes-platform/blob/main/apps/tenant/tenant-system-kustomize.yaml) - Deploys system applications from the tenant repository using kustomize.
+:material-arrow-right-bold-circle-outline: [tenant-system-kustomize](https://github.com/appvia/kubernetes-platform/blob/main/apps/tenant/tenant-system-kustomize.yaml) - Deploys system applications from the tenant repository using kustomize.

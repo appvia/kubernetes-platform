@@ -72,6 +72,30 @@ Other keys on those definitions (chart source, namespace, patches, and so on) ar
 
 Disable an addon by removing the label or setting it to a value other than `"true"` (the ApplicationSets expect `"true"` for installation).
 
+## Customizing Helm addons from the tenant repository
+
+**Helm** addons merge values from the platform repository and from your **tenant** repository. The merge order is fixed in the system Helm ApplicationSet: platform defaults are loaded first, then tenant files in increasing specificity. In Helm, **later** value files win for the same keys, so tenant files override platform defaults when both set a value.
+
+Use the addon’s **`feature`** name as the directory (the same identifier that appears in `enable_<feature>` on the cluster definition—for example `cert_manager` or `kyverno_policies`). Under your cluster definition’s `tenant_path`, create:
+
+| File | Purpose |
+| ---- | ------- |
+| `config/<feature>/all.yaml` | Tenant-wide defaults for that addon across clusters that share this tenant layout |
+| `config/<feature>/<cloud_vendor>.yaml` | Overrides for one cloud (matches `cloud_vendor` in the cluster definition, for example `aws` or `kind`) |
+| `config/<feature>/<cluster_name>.yaml` | Overrides for a single cluster (matches `cluster_name`) |
+
+Example paths when `tenant_path` is `clusters/prod`:
+
+- `clusters/prod/config/cert_manager/all.yaml`
+- `clusters/prod/config/cert_manager/aws.yaml`
+- `clusters/prod/config/cert_manager/dev.yaml`
+
+Missing files are ignored (`ignoreMissingValueFiles: true`), so you only add the layers you need.
+
+Platform-side defaults for the same feature live in this repository under [`config/<feature>/`](https://github.com/appvia/kubernetes-platform/tree/main/config) (`all.yaml` and optional `<cloud_vendor>.yaml`). Tenant files extend or replace those defaults without forking the platform chart definitions.
+
+**Kustomize** addons do not use this `config/<feature>/` values mechanism; they are tailored with patches and metadata in their addon definitions and cluster context. For more detail on multi-source Helm wiring, see [System Application Sets](../architecture/system-appsets.md).
+
 ## Cloud and overlay considerations
 
 Some addons only appear in certain platform layouts (for example AWS-oriented Helm files under `addons/helm/cloud/`). Your cluster’s `cloud_vendor`, `platform_path`, and the platform overlay still determine which generators run and which addon files are visible. If an addon does not apply to your cloud or topology, enabling its feature flag will have no effect until the matching definitions are included in your bootstrap overlay.

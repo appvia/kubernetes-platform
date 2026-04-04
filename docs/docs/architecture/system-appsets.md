@@ -12,7 +12,7 @@ The platform application sets are the entrypoint application sets for the standa
 
 ### :material-application-array-outline: Cluster Registration Application Set
 
-The [system-registration](https://github.com/appvia/kubernetes-platform/tree/main/apps/registration/standalone) and the [hub version](https://github.com/gambol99/kubernetes-platform/tree/main/apps/registration/hub) are responsible for sourcing the cluster definitions from the tenant repository and producing a cluster secret, using the [charts/cluster-registration](https://github.com/gambol99/kubernetes-platform/tree/main/charts/cluster-registration) helm chart.
+The [system-registration](https://github.com/appvia/kubernetes-platform/tree/main/apps/registration/standalone) and the [hub version](https://github.com/appvia/kubernetes-platform/tree/main/apps/registration/hub) are responsible for sourcing the cluster definitions from the tenant repository and producing a cluster secret, using the [charts/cluster-registration](https://github.com/appvia/kubernetes-platform/tree/main/charts/cluster-registration) helm chart.
 
 ### :material-application-array-outline: System Helm Application Set
 
@@ -28,7 +28,7 @@ generators:
             repoURL: PLATFORM_REPO
             revision: PLATFORM_REVISION
             files:
-              - path: "addons/helm/cloud/{{ .cloud_vendor }}/*.yaml"
+              - path: "addons/helm/cloud/**/*.yaml"
               - path: "addons/helm/*.yaml"
           selector:
             matchExpressions:
@@ -66,50 +66,58 @@ The [addons](https://github.com/appvia/kubernetes-platform/tree/main/addons) are
 
 Assuming the cluster selected has a label `enable_metrics_server=true` and `enable_volcano=true` in the cluster definition, the helm applications will be installed.
 
-Currently we use the following helm values locations as the source of values to the chart.
+Each generated Application uses **three sources**: the Helm chart (first source), the **platform** repository as `ref: values` (so `$values/...` paths resolve), and the **tenant** repository as `ref: tenant` (so `$tenant/...` paths resolve). The chart source is templated in two ways:
 
-```YAML
+- When the addon definition sets `repository: platform`, the chart is loaded from the platform repository (`repoURL` / `targetRevision` from the cluster definition) using `path` (and no `chart` field).
+- Otherwise, the chart is loaded from the external Helm repository (`repository`, `version`, `chart`, optional `repository_path`).
+
+`valueFiles` are always attached to the **first** source. They are listed below in merge order. Argo CD Helm merges these files in order; **later files override earlier ones** for the same keys.
+
+```yaml
 sources:
-  - repoURL: "{{ .repository }}"
-    targetRevision: "{{ .version }}"
-    chart: '{{ default "" .chart }}'
-    path: '{{ default "" .repository_path }}'
+  # First source: chart from platform path OR external Helm repo (see templatePatch in system-helm.yaml)
+  - repoURL: "<platform or chart repository>"
+    targetRevision: "<revision>"
+    # chart: "<chart>"   # present for external repos; omitted when repository is platform
+    path: "<optional path to chart in repo>"
     helm:
       releaseName: "{{ normalize (default .feature .release_name) }}"
       ignoreMissingValueFiles: true
       valueFiles:
-        - "$tenant/{{ .metadata.annotations.tenant_path }}/config/{{ .chart }}/all.yaml"
         - "$values/config/{{ .feature }}/all.yaml"
-
+        - "$values/config/{{ .feature }}/{{ .metadata.labels.cloud_vendor }}.yaml"
+        - "$tenant/{{ .metadata.annotations.tenant_path }}/config/{{ .feature }}/all.yaml"
+        - "$tenant/{{ .metadata.annotations.tenant_path }}/config/{{ .feature }}/{{ .metadata.labels.cloud_vendor }}.yaml"
+        - "$tenant/{{ .metadata.annotations.tenant_path }}/config/{{ .feature }}/{{ .metadata.labels.cluster_name }}.yaml"
   - repoURL: "{{ .metadata.annotations.platform_repository }}"
     targetRevision: "{{ .metadata.annotations.platform_revision }}"
     ref: values
-
   - repoURL: "{{ .metadata.annotations.tenant_repository }}"
     targetRevision: "{{ .metadata.annotations.tenant_revision }}"
     ref: tenant
 ```
 
-!!! note "Tenant Overrides"
+!!! note "Tenant overrides"
 
-    Note from the above configuration it is technically possible to override the values for the helm chart by adding a `all.yaml` file to the tenant repository, under a similar folder structure i.e. config/metrics-server/all.yaml.
+    Tenant value files live under `<tenant_path>/config/<feature>/` in the tenant repository, using the addon **`feature`** name (the same identifier as in `enable_<feature>`), not necessarily the Helm chart name—for example `config/cert_manager/all.yaml`.
 
 ---
 
 #### :material-cog: Helm Values and Configuration
 
-The configuration and helm values for the helm add-on's can be found in the [config](https://github.com/appvia/kubernetes-platform/tree/main/config) directory. Simply create a folder named after the chart name i.e `config/metrics-server` and drop an `all.yaml` file in the folder.
+Default Helm values for addons shipped with the platform live in this repository under [config/](https://github.com/appvia/kubernetes-platform/tree/main/config), in directories named after the addon **`feature`** (for example `config/cert_manager/all.yaml`). Tenant repositories mirror that layout under their `tenant_path` to override or extend defaults.
 
-By default the helm values will be sourced in the following order:
+**Merge order** (first file is the base; each subsequent file overrides overlapping keys):
 
-```yaml
-- "$tenant/{{ .metadata.annotations.tenant_path }}/config/{{ .feature }}/{{ .metadata.labels.cloud_vendor }}.yaml"
-- "$tenant/{{ .metadata.annotations.tenant_path }}/config/{{ .feature }}/all.yaml"
-- "$values/config/{{ .feature }}/{{ .metadata.labels.cloud_vendor }}.yaml"
-- "$values/config/{{ .feature }}/all.yaml"
-```
+1. `$values/config/<feature>/all.yaml` (platform)
+2. `$values/config/<feature>/<cloud_vendor>.yaml` (platform)
+3. `$tenant/<tenant_path>/config/<feature>/all.yaml`
+4. `$tenant/<tenant_path>/config/<feature>/<cloud_vendor>.yaml`
+5. `$tenant/<tenant_path>/config/<feature>/<cluster_name>.yaml`
 
-You can find the application set [here](https://github.com/appvia/kubernetes-platform/blob/main/apps/system/system-helm.yaml)
+So the strongest tenant override is the cluster-specific file; missing files are skipped because `ignoreMissingValueFiles` is true.
+
+The canonical template is in [apps/system/system-helm.yaml](https://github.com/appvia/kubernetes-platform/blob/main/apps/system/system-helm.yaml).
 
 Another way to pass values to the Helm applications is via `parameters` i.e
 
@@ -123,20 +131,19 @@ Another way to pass values to the Helm applications is via `parameters` i.e
     - name: serviceAccount.annotations.test
       value: default_value
 
-    # Reference metadata from the cluster definition
+    # Reference metadata from the cluster definition (leading dot triggers lookup)
     - name: serviceAccount.annotations.test2
-      value: metadata.labels.cloud_vendor
+      value: .metadata.labels.cloud_vendor
 ```
 
-#### Helm Values Key Points
+#### Helm values key points
 
-- The order of precedence is tenant overrides, cloud specific (i.e. `kind`, `aws`), followed by the default values in `all.yaml`.
-- Next comes platform default values, again following cloud vendor, then defaults; these are located in the `config/<FEATURE>` directory.
-- Tenant currently have the option to override the platform default, though we're considering dropping this feature in future releases, or at the very least making an optional in the cluster definition.
+- Value file paths use **`feature`**, not the chart name, unless they happen to be the same in a given addon definition.
+- After value files are merged, the addon definition may also supply inline Helm `values` and `parameters` (including values pulled from cluster metadata); those are applied as part of the same Helm source.
 
 ## :material-application-array-outline: System Kustomize Application Set
 
-The [system-kustomize](https://github.com/appvia/kubernetes-platform/blob/main/apps/system/system-kustomize.yaml) is responsible for provisioning any kustomize related functionality from the system. The application set use's a [git generator](https://argo-cd.readthedocs.io/en/stable/operator-manual/applicationset/Generators-Git/) to source all the `kustomize.yml` from the [addons/kustomize](https://github.com/gambol99/kubernetes-platform/tree/main/addons/kustomize) directory.
+The [system-kustomize](https://github.com/appvia/kubernetes-platform/blob/main/apps/system/system-kustomize.yaml) is responsible for provisioning any kustomize related functionality from the system. The application set use's a [git generator](https://argo-cd.readthedocs.io/en/stable/operator-manual/applicationset/Generators-Git/) to source all the `kustomize.yaml` files from the [addons/kustomize](https://github.com/appvia/kubernetes-platform/tree/main/addons/kustomize) directory.
 
 Kustomize applications are defined in a similar manner to helm applications, with the following fields:
 

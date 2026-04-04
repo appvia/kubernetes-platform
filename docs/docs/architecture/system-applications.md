@@ -39,32 +39,19 @@ The following fields are supported:
 
 All the fields are optional except for `path` and `chart`, as they are dependent on if the repository is a helm repository or a git repository.
 
-The values files for the Helm applications can be found in `config/NAME/all.yaml`
+Default Helm values for each addon **`feature`** live in the platform repository under `config/<feature>/` (for example `config/cert_manager/all.yaml`). The tenant repository can add matching paths under `<tenant_path>/config/<feature>/` to override or extend those defaults.
 
-## Tenant Overrides
+## Tenant overrides
 
-Note, while not advisable the tenant repository can override or add to additional values to the base application
+The [system-helm](https://github.com/appvia/kubernetes-platform/blob/main/apps/system/system-helm.yaml) ApplicationSet uses three sources (`chart` + `ref: values` + `ref: tenant`) and merges value files in list order; **later** files override **earlier** ones. The `valueFiles` on the chart source are:
 
 ```yaml
-sources:
-  - repoURL: "{{ .repository }}"
-    targetRevision: "{{ .version }}"
-    chart: '{{ default "" .chart }}'
-    path: '{{ default "" .repository_path }}'
-    helm:
-      releaseName: "{{ default .chart .release_name }}"
-      ignoreMissingValueFiles: true
-      valueFiles:
-        - "$tenant/{{ .tenant_path }}/config/{{ .feature }}/all.yaml"
-        - "$values/config/{{ .feature }}/all.yaml"
-
-  - repoURL: "{{ .metadata.annotations.platform_repository }}"
-    targetRevision: "{{ .metadata.annotations.platform_revision }}"
-    ref: values
-
-  - repoURL: "{{ .metadata.annotations.tenant_repository }}"
-    targetRevision: "{{ .metadata.annotations.tenant_revision }}"
-    ref: tenant
+valueFiles:
+  - "$values/config/{{ .feature }}/all.yaml"
+  - "$values/config/{{ .feature }}/{{ .metadata.labels.cloud_vendor }}.yaml"
+  - "$tenant/{{ .metadata.annotations.tenant_path }}/config/{{ .feature }}/all.yaml"
+  - "$tenant/{{ .metadata.annotations.tenant_path }}/config/{{ .feature }}/{{ .metadata.labels.cloud_vendor }}.yaml"
+  - "$tenant/{{ .metadata.annotations.tenant_path }}/config/{{ .feature }}/{{ .metadata.labels.cluster_name }}.yaml"
 ```
 
-As you can see from the Application Set, the tenant repository is also sourced in, and values from any `config/NAME/all.yaml` will take precedence over the platform version.
+So tenant cluster-specific and cloud-specific files override tenant `all.yaml`, which overrides platform defaults. See [System Application Sets](system-appsets.md) for the full template and behavior.
