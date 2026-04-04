@@ -179,7 +179,7 @@ spec:
                     path: {{ $patch.path }}
                     {{- if not (hasPrefix "." $patch.key) }}
                     {{- $value = printf "%s%s" $patch.prefix $value }}
-                    value: "{{ $patch.value }}"
+                    value: "{{ default $patch.default $value }}"
                     {{- else }}
                     {{- $params := splitList "." (trimPrefix "." $patch.key) }}
                     {{- if eq (len $params) 1 }}
