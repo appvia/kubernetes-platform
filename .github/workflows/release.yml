@@ -33,7 +33,7 @@ jobs:
           # https://git-cliff.org/docs/usage/args/
           args: "--verbose --latest"
           config: .cliff/cliff.toml
-          github-token: "${{ secrets.GITHUB_TOKEN }}"
+          github_token: "${{ secrets.GITHUB_TOKEN }}"
         env:
           OUTPUT: CHANGELOG.md
           GITHUB_REPO: ${{ github.repository }}
