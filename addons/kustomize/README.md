@@ -48,7 +48,7 @@ kustomize:
         - op: replace
           path: /spec/validationFailureAction
           ## Reference a value from the cluster definition
-          key: metadata.annotations.validation_mode
+          key: .metadata.annotations.validation_mode
           ## Default value if the key is not found
           default: "audit"
           ## Optional prefix to prepend to the resolved value
@@ -85,28 +85,28 @@ sync:
 
 ### `kustomize` Section
 
-| Field               | Type   | Required | Description                                                         |
-| ------------------- | ------ | -------- | ------------------------------------------------------------------- |
-| `description`       | string | No       | Human-friendly description of the addon                             |
-| `feature`           | string | Yes      | Feature name; enabled by label `enable_<feature>: "true"`           |
-| `path`              | string | Yes      | Path to the kustomize overlay relative to the addon directory       |
-| `repository`        | string | No       | Git URL of external kustomize repository                            |
-| `revision`          | string | No       | Git branch, tag, or commit SHA for external repository              |
-| `patches`           | array  | No       | Kustomize patches to apply                                          |
-| `commonLabels`      | object | No       | Labels to apply to all resources                                    |
-| `commonAnnotations` | object | No       | Annotations to apply to all resources                               |
+| Field               | Type   | Required | Description                                                   |
+| ------------------- | ------ | -------- | ------------------------------------------------------------- |
+| `description`       | string | No       | Human-friendly description of the addon                       |
+| `feature`           | string | Yes      | Feature name; enabled by label `enable_<feature>: "true"`     |
+| `path`              | string | Yes      | Path to the kustomize overlay relative to the addon directory |
+| `repository`        | string | No       | Git URL of external kustomize repository                      |
+| `revision`          | string | No       | Git branch, tag, or commit SHA for external repository        |
+| `patches`           | array  | No       | Kustomize patches to apply                                    |
+| `commonLabels`      | object | No       | Labels to apply to all resources                              |
+| `commonAnnotations` | object | No       | Annotations to apply to all resources                         |
 
 ### `patches` Item Reference
 
-| Field           | Type   | Required | Description                                                                     |
-| --------------- | ------ | -------- | ------------------------------------------------------------------------------- |
-| `target.kind`   | string | Yes      | Kubernetes resource kind to patch (e.g., Deployment, ClusterPolicy)             |
-| `target.name`   | string | No       | Name of the specific resource to patch                                          |
-| `patch.op`      | string | Yes      | JSON Patch operation: `add`, `replace`, `remove`                                |
-| `patch.path`    | string | Yes      | JSON Pointer path to the field (e.g., `/spec/validationFailureAction`)          |
-| `patch.key`     | string | No       | Cluster definition path to lookup a value (e.g., `metadata.annotations.region`) |
-| `patch.default` | string | No       | Default value if the key is not found or empty                                  |
-| `patch.prefix`  | string | No       | String prefix to prepend to the resolved value                                  |
+| Field           | Type   | Required | Description                                                                      |
+| --------------- | ------ | -------- | -------------------------------------------------------------------------------- |
+| `target.kind`   | string | Yes      | Kubernetes resource kind to patch (e.g., Deployment, ClusterPolicy)              |
+| `target.name`   | string | No       | Name of the specific resource to patch                                           |
+| `patch.op`      | string | Yes      | JSON Patch operation: `add`, `replace`, `remove`                                 |
+| `patch.path`    | string | Yes      | JSON Pointer path to the field (e.g., `/spec/validationFailureAction`)           |
+| `patch.key`     | string | No       | Cluster definition path to lookup a value (e.g., `.metadata.annotations.region`) |
+| `patch.default` | string | No       | Default value if the key is not found or empty                                   |
+| `patch.prefix`  | string | No       | String prefix to prepend to the resolved value                                   |
 
 ### `namespace` Section
 
@@ -137,7 +137,7 @@ kustomize:
       patch:
         - op: replace
           path: /spec/validationFailureAction
-          key: metadata.annotations.validation_mode
+          key: .metadata.annotations.validation_mode
           default: "audit"
 
 namespace:
@@ -160,11 +160,11 @@ patches:
     patch:
       - op: replace
         path: /data/region
-        key: metadata.annotations.region
+        key: .metadata.annotations.region
         default: "us-east-1"
 ```
 
-This will resolve the value from the cluster definition at `metadata.annotations.region`, or use `"us-east-1"` if not found.
+This will resolve the value from the cluster definition at `.metadata.annotations.region`, or use `"us-east-1"` if not found.
 
 Multi-level paths are supported:
 

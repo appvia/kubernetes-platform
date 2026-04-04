@@ -76,13 +76,13 @@ kustomize:
         - op: replace
           path: /spec/template/spec/containers/0/image
           ## This value is looked from the cluster definition.
-          key: metadata.annotations.image
+          key: .metadata.annotations.image
           ## This is the default value to use if the value is not found.
           default: nginx:1.21.3
         - op: replace
           path: /spec/template/spec/containers/0/version
           ## This value is looked from the cluster definition.
-          key: metadata.annotations.version
+          key: .metadata.annotations.version
           ## This is the default value to use if the value is not found.
           default: "1.21.3"
 ```

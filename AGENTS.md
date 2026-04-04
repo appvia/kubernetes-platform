@@ -175,7 +175,7 @@ kustomize:
       patch:
         - op: replace
           path: /spec/provider/aws/region
-          key: metadata.annotations.region
+          key: .metadata.annotations.region
           default: unknown
 
 namespace:
@@ -294,8 +294,8 @@ with `enable_kyverno_policies` (separate from `enable_kyverno` which installs th
 ```yaml
 metadata:
   labels:
-    enable_kyverno: "true"           # Install Kyverno controller
-    enable_kyverno_policies: "true"  # Deploy policies
+    enable_kyverno: "true" # Install Kyverno controller
+    enable_kyverno_policies: "true" # Deploy policies
 ```
 
 **Customize policies at tenant level:**
@@ -340,7 +340,7 @@ policies:
           - prod
           - staging
       - name: docker.io
-        allowedNamespaces: []  # Empty = allowed in all namespaces (minus global exclusions)
+        allowedNamespaces: [] # Empty = allowed in all namespaces (minus global exclusions)
       - name: ecr.aws
         allowedNamespaces:
           - prod
