@@ -78,10 +78,6 @@ test:
 	@$(MAKE) lint
 	@$(MAKE) test-templates
 
-test-templates:
-	@echo "--> Testing ApplicationSet templatePatch rendering (Ginkgo)..."
-	@cd tests/templates && go test ./... -count=1
-
 validate-templates: generate-template-fixtures
 	@echo "--> Testing ApplicationSet templatePatch rendering (Ginkgo)..."
 	@cd tests/templates && go test ./... -count=1
@@ -105,6 +101,7 @@ validate:
 	@$(MAKE) validate-actions
 	@$(MAKE) validate-cluster-definitions
 	@$(MAKE) validate-helm-addons
+	@$(MAKE) validate-kustomize-addons
 	@$(MAKE) validate-kustomize
 	@$(MAKE) validate-helm-charts
 	@$(MAKE) validate-kyverno
@@ -120,7 +117,15 @@ validate-actions:
 
 validate-helm-addons:
 	@echo "--> Validating the helm addons..."
-	@scripts/validate-helm-addons.sh
+	@scripts/validate-addon-schemas.sh --helm
+
+validate-kustomize-addons:
+	@echo "--> Validating the kustomize addons..."
+	@scripts/validate-addon-schemas.sh --kustomize
+
+generate-addons-docs:
+	@echo "--> Generating addons catalog documentation..."
+	@scripts/generate-addons.sh
 
 validate-kyverno:
 	@echo "--> Validating the Kyverno policies..."
