@@ -58,8 +58,16 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v6
-      - run: sudo apt install -y yq
+      - run: pip install check-jsonschema
       - run: make validate-helm-addons
+
+  validate-kustomize-addons:
+    name: Validate Kustomize Addons
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - run: pip install check-jsonschema
+      - run: make validate-kustomize-addons
 
   validate-scripts:
     name: Validate Scripts
@@ -90,6 +98,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v6
+      - run: pip install check-jsonschema
       - uses: azure/setup-kubectl@v5
       - run: make validate-kustomize
 
