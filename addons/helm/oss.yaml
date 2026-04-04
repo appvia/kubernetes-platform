@@ -51,6 +51,7 @@
   namespace: keda-system
 - feature: kro
   repository: oci://registry.k8s.io/kro/charts/kro
+  repository_path: .
   version: "0.9.1"
   namespace: kro-system
 - feature: kube_prometheus_stack
