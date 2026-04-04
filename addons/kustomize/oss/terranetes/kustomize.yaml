@@ -2,6 +2,8 @@
 kustomize:
   ## Human friendly description
   description: Used to provision the various addons for the Terranetes platform
+  category: platform
+  link: https://terranetes.appvia.io/
   ## The feature flag used to enable the feature
   feature: terranetes
   ## The path to the kustomize overlay

@@ -2,6 +2,9 @@
 kustomize:
   ## The features to enable in the tenant cluster
   feature: gateway_api
+  category: networking
+  description: Gateway API CRDs for ingress and mesh-style routing.
+  link: https://gateway-api.sigs.k8s.io/
   ## The path to the kustomize overlay
   path: config/crd
   ## The location of an external kustomize repository (optional)

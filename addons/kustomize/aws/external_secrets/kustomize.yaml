@@ -2,6 +2,9 @@
 kustomize:
   ## The feature label
   feature: external_secrets
+  category: security
+  description: AWS ClusterSecretStore and related wiring for External Secrets.
+  link: https://external-secrets.io/
   ## The entrypoint for the kustomize
   path: base
   ## The patches to apply to the kustomize

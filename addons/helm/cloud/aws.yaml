@@ -1,5 +1,8 @@
 ---
 - feature: aws_load_balancer
+  category: networking
+  description: AWS Load Balancer Controller for ALB/NLB and Gateway API integration.
+  link: https://kubernetes-sigs.github.io/aws-load-balancer-controller/
   chart: aws-load-balancer-controller
   repository: https://aws.github.io/eks-charts
   version: "3.1.0"
@@ -18,86 +21,134 @@
     - name: controllerConfig.featureGates.NLBGatewayAPI
       value: "true"
 - feature: aws_ebs_csi_resources
+  category: storage
+  description: Default StorageClass and related helpers for AWS EBS CSI volumes.
+  link: https://github.com/gitops-bridge-dev/gitops-bridge
   chart: aws-ebs-csi-classes
   repository: https://gitops-bridge-dev.github.io/gitops-bridge-helm-charts
   version: "1.0.0"
   namespace: kube-system
 - feature: aws_cloudwatch_metrics
+  category: observability
+  description: CloudWatch agent for cluster and node metrics on EKS.
+  link: https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/ContainerInsights.html
   chart: aws-cloudwatch-metrics
   repository: https://aws.github.io/eks-charts
   version: "0.0.11"
   namespace: kube-system
 - feature: aws_efs_csi_driver
+  category: storage
+  description: CSI driver for Amazon EFS file systems.
+  link: https://github.com/kubernetes-sigs/aws-efs-csi-driver
   chart: aws-efs-csi-driver
   repository: https://kubernetes-sigs.github.io/aws-efs-csi-driver
   version: "3.4.1"
   namespace: kube-system
 - feature: aws_fsx_csi_driver
+  category: storage
+  description: CSI driver for Amazon FSx for Lustre file systems.
+  link: https://github.com/kubernetes-sigs/aws-fsx-csi-driver
   chart: aws-fsx-csi-driver
   repository: https://kubernetes-sigs.github.io/aws-fsx-csi-driver
   version: "1.15.0"
   namespace: kube-system
 - feature: aws_for_fluentbit
+  category: observability
+  description: Fluent Bit log router shipping container logs to CloudWatch Logs.
+  link: https://github.com/aws/aws-for-fluent-bit
   chart: aws-for-fluent-bit
   repository: https://aws.github.io/eks-charts
   version: "0.1.35"
   namespace: kube-system
 - feature: aws_fargate_fluentbit
+  category: observability
+  description: Fluent Bit configuration for Fargate log routing to CloudWatch.
+  link: https://github.com/gitops-bridge-dev/gitops-bridge
   chart: aws-fargate-fluentbit
   repository: https://gitops-bridge-dev.github.io/gitops-bridge-helm-charts
   version: "1.0.0"
   namespace: kube-system
 - feature: aws_gateway_api_controller
+  category: networking
+  description: AWS Gateway API controller for VPC Lattice-backed HTTP routes.
+  link: https://github.com/aws/aws-application-networking-k8s
   chart: aws-gateway-controller-chart
   repository: public.ecr.aws
   version: "v1.1.7"
   namespace: kube-system
 - feature: aws_node_termination_handler
+  category: compute
+  description: Gracefully drains nodes on EC2 spot interruption and maintenance events.
+  link: https://github.com/aws/aws-node-termination-handler
   chart: aws-node-termination-handler
   repository: https://aws.github.io/eks-charts
   version: "0.21.0"
   namespace: kube-system
 - feature: aws_argo_workflows_ingress
+  category: gitops
+  description: Argo Workflows chart configured with AWS-oriented ingress patterns.
   chart: argo-workflows
   repository: https://argoproj.github.io/argo-helm
   version: "0.41.14"
   namespace: argocd
 - feature: aws_argocd
+  category: gitops
+  description: Argo CD release tuned for AWS reference architectures.
   chart: argo-cd
   repository: https://argoproj.github.io/argo-helm
   version: "7.9.1"
   namespace: argocd
 - feature: aws_argocd_ingress
+  category: gitops
+  description: Argo CD with ingress settings for AWS load balancers and DNS.
   chart: argo-cd
   repository: https://argoproj.github.io/argo-helm
   version: "7.9.1"
   namespace: argocd
 - feature: aws_crossplane_provider
+  category: aws
+  description: Crossplane AWS provider bundle for GitOps Bridge-style installs.
+  link: https://github.com/gitops-bridge-dev/gitops-bridge
   chart: crossplane-aws
   repository: https://gitops-bridge-dev.github.io/gitops-bridge-helm-charts
   version: "2.2.0"
   namespace: crossplane-system
 - feature: aws_crossplane_upbound_provider
+  category: aws
+  description: Upbound AWS provider family for Crossplane on EKS.
+  link: https://github.com/gitops-bridge-dev/gitops-bridge
   chart: crossplane-aws-upbound
   repository: https://gitops-bridge-dev.github.io/gitops-bridge-helm-charts
   version: "3.0.0"
   namespace: crossplane-system
 - feature: aws_privateca_issuer
+  category: security
+  description: cert-manager issuer for AWS Private Certificate Authority.
+  link: https://cert-manager.github.io/aws-privateca-issuer/
   chart: aws-privateca-issuer
   repository: https://cert-manager.github.io/aws-privateca-issuer
   version: "v1.8.1"
   namespace: cert-manager
 - feature: aws_velero
+  category: storage
+  description: Backup and migrate cluster resources and persistent volumes.
+  link: https://velero.io/
   chart: velero
   repository: https://vmware-tanzu.github.io/helm-charts
   version: "7.2.2"
   namespace: velero
 - feature: aws_secrets_store_csi_driver_provider
+  category: security
+  description: AWS provider for the Secrets Store CSI Driver (Secrets Manager / Parameter Store).
+  link: https://github.com/aws/secrets-store-csi-driver-provider-aws
   chart: secrets-store-csi-driver-provider-aws
   repository: https://aws.github.io/secrets-store-csi-driver-provider-aws
   version: "2.2.2"
   namespace: kube-system
 - feature: aws_ack_apigatewayv2
+  category: aws
+  description: ACK controller for Amazon API Gateway v2.
+  link: https://aws-controllers-k8s.github.io/community/
   chart: aws-controllers-k8s/apigatewayv2-chart
   repository: public.ecr.aws
   version: "1.1.2"
@@ -106,6 +157,9 @@
     - name: aws.region
       value: .metadata.annotations.region
 - feature: aws_ack_dynamodb
+  category: aws
+  description: ACK controller for Amazon DynamoDB.
+  link: https://aws-controllers-k8s.github.io/community/
   chart: aws-controllers-k8s/dynamodb-chart
   repository: public.ecr.aws
   version: "1.6.1"
@@ -114,6 +168,9 @@
     - name: aws.region
       value: .metadata.annotations.region
 - feature: aws_ack_prometheusservice
+  category: aws
+  description: ACK controller for Amazon Managed Service for Prometheus.
+  link: https://aws-controllers-k8s.github.io/community/
   chart: aws-controllers-k8s/prometheusservice-chart
   repository: public.ecr.aws
   version: "1.3.2"
@@ -122,6 +179,9 @@
     - name: aws.region
       value: .metadata.annotations.region
 - feature: aws_ack_eventbridge
+  category: aws
+  description: ACK controller for Amazon EventBridge.
+  link: https://aws-controllers-k8s.github.io/community/
   chart: aws-controllers-k8s/eventbridge-chart
   repository: public.ecr.aws
   version: "1.1.2"
@@ -130,6 +190,9 @@
     - name: aws.region
       value: .metadata.annotations.region
 - feature: aws_ack_rds
+  category: aws
+  description: ACK controller for Amazon RDS.
+  link: https://aws-controllers-k8s.github.io/community/
   chart: aws-controllers-k8s/rds-chart
   repository: public.ecr.aws
   version: "1.6.3"
@@ -138,6 +201,9 @@
     - name: aws.region
       value: .metadata.annotations.region
 - feature: aws_ack_s3
+  category: aws
+  description: ACK controller for Amazon S3.
+  link: https://aws-controllers-k8s.github.io/community/
   chart: aws-controllers-k8s/s3-chart
   repository: public.ecr.aws
   version: "1.1.2"
@@ -146,6 +212,9 @@
     - name: aws.region
       value: .metadata.annotations.region
 - feature: aws_ack_iam
+  category: aws
+  description: ACK controller for AWS IAM.
+  link: https://aws-controllers-k8s.github.io/community/
   chart: aws-controllers-k8s/iam-chart
   repository: public.ecr.aws
   version: "1.5.3"
@@ -154,6 +223,9 @@
     - name: aws.region
       value: .metadata.annotations.region
 - feature: aws_ack_sns
+  category: aws
+  description: ACK controller for Amazon SNS.
+  link: https://aws-controllers-k8s.github.io/community/
   chart: aws-controllers-k8s/sns-chart
   repository: public.ecr.aws
   version: "1.2.3"
@@ -162,6 +234,9 @@
     - name: aws.region
       value: .metadata.annotations.region
 - feature: aws_ack_sqs
+  category: aws
+  description: ACK controller for Amazon SQS.
+  link: https://aws-controllers-k8s.github.io/community/
   chart: aws-controllers-k8s/sqs-chart
   repository: public.ecr.aws
   version: "1.2.2"
@@ -170,6 +245,9 @@
     - name: aws.region
       value: .metadata.annotations.region
 - feature: aws_ack_ses
+  category: aws
+  description: ACK controller for Amazon SES.
+  link: https://aws-controllers-k8s.github.io/community/
   chart: aws-controllers-k8s/ses-chart
   repository: public.ecr.aws
   version: "1.1.2"
@@ -178,6 +256,9 @@
     - name: aws.region
       value: .metadata.annotations.region
 - feature: aws_ack_sfn
+  category: aws
+  description: ACK controller for AWS Step Functions.
+  link: https://aws-controllers-k8s.github.io/community/
   chart: aws-controllers-k8s/sfn-chart
   repository: public.ecr.aws
   version: "1.1.2"
@@ -186,6 +267,9 @@
     - name: aws.region
       value: .metadata.annotations.region
 - feature: aws_ack_eks
+  category: aws
+  description: ACK controller for Amazon EKS.
+  link: https://aws-controllers-k8s.github.io/community/
   chart: aws-controllers-k8s/eks-chart
   repository: public.ecr.aws
   version: "1.9.4"
@@ -194,6 +278,9 @@
     - name: aws.region
       value: .metadata.annotations.region
 - feature: karpenter_nodepools
+  category: compute
+  description: Platform chart defining Karpenter NodePools and related objects.
+  link: https://github.com/appvia/kubernetes-platform/tree/main/charts/karpenter-nodepools
   chart: karpenter-nodepools
   repository: platform
   repository_path: charts/karpenter-nodepools

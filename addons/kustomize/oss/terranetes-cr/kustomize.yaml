@@ -2,8 +2,10 @@
 kustomize:
   ## The feature used to toggle the addon
   feature: terranetes_crs
+  category: platform
   ## The description of the addon
   description: A collection of Terranetes Cloud Resource Plans
+  link: https://github.com/appvia/terranetes-cloudresources
   ## The path inside the repository
   path: cloudresources/aws/
   ## The location of an external kustomize repository (optional)

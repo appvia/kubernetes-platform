@@ -2,6 +2,9 @@
 kustomize:
   ## The feature label
   feature: aws_ack_dynamodb
+  category: aws
+  description: IAM roles and Pod Identity associations for the DynamoDB ACK controller.
+  link: https://aws-controllers-k8s.github.io/community/
   ## The entrypoint for the kustomize
   path: base
   ## The patches to apply to the kustomize

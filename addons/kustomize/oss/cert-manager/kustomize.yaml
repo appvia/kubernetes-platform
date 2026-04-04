@@ -2,6 +2,9 @@
 kustomize:
   ## The features to enable in the tenant cluster
   feature: cert_manager
+  category: security
+  description: Patched cert-manager overlay including self-signed ClusterIssuer.
+  link: https://cert-manager.io/
   ## The path to the kustomize overlay
   path: base
   ## The patches to apply to the kustomize
