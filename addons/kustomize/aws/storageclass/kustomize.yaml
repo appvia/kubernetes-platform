@@ -14,7 +14,7 @@ kustomize:
       patch:
         - op: replace
           path: /provisioner
-          key: metadata.annotations.storage_ebs_provisioner
+          key: .metadata.annotations.storage_ebs_provisioner
           default: kubernetes.io/aws-ebs
 
 ## The namespace options (required)
