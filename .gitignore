@@ -37,3 +37,6 @@ Thumbs.db
 
 # mkdocs
 docs/site/
+
+# Worktrees
+.worktrees/
