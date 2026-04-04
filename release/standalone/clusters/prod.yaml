@@ -24,7 +24,7 @@ cluster_type: standalone
 tenant: tenant
 ## We use labels to enable/disable features in the tenant cluster
 labels:
-  # Enable the ceritfication management feature
+  # Enable the certification management feature
   enable_cert_manager: "true"
   # Enable the external secrets feature
   enable_external_secrets: "true"

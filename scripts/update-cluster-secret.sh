@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 #
-## The purpose of this script is to create or update the clusetr
+## The purpose of this script is to create or update the cluster
 ## secret in the argocd namespace.
 #
 # Usage: create-cluster-secret.sh [options]
@@ -23,7 +23,7 @@ EOF
   fi
 }
 
-## Responisble for updating the cluster secret
+## Responsible for updating the cluster secret
 update_cluster_secret() {
   echo "Updating the cluster secret for: \"${CLUSTER_PATH}\""
   ## We use the cluster definition file as the helm values for the
