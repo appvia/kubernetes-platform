@@ -1,0 +1,47 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Kustomize addon definition",
+  "description": "Single kustomize.yaml addon under addons/kustomize/",
+  "type": "object",
+  "required": ["kustomize", "namespace"],
+  "properties": {
+    "kustomize": {
+      "type": "object",
+      "required": ["feature", "path", "category", "description"],
+      "properties": {
+        "feature": {
+          "type": "string",
+          "minLength": 1
+        },
+        "path": {
+          "type": "string",
+          "minLength": 1
+        },
+        "category": {
+          "$ref": "addon-category.json"
+        },
+        "description": {
+          "type": "string",
+          "minLength": 1
+        },
+        "link": {
+          "type": "string",
+          "minLength": 1
+        }
+      },
+      "additionalProperties": true
+    },
+    "namespace": {
+      "type": "object",
+      "required": ["name"],
+      "properties": {
+        "name": {
+          "type": "string",
+          "minLength": 1
+        }
+      },
+      "additionalProperties": true
+    }
+  },
+  "additionalProperties": true
+}
