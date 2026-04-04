@@ -76,6 +76,20 @@ test:
 	@echo "--> Testing the configuration..."
 	@$(MAKE) validate
 	@$(MAKE) lint
+	@$(MAKE) test-templates
+
+test-templates:
+	@echo "--> Testing ApplicationSet templatePatch rendering (Ginkgo)..."
+	@cd tests/templates && go test ./... -count=1
+
+validate-templates: generate-template-fixtures
+	@echo "--> Testing ApplicationSet templatePatch rendering (Ginkgo)..."
+	@cd tests/templates && go test ./... -count=1
+
+# Regenerate tests/templates/embedded_fixtures_test.go (patch* constants only) after editing ApplicationSet templatePatch.
+generate-template-fixtures:
+	@echo "--> Regenerating embedded template patches..."
+	@cd $(CURDIR) && python3 scripts/generate-template-fixtures.py
 
 e2e:
 	@echo "--> Running the e2e tests..."
