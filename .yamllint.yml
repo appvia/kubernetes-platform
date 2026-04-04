@@ -8,6 +8,7 @@ ignore:
   - charts/*
   - .kyverno-test/*.yaml
   - terraform/.terraform
+  - .worktrees/
 
 rules:
   anchors: enable
