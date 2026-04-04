@@ -15,6 +15,28 @@ permissions:
   pull-requests: write
 
 jobs:
+  changes:
+    name: Detect changed paths
+    runs-on: ubuntu-latest
+    outputs:
+      apps: ${{ steps.filter.outputs.apps }}
+      docs: ${{ steps.filter.outputs.docs }}
+      templates: ${{ steps.filter.outputs.templates }}
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+      - uses: dorny/paths-filter@v4
+        id: filter
+        with:
+          filters: |
+            apps:
+              - 'apps/**'
+            docs:
+              - 'docs/**'
+            templates:
+              - 'tests/templates/**'
+
   validate-charts:
     name: Validate Chart
     runs-on: ubuntu-latest
@@ -51,7 +73,9 @@ jobs:
           path: scripts
 
   validate-templates:
-    name: Validate ApplicationSet Templates
+    name: Validate ApplicationSets
+    needs: changes
+    if: needs.changes.outputs.apps == 'true' || needs.changes.outputs.templates == 'true'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v6
@@ -107,12 +131,13 @@ jobs:
           github_token: ${{ secrets.github_token }}
 
   publish-docs:
-    if: github.ref == 'refs/heads/main'
     name: Publish Docs
+    if: needs.changes.outputs.docs == 'true'
     runs-on: ubuntu-latest
     permissions:
       contents: write
     needs:
+      - changes
       - validate-charts
       - validate-docs-spelling
       - validate-helm-addons
@@ -120,7 +145,6 @@ jobs:
       - validate-kyverno
       - validate-schemas
       - validate-scripts
-      - validate-templates
       - validate-yaml
     defaults:
       run:
