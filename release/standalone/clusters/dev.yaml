@@ -47,7 +47,7 @@ labels:
   # Enable the gateway-api feature
   enable_gateway_api: "true"
   # Enable the metrics server feature
-  metrics_server: "true"
+  enable_metrics_server: "true"
 ## Annotations are using for additional metadata about the tenant cluster
 annotations:
   # The tenant name
