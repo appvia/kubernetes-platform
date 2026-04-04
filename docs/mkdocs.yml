@@ -9,17 +9,20 @@ nav:
       - System Application Sets: architecture/system-appsets.md
       - Tenant Application Sets: architecture/tenant-appsets.md
       - Tenant Namespaces: architecture/tenant-namespace.md
+  - Getting Started:
+      - Standalone: getting-started/standalone.md
+      - Hub & Spoke: getting-started/central.md
   - Development:
       - Local: development/local.md
       - Remote:
           - Overview: development/overview.md
           - Standalone: development/standalone.md
           - Hub: development/hub.md
-  - Getting Started:
-      - Standalone: getting-started/standalone.md
-      - Hub & Spoke: getting-started/central.md
   - Platform:
       - Overview: platform/overview.md
+      - Addons:
+          - Overview: catalog/overview.md
+          - Addons: catalog/features.md
       - Node Pools:
           - Overview: platform/nodepools/overview.md
           - Karpenter: platform/nodepools/karpenter.md
