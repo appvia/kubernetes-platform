@@ -25,7 +25,7 @@ terraform apply -var-file=variables/dev.tfvars
 | Name | Version |
 |------|---------|
 | <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >= 1.6.0 |
-| <a name="requirement_aws"></a> [aws](#requirement\_aws) | >= 5.0.0 |
+| <a name="requirement_aws"></a> [aws](#requirement\_aws) | >= 6.0.0 |
 | <a name="requirement_helm"></a> [helm](#requirement\_helm) | >= 2.0.0 |
 | <a name="requirement_kubectl"></a> [kubectl](#requirement\_kubectl) | ~> 2.0 |
 
@@ -33,17 +33,17 @@ terraform apply -var-file=variables/dev.tfvars
 
 | Name | Version |
 |------|---------|
-| <a name="provider_aws"></a> [aws](#provider\_aws) | >= 5.0.0 |
+| <a name="provider_aws"></a> [aws](#provider\_aws) | >= 6.0.0 |
 
 ## Modules
 
 | Name | Source | Version |
 |------|--------|---------|
-| <a name="module_eks"></a> [eks](#module\_eks) | appvia/eks/aws | 1.2.12 |
-| <a name="module_network"></a> [network](#module\_network) | appvia/network/aws | 0.6.12 |
-| <a name="module_platform"></a> [platform](#module\_platform) | appvia/eks/aws//modules/platform | 1.2.12 |
-| <a name="module_spot_feed_bucket"></a> [spot\_feed\_bucket](#module\_spot\_feed\_bucket) | terraform-aws-modules/s3-bucket/aws | 3.10.0 |
-| <a name="module_spot_feed_pod_identity"></a> [spot\_feed\_pod\_identity](#module\_spot\_feed\_pod\_identity) | terraform-aws-modules/eks-pod-identity/aws | 2.2.0 |
+| <a name="module_eks"></a> [eks](#module\_eks) | appvia/eks/aws | 1.2.16 |
+| <a name="module_network"></a> [network](#module\_network) | appvia/network/aws | 0.6.14 |
+| <a name="module_platform"></a> [platform](#module\_platform) | appvia/eks/aws//modules/platform | 1.2.16 |
+| <a name="module_spot_feed_bucket"></a> [spot\_feed\_bucket](#module\_spot\_feed\_bucket) | terraform-aws-modules/s3-bucket/aws | 5.12.0 |
+| <a name="module_spot_feed_pod_identity"></a> [spot\_feed\_pod\_identity](#module\_spot\_feed\_pod\_identity) | terraform-aws-modules/eks-pod-identity/aws | 2.7.0 |
 
 ## Resources
 
@@ -71,7 +71,7 @@ terraform apply -var-file=variables/dev.tfvars
 | <a name="input_hub_account_role"></a> [hub\_account\_role](#input\_hub\_account\_role) | The role to use for the hub account | `string` | `"argocd-pod-identity-hub"` | no |
 | <a name="input_kubecosts"></a> [kubecosts](#input\_kubecosts) | The Kubecost configuration | <pre>object({<br/>    ## Indicates if we should enable the Kubecost platform<br/>    enable = optional(bool, false)<br/>    ## The namespace to deploy the Kubecost platform to<br/>    namespace = optional(string, "kubecosts")<br/>    ## The service account to deploy the Kubecost platform to<br/>    service_account = optional(string, "kubecosts")<br/>    ## Federated storage configuration<br/>    federated_storage = optional(object({<br/>      ## Indicates if we should create the federated bucket<br/>      create_bucket = optional(bool, false)<br/>      ## KMS key ARN to use for the federated bucket<br/>      kms_key_arn = optional(string, null)<br/>      ## The ARN of the federated bucket to use for the Kubecost platform<br/>      federated_bucket_arn = optional(string, null)<br/>      ## List of principals to allowed to write to the federated bucket<br/>      allowed_principals = optional(list(string), [])<br/>    }), {})<br/>    ## Cloud Costs feature<br/>    cloud_costs = optional(object({<br/>      ## Indicates if we should enable cloud costs via Athena<br/>      enable = optional(bool, false)<br/>      ## The ARN of the S3 bucket for Cost and Usage Report (CUR) data<br/>      cur_bucket_arn = string<br/>      ## The ARN of the S3 bucket for Athena query results<br/>      athena_bucket_arn = string<br/>      # The name of the Athena database for CUR data<br/>      athena_database_name = optional(string, null)<br/>      ## The ARN of the Athena table for CUR data<br/>      athena_table_arn = optional(string, null)<br/>    }), null)<br/>  })</pre> | `null` | no |
 | <a name="input_kubecosts_agent"></a> [kubecosts\_agent](#input\_kubecosts\_agent) | The Kubecost Agent configuration | <pre>object({<br/>    ## Indicates if we should enable the Kubecost Agent platform<br/>    enable = optional(bool, false)<br/>    ## The namespace to deploy the Kubecost Agent platform to<br/>    namespace = optional(string, "kubecosts")<br/>    ## The service account to deploy the Kubecost Agent platform to<br/>    service_account = optional(string, "kubecosts")<br/>    ## The ARN of the federated bucket to use for the Kubecost Agent platform<br/>    federated_bucket_arn = string<br/>    ## List of principals to allowed to write to the federated bucket<br/>    allowed_principals = optional(list(string), [])<br/>  })</pre> | `null` | no |
-| <a name="input_kubernetes_version"></a> [kubernetes\_version](#input\_kubernetes\_version) | The version of the cluster to provision | `string` | `"1.34"` | no |
+| <a name="input_kubernetes_version"></a> [kubernetes\_version](#input\_kubernetes\_version) | The version of the cluster to provision | `string` | `"1.35"` | no |
 | <a name="input_nat_gateway_mode"></a> [nat\_gateway\_mode](#input\_nat\_gateway\_mode) | The NAT gateway mode | `string` | `"single_az"` | no |
 | <a name="input_opencost"></a> [opencost](#input\_opencost) | Indicates if we should enable the spot feed | <pre>object({<br/>    ## Indicates if we should enable the spot feed<br/>    enable_spot_feed = optional(bool, false)<br/>    ## Name of the spot feed bucket else we auto generate one<br/>    spot_feed_bucket_name = optional(string, null)<br/>    ## The prefix to use for the spot feed<br/>    spot_feed_prefix = optional(string, "")<br/>  })</pre> | `{}` | no |
 | <a name="input_pod_identity"></a> [pod\_identity](#input\_pod\_identity) | The pod identity configuration | <pre>map(object({<br/>    ## Indicates if we should enable the pod identity<br/>    enabled = optional(bool, true)<br/>    ## The namespace to deploy the pod identity to<br/>    description = optional(string, null)<br/>    ## The service account to deploy the pod identity to<br/>    service_account = optional(string, null)<br/>    ## The managed policy ARNs to attach to the pod identity<br/>    managed_policy_arns = optional(map(string), {})<br/>    ## The permissions boundary ARN to use for the pod identity<br/>    permissions_boundary_arn = optional(string, null)<br/>    ## The namespace to deploy the pod identity to<br/>    namespace = optional(string, null)<br/>    ## The name of the pod identity role<br/>    name = optional(string, null)<br/>    ## Additional policy statements to attach to the pod identity role<br/>    policy_statements = optional(list(object({<br/>      ## The statement ID<br/>      sid = optional(string, null)<br/>      ## The actions to allow<br/>      actions = optional(list(string), [])<br/>      ## The resources to allow<br/>      resources = optional(list(string), [])<br/>      ## The effect to allow<br/>      effect = optional(string, null)<br/>    })), [])<br/>  }))</pre> | `{}` | no |

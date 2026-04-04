@@ -22,17 +22,30 @@ variable "access_entries" {
   default = null
 }
 
-variable "opencost" {
-  description = "Indicates if we should enable the spot feed"
-  type = object({
-    ## Indicates if we should enable the spot feed
-    enable_spot_feed = optional(bool, false)
-    ## Name of the spot feed bucket else we auto generate one
-    spot_feed_bucket_name = optional(string, null)
-    ## The prefix to use for the spot feed
-    spot_feed_prefix = optional(string, "")
-  })
+variable "argocd_repositories" {
+  description = "A collection of repository secrets to add to the argocd namespace"
+  type = map(object({
+    ## The description of the repository
+    description = string
+    ## An optional password for the repository
+    password = optional(string, null)
+    ## The secret to use for the repository
+    secret = optional(string, null)
+    ## The secret manager ARN to use for the secret
+    secret_manager_arn = optional(string, null)
+    ## An optional SSH private key for the repository
+    ssh_private_key = optional(string, null)
+    ## The URL for the repository
+    url = string
+    ## An optional username for the repository
+    username = optional(string, null)
+  }))
   default = {}
+}
+
+variable "cluster_path" {
+  description = "The name of the cluster"
+  type        = string
 }
 
 variable "enable_aws_managed_prometheus" {
@@ -41,21 +54,28 @@ variable "enable_aws_managed_prometheus" {
   default     = false
 }
 
-variable "sso_administrator_role" {
-  description = "The SSO administrator role ARN"
+variable "enable_public_access" {
+  description = "The public access to the cluster endpoint"
+  type        = bool
+  default     = true
+}
+
+variable "hub_account_id" {
+  description = "When using a hub deployment options, this is the account where argocd is running"
   type        = string
   default     = null
 }
 
-variable "revision_overrides" {
-  description = "Revision overrides permit the user to override the revision contained in cluster definition"
-  type = object({
-    ## The platform revision or branch to use
-    platform_revision = optional(string, null)
-    ## The tenant revision or branch to use
-    tenant_revision = optional(string, null)
-  })
-  default = null
+variable "hub_account_role" {
+  description = "The role to use for the hub account"
+  type        = string
+  default     = "argocd-pod-identity-hub"
+}
+
+variable "kubernetes_version" {
+  description = "The version of the cluster to provision"
+  type        = string
+  default     = "1.35"
 }
 
 variable "kubecosts" {
@@ -112,97 +132,23 @@ variable "kubecosts_agent" {
   default = null
 }
 
-variable "argocd_repositories" {
-  description = "A collection of repository secrets to add to the argocd namespace"
-  type = map(object({
-    ## The description of the repository
-    description = string
-    ## An optional password for the repository
-    password = optional(string, null)
-    ## The secret to use for the repository
-    secret = optional(string, null)
-    ## The secret manager ARN to use for the secret
-    secret_manager_arn = optional(string, null)
-    ## An optional SSH private key for the repository
-    ssh_private_key = optional(string, null)
-    ## The URL for the repository
-    url = string
-    ## An optional username for the repository
-    username = optional(string, null)
-  }))
-  default = {}
-}
-
-variable "enable_public_access" {
-  description = "The public access to the cluster endpoint"
-  type        = bool
-  default     = true
-}
-
-variable "cluster_path" {
-  description = "The name of the cluster"
-  type        = string
-}
-
-variable "kubernetes_version" {
-  description = "The version of the cluster to provision"
-  type        = string
-  default     = "1.34"
-}
-
-variable "hub_account_id" {
-  description = "When using a hub deployment options, this is the account where argocd is running"
-  type        = string
-  default     = null
-}
-
-variable "hub_account_role" {
-  description = "The role to use for the hub account"
-  type        = string
-  default     = "argocd-pod-identity-hub"
-}
-
 variable "nat_gateway_mode" {
   description = "The NAT gateway mode"
   type        = string
   default     = "single_az"
 }
 
-variable "private_subnet_netmask" {
-  description = "The netmask for the private subnets"
-  type        = number
-  default     = 24
-}
-
-variable "public_subnet_netmask" {
-  description = "The netmask for the public subnets"
-  type        = number
-  default     = 24
-}
-
-variable "tags" {
-  description = "The tags to apply to all resources"
-  type        = map(string)
-}
-
-variable "transit_gateway_id" {
-  description = "The ID of the Transit Gateway to use, when attaching to a Transit Gateway"
-  type        = string
-  default     = null
-}
-
-variable "transit_gateway_routes" {
-  description = "The routes to add to the Transit Gateway"
-  type        = map(string)
-  default = {
-    private = "0.0.0.0/0"
-  }
-}
-
-variable "vpc_cidr" {
-  description = "The CIDR block for the VPC, if not using an existing VPC"
-  type        = string
-  default     = "10.90.0.0/16"
+variable "opencost" {
+  description = "Indicates if we should enable the spot feed"
+  type = object({
+    ## Indicates if we should enable the spot feed
+    enable_spot_feed = optional(bool, false)
+    ## Name of the spot feed bucket else we auto generate one
+    spot_feed_bucket_name = optional(string, null)
+    ## The prefix to use for the spot feed
+    spot_feed_prefix = optional(string, "")
+  })
+  default = {}
 }
 
 variable "pod_identity" {
@@ -235,4 +181,58 @@ variable "pod_identity" {
     })), [])
   }))
   default = {}
+}
+
+variable "private_subnet_netmask" {
+  description = "The netmask for the private subnets"
+  type        = number
+  default     = 24
+}
+
+variable "public_subnet_netmask" {
+  description = "The netmask for the public subnets"
+  type        = number
+  default     = 24
+}
+
+variable "revision_overrides" {
+  description = "Revision overrides permit the user to override the revision contained in cluster definition"
+  type = object({
+    ## The platform revision or branch to use
+    platform_revision = optional(string, null)
+    ## The tenant revision or branch to use
+    tenant_revision = optional(string, null)
+  })
+  default = null
+}
+
+variable "sso_administrator_role" {
+  description = "The SSO administrator role ARN"
+  type        = string
+  default     = null
+}
+
+variable "tags" {
+  description = "The tags to apply to all resources"
+  type        = map(string)
+}
+
+variable "transit_gateway_id" {
+  description = "The ID of the Transit Gateway to use, when attaching to a Transit Gateway"
+  type        = string
+  default     = null
+}
+
+variable "transit_gateway_routes" {
+  description = "The routes to add to the Transit Gateway"
+  type        = map(string)
+  default = {
+    private = "0.0.0.0/0"
+  }
+}
+
+variable "vpc_cidr" {
+  description = "The CIDR block for the VPC, if not using an existing VPC"
+  type        = string
+  default     = "10.90.0.0/16"
 }
