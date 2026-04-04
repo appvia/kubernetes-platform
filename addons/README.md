@@ -60,6 +60,16 @@ helm:
       default: mydefault_value
   values: |
     my_value: hello
+  ## (Optional) Ignore difference on resources
+  ignoreDifferences:
+    - group: ""
+      name: "test"
+      kind: "Secret"
+      jsonPointers:
+        - /spec/replicas
+      managedFieldManagers:
+        - test
+
 ## Sync Options
 sync:
   # (Optional) The phase to use for the deployment, used to determine the order of the deployment.
@@ -68,6 +78,18 @@ sync:
   duration: 30s
   # (Optional) The max duration to use for the deployment.
   max_duration: 5m
+```
+
+### Ignoring diff drift (optional)
+
+Optional `ignoreDifferences` at the **root** of the definition (next to `helm` / `sync`) is copied onto the generated Argo CD Application `spec.ignoreDifferences`. Syntax matches [Argo CD diffing customization](https://argo-cd.readthedocs.io/en/stable/user-guide/diffing/) (`group`, `kind`, `name`, `namespace`, `jsonPointers`, `jqPathExpressions`, `managedFieldsManagers`). Omit `group` or set it to `""` for core API resources.
+
+```yaml
+ignoreDifferences:
+  - group: apps
+    kind: Deployment
+    jsonPointers:
+      - /spec/replicas
 ```
 
 The following fields are supported:
@@ -85,6 +107,7 @@ The following fields are supported:
 - `values`: A multi-line string of Helm values to add to the Application.
 - `sync`: Sync options for the resulting Argo CD Application.
   - `wave`: Optional wave number to set for the Application. Applications with lower wave numbers are deployed first.
+- `ignoreDifferences`: Optional list of Argo CD diff ignore rules for the generated Application (see [diffing customization](https://argo-cd.readthedocs.io/en/stable/user-guide/diffing/)).
 
 At minimum, each entry must include `feature`, `repository`, `namespace`, `version`, and one of `chart` or `path`.
 
@@ -188,6 +211,16 @@ kustomize:
   commonAnnotations:
     app.kubernetes.io/managed-by: platform
 
+  ## (Optional) Ignore difference on resources
+  ignoreDifferences:
+    - group: ""
+      name: "test"
+      kind: "Secret"
+      jsonPointers:
+        - /spec/replicas
+      managedFieldManagers:
+        - test
+
 ## Namespace configuration (required)
 namespace:
   ## The name of the namespace where this addon will be deployed (required)
@@ -205,7 +238,16 @@ sync:
   phase: secondary
   ## Allows the user to control the sync wave of the resulting application
   wave: NUMBER
+
+## Optional: ignore live vs desired diffs (root level, next to kustomize / namespace / sync)
+ignoreDifferences:
+  - group: apps
+    kind: Deployment
+    jsonPointers:
+      - /spec/replicas
 ```
+
+See [Argo CD diffing customization](https://argo-cd.readthedocs.io/en/stable/user-guide/diffing/) for `jsonPointers`, `jqPathExpressions`, and `managedFieldsManagers`.
 
 ## Field Reference
 
@@ -247,6 +289,12 @@ sync:
 | ------- | ------ | -------- | ---------------------------------------------------- |
 | `phase` | string | No       | Deployment order: `primary` (default) or `secondary` |
 | `wave`  | number | No       | Controls the sync wave of the resulting application  |
+
+### Root-level `ignoreDifferences`
+
+| Field               | Type  | Required | Description                                                                                  |
+| ------------------- | ----- | -------- | -------------------------------------------------------------------------------------------- |
+| `ignoreDifferences` | array | No       | Passed through to the generated Application `spec.ignoreDifferences` (same shape as Argo CD) |
 
 ## Example: Kyverno Addon
 
