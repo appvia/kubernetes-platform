@@ -41,7 +41,7 @@
   version: "0.1.0"
   namespace: argocd
   parameters:
-    - nname: externalSecret.secretName
+    - name: externalSecret.secretName
       value: .metadata.annotations.argocd_notifications_secret_name
 - feature: cert_manager
   category: security
