@@ -1,0 +1,6 @@
+# AWS clusters: align ExternalSecret keys with the AWS Secrets Manager layout used by the
+# platform ClusterSecretStore. Cluster name is injected via the kyverno_policies Helm parameters
+# in addons/helm/oss.yaml (metadata.labels.cluster_name).
+policies:
+  denyExternalSecrets:
+    useAwsSecretsManagerPaths: true

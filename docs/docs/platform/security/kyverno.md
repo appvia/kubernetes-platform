@@ -71,7 +71,7 @@ policies:
     validationFailureAction: enforce
 ```
 
-The `policies` map uses the same camelCase keys as the chart values, for example: `denyDefaultNamespace`, `denyEksResources`, `denyEmptyIngress`, `denyExternalSecrets`, `denyLatestImage`, `denyNoLabels`, `denyNoLimits`, `denyNoPodProbes`, `denyNoTrafficDistribution`, `denyNodeportService`, `mutateEcrCache`, `mutatePsaLabels`, `mutateTrafficDistribution`, and `restrictImageRegistries`. See the chart’s `values.yaml` for the authoritative list and defaults.
+The `policies` map uses the same camelCase keys as the chart values, for example: `denyDefaultNamespace`, `denyEksResources`, `denyEmptyIngress`, `denyExternalSecrets` (including `useAwsSecretsManagerPaths` and `aws.*` for Secrets Manager path layout on AWS), `denyLatestImage`, `denyNoLabels`, `denyNoLimits`, `denyNoPodProbes`, `denyNoTrafficDistribution`, `denyNodeportService`, `mutateEcrCache`, `mutatePsaLabels`, `mutateTrafficDistribution`, and `restrictImageRegistries`. See the chart’s `values.yaml` for the authoritative list and defaults. For AWS External Secrets path rules, see [External Secrets — AWS paths](external-secrets-aws-paths.md).
 
 ### Configuration resolution order (precedence)
 

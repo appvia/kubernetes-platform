@@ -24,10 +24,20 @@ policies:
     enabled: true
     validationFailureAction: enforce
 
-  # Deny External Secrets resources in non-standard namespaces
+  # ExternalSecret remote key layout (deny-external-secrets ClusterPolicy)
   denyExternalSecrets:
     enabled: true
     validationFailureAction: enforce
+    # When true and aws.clusterName is non-empty, require AWS SM names:
+    #   <clusterName>/global/<secretsPrefix>*  OR  <clusterName>/<namespace>/<secretsPrefix>*
+    # Intended for the platform AWS ClusterSecretStore (see docs).
+    useAwsSecretsManagerPaths: false
+    aws:
+      # Filled automatically from cluster metadata when using ApplicationSet parameters (see addons/helm/oss.yaml).
+      clusterName: ""
+      clusterSecretStoreName: secrets-store
+      globalSegment: global
+      secretsPrefix: SECRETS
 
   # Deny images with 'latest' tag
   denyLatestImage:
