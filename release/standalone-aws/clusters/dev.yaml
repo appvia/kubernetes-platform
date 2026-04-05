@@ -24,6 +24,8 @@ cluster_type: standalone
 tenant: tenant
 ## We use labels to enable/disable features in the tenant cluster
 labels:
+  # Enable the argocd notifications feature
+  enable_argocd_notifications: "true"
   # Enable the aws ack iam feature
   enable_aws_ack_iam: "true"
   # Enable the aws ack eks feature
@@ -66,3 +68,5 @@ annotations:
   platform.local/tenant: tenant
   ## The region the cluster resides in
   region: eu-west-2
+  ## The path within AWS Secret Manager where the notification secrets are stored
+  argocd_notifications_secret_name: dev/global/notifications
