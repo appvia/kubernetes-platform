@@ -40,6 +40,9 @@
   repository_path: charts/argocd-notifications
   version: "0.1.0"
   namespace: argocd
+  parameters:
+    - nname: externalSecret.secretName
+      value: .metadata.annotations.argocd_notifications_secret_name
 - feature: cert_manager
   category: security
   description: Automates TLS certificate issuance and renewal in Kubernetes.
@@ -114,7 +117,7 @@
   namespace: kubecost
   parameters:
     - name: global.clusterName
-      value: metadata.labels.cluster_name
+      value: .metadata.labels.cluster_name
 - feature: kyverno
   category: security
   description: Kubernetes-native policy engine for admission control and reporting.
