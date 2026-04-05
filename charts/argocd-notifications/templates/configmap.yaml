@@ -1,0 +1,96 @@
+{{- if .Values.notifications.enabled }}
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Values.configMapName }}
+  namespace: argocd
+  labels:
+    app.kubernetes.io/name: argocd-notifications
+    app.kubernetes.io/instance: {{ .Release.Name }}
+    app.kubernetes.io/managed-by: {{ .Release.Service }}
+data:
+  service.slack: |
+    token: $slack-token
+  
+  trigger.on-deployed: |
+    - when: app.status.operationState.phase in ['Succeeded'] and app.status.operationState.finishedAt != ''
+      oncePer: app.status.operationState.finishedAt
+      send: [app-deployed]
+  
+  trigger.on-health-degraded: |
+    - when: app.status.health.status == 'Degraded'
+      oncePer: app.status.health.status
+      send: [app-health-degraded]
+  
+  trigger.on-sync-failed: |
+    - when: app.status.operationState.phase in ['Error', 'Failed']
+      oncePer: app.status.operationState.finishedAt
+      send: [app-sync-failed]
+  
+  template.app-deployed: |
+    message: |
+      Application {{ `{{.app.metadata.name}}` }} deployment is healthy.
+      {{ `{{if eq .app.status.operationState.phase "Succeeded"}}✔{{end}}` }} Application details: {{ `{{.context.argocdUrl}}/applications/{{.app.metadata.name}}` }}
+    slack:
+      attachments: |
+        [{
+          "color": "#18be52",
+          "fields": [
+            {
+              "title": "Sync Status",
+              "value": "{{ `{{.app.status.sync.status}}` }}",
+              "short": true
+            },
+            {
+              "title": "Repository",
+              "value": "{{ `{{.app.spec.source.repoURL}}` }}",
+              "short": true
+            }
+          ]
+        }]
+  
+  template.app-health-degraded: |
+    message: |
+      ⚠️ Application {{ `{{.app.metadata.name}}` }} health status is {{ `{{.app.status.health.status}}` }}
+      Application details: {{ `{{.context.argocdUrl}}/applications/{{.app.metadata.name}}` }}
+    slack:
+      attachments: |
+        [{
+          "color": "#f4c030",
+          "fields": [
+            {
+              "title": "Health Status",
+              "value": "{{ `{{.app.status.health.status}}` }}",
+              "short": true
+            },
+            {
+              "title": "Repository",
+              "value": "{{ `{{.app.spec.source.repoURL}}` }}",
+              "short": true
+            }
+          ]
+        }]
+  
+  template.app-sync-failed: |
+    message: |
+      ❌ Application {{ `{{.app.metadata.name}}` }} sync is {{ `{{.app.status.operationState.phase}}` }}.
+      Application details: {{ `{{.context.argocdUrl}}/applications/{{.app.metadata.name}}` }}
+    slack:
+      attachments: |
+        [{
+          "color": "#e96d76",
+          "fields": [
+            {
+              "title": "Sync Status",
+              "value": "{{ `{{.app.status.sync.status}}` }}",
+              "short": true
+            },
+            {
+              "title": "Repository",
+              "value": "{{ `{{.app.spec.source.repoURL}}` }}",
+              "short": true
+            }
+          ]
+        }]
+{{- end }}

@@ -1,0 +1,16 @@
+apiVersion: v2
+name: argocd-notifications
+description: A Helm chart for configuring ArgoCD Slack notifications with ExternalSecrets integration
+type: application
+version: 0.1.0
+appVersion: "0.1.0"
+keywords:
+  - argocd
+  - notifications
+  - slack
+  - external-secrets
+home: https://argo-cd.readthedocs.io/en/stable/operator-manual/notifications/
+sources:
+  - https://github.com/appvia/kubernetes-platform
+maintainers:
+  - name: Appvia

@@ -1,0 +1,41 @@
+# Patterns to ignore when building packages.
+# This supports shell glob patterns, relative path patterns, and
+# patterns with double asterisks '**'.
+#
+# For more information, visit http://helm.sh
+
+# Chart dependencies
+charts/
+Chart.lock
+
+# Common VCS dirs
+.git/
+.gitignore
+.bzr/
+.bzrignore
+.hg/
+.hgignore
+.svn/
+
+# Common backup files
+*.swp
+*.swo
+*~
+*.tmp
+*.bak
+*.orig
+
+# Common editor dirs
+.idea/
+.vscode/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+
+# OS-specific files
+.DS_Store
+Thumbs.db
+
+# Test files
+tests/

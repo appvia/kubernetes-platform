@@ -26,6 +26,9 @@ nav:
       - Node Pools:
           - Overview: platform/nodepools/overview.md
           - Karpenter: platform/nodepools/karpenter.md
+      - Notifications:
+          - Overview: platform/notifications/overview.md
+          - Slack: platform/notifications/slack.md
       - Security:
           - Network Security:
               - Cilium: platform/security/cilium.md

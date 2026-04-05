@@ -31,6 +31,15 @@
   repository: https://argoproj.github.io/argo-helm
   version: "1.0.6"
   namespace: argo-workflows
+- feature: argocd_notifications
+  category: gitops
+  description: Enables ArgoCD to send notifications (Slack, Email, etc.) for application events.
+  link: https://argo-cd.readthedocs.io/en/stable/operator-manual/notifications/
+  chart: argocd-notifications
+  repository: platform
+  repository_path: charts/argocd-notifications
+  version: "0.1.0"
+  namespace: argocd
 - feature: cert_manager
   category: security
   description: Automates TLS certificate issuance and renewal in Kubernetes.

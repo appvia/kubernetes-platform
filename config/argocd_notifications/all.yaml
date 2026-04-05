@@ -1,0 +1,58 @@
+---
+# Default configuration for ArgoCD Notifications
+# This file provides default values that can be overridden at the tenant level
+# or at the cluster level using config/argocd_notifications/<cluster_name>.yaml
+
+# External Secret configuration
+# The secretName should follow the secret policy path: /CLUSTER_NAME/global/SECRETS
+# This is the name of the secret in your cloud provider's secrets manager (e.g., AWS Secrets Manager)
+#
+# Example for a cluster named "my-cluster":
+#   externalSecret:
+#     secretName: "my-cluster/global/argocd-slack-webhook"
+#
+# The tenant should provide this in their tenant repository:
+# - config/argocd_notifications/all.yaml (global default for all clusters)
+# - config/argocd_notifications/<cluster_name>.yaml (cluster-specific override)
+# - config/argocd_notifications/<cloud_vendor>.yaml (cloud-specific defaults)
+
+externalSecret:
+  # The name of the secret in the secrets manager that contains OAuth token for Slack.
+  # The should be within the path /CLUSTER_NAME/global/SECRET_NAME
+  secretName: ""
+  key: "webhook-url"
+  namespace: argocd
+
+# Notification configuration
+notifications:
+  enabled: true
+
+  slack:
+    serviceName: slack
+    channel: "#argocd-notifications"
+    username: "ArgoCD"
+    iconEmoji: ":rocket:"
+
+  # Default triggers - can be customized via tenant overrides
+  triggers:
+    - name: on-deployed
+      enabled: true
+      when: app.status.operationState.phase in ['Succeeded'] and app.status.operationState.finishedAt != ''
+      oncePer: app.status.operationState.finishedAt
+      template: app-deployed
+
+    - name: on-health-degraded
+      enabled: true
+      when: app.status.health.status == 'Degraded'
+      oncePer: app.status.health.status
+      template: app-health-degraded
+
+    - name: on-sync-failed
+      enabled: true
+      when: app.status.operationState.phase in ['Error', 'Failed']
+      oncePer: app.status.operationState.finishedAt
+      template: app-sync-failed
+
+# ConfigMap and Secret names
+configMapName: argocd-notifications-cm
+secretName: argocd-notifications-secret
