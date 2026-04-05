@@ -1,0 +1,70 @@
+---
+# clusterName=dev in Helm values; namespace frontend must not use backend paths
+apiVersion: external-secrets.io/v1
+kind: ExternalSecret
+metadata:
+  name: good-global
+  namespace: frontend
+spec:
+  secretStoreRef:
+    name: secrets-store
+    kind: ClusterSecretStore
+  data:
+    - secretKey: token
+      remoteRef:
+        key: dev/global/SECRETS/shared-app
+---
+apiVersion: external-secrets.io/v1
+kind: ExternalSecret
+metadata:
+  name: good-ns-scoped
+  namespace: frontend
+spec:
+  secretStoreRef:
+    name: secrets-store
+    kind: ClusterSecretStore
+  data:
+    - secretKey: db
+      remoteRef:
+        key: dev/frontend/SECRETS/database
+---
+apiVersion: external-secrets.io/v1
+kind: ExternalSecret
+metadata:
+  name: good-datafrom-extract
+  namespace: frontend
+spec:
+  secretStoreRef:
+    name: secrets-store
+    kind: ClusterSecretStore
+  dataFrom:
+    - extract:
+        key: dev/global/SECRETS/bundle
+---
+apiVersion: external-secrets.io/v1
+kind: ExternalSecret
+metadata:
+  name: bad-cross-namespace-path
+  namespace: frontend
+spec:
+  secretStoreRef:
+    name: secrets-store
+    kind: ClusterSecretStore
+  data:
+    - secretKey: stolen
+      remoteRef:
+        key: dev/backend/test
+---
+apiVersion: external-secrets.io/v1
+kind: ExternalSecret
+metadata:
+  name: ignored-non-cluster-store
+  namespace: frontend
+spec:
+  secretStoreRef:
+    name: other
+    kind: SecretStore
+  data:
+    - secretKey: x
+      remoteRef:
+        key: arbitrary/path

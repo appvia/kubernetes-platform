@@ -1,0 +1,39 @@
+apiVersion: cli.kyverno.io/v1alpha1
+kind: Test
+metadata:
+  name: deny-external-secrets-aws
+policies:
+  - ../policy.yaml
+resources:
+  - resources-aws.yaml
+results:
+  - kind: ExternalSecret
+    policy: deny-external-secrets
+    rule: aws-secrets-manager-paths
+    resources:
+      - bad-cross-namespace-path
+    result: fail
+  - kind: ExternalSecret
+    policy: deny-external-secrets
+    rule: aws-secrets-manager-paths
+    resources:
+      - good-global
+    result: pass
+  - kind: ExternalSecret
+    policy: deny-external-secrets
+    rule: aws-secrets-manager-paths
+    resources:
+      - good-ns-scoped
+    result: pass
+  - kind: ExternalSecret
+    policy: deny-external-secrets
+    rule: aws-secrets-manager-paths
+    resources:
+      - good-datafrom-extract
+    result: pass
+  - kind: ExternalSecret
+    policy: deny-external-secrets
+    rule: aws-secrets-manager-paths
+    resources:
+      - ignored-non-cluster-store
+    result: pass

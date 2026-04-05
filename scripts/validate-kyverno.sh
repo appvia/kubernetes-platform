@@ -28,9 +28,10 @@ check_helm() {
 }
 
 render_chart() {
-  echo -e "${YELLOW}→ Rendering Kyverno policies chart...${NC}"
+  local values_file=$1
+  echo -e "${YELLOW}→ Rendering Kyverno policies chart (${values_file})...${NC}"
 
-  if ! helm template kyverno-policies "$CHART_DIR" -f "$TEST_VALUES" >"$TEMP_DIR/rendered-policies.yaml" 2>&1; then
+  if ! helm template kyverno-policies "$CHART_DIR" -f "$values_file" >"$TEMP_DIR/rendered-policies.yaml" 2>&1; then
     echo -e "${RED}✗ Failed to render Kyverno policies chart${NC}"
     cat "$TEMP_DIR/rendered-policies.yaml"
     exit 1
@@ -42,7 +43,6 @@ render_chart() {
 validate_rendered_policies() {
   echo -e "${YELLOW}→ Validating rendered policies structure...${NC}"
 
-  # Check that policies were rendered
   POLICY_COUNT=$(grep -c "^kind: ClusterPolicy" "$TEMP_DIR/rendered-policies.yaml" || true)
   if [ "$POLICY_COUNT" -eq 0 ]; then
     echo -e "${RED}✗ No policies were rendered from the chart${NC}"
@@ -52,50 +52,38 @@ validate_rendered_policies() {
   echo -e "${GREEN}✓ Found $POLICY_COUNT policies${NC}"
 }
 
-validate_with_tests() {
-  echo -e "${YELLOW}→ Running Kyverno unit tests...${NC}"
+wipe_policy_directories() {
+  find "$TEMP_DIR" -mindepth 1 -maxdepth 1 -type d ! -name '.*' -exec rm -rf {} + 2>/dev/null || true
+}
 
-  # Check if tests directory exists
-  if [ ! -d "$CHART_DIR/tests" ]; then
-    echo -e "${YELLOW}⚠ No tests directory found, skipping tests${NC}"
-    return 0
-  fi
-
-  # Extract individual policies and organize for kyverno test
-  # kyverno test expects structure: policy-dir/.kyverno-test/kyverno-test.yaml
-
-  # Create subdirectories for each policy with its rendered YAML
+split_rendered_policies() {
   current_policy=""
   current_file=""
 
   while IFS= read -r line; do
-    # Look for policy source comments
     if [[ "$line" == "# Source: kyverno-policies/templates/"* ]]; then
-      # Extract policy name from: # Source: kyverno-policies/templates/deny-latest-image.yaml
       policy_name=$(echo "$line" | sed 's/.*templates\/\([^.]*\)\.yaml.*/\1/')
       current_policy="$policy_name"
       current_file="$TEMP_DIR/$policy_name/policy.yaml"
       mkdir -p "$TEMP_DIR/$policy_name/.kyverno-test"
     elif [[ "$line" == "---" ]]; then
       if [ ! -z "$current_file" ] && [ ! -z "$current_policy" ]; then
-        # Start new policy
         current_policy=""
         current_file=""
       fi
     elif [ ! -z "$current_file" ]; then
-      # Write to current policy file
       echo "$line" >>"$current_file"
     fi
   done <"$TEMP_DIR/rendered-policies.yaml"
+}
 
-  # Copy test files to the correct structure
+copy_chart_tests() {
   for test_policy_dir in "$CHART_DIR/tests"/*; do
     if [ -d "$test_policy_dir" ]; then
       policy_name=$(basename "$test_policy_dir")
       target_test_dir="$TEMP_DIR/$policy_name/.kyverno-test"
 
       if [ -d "$target_test_dir" ]; then
-        # Copy test files
         for test_file in "$test_policy_dir"/*; do
           if [ -f "$test_file" ]; then
             cp "$test_file" "$target_test_dir/" 2>/dev/null || true
@@ -104,20 +92,48 @@ validate_with_tests() {
       fi
     fi
   done
+}
 
-  # Run kyverno test on the temp directory
+run_kyverno_cli_tests() {
+  echo -e "${YELLOW}→ Running Kyverno unit tests...${NC}"
+
+  if [ ! -d "$CHART_DIR/tests" ]; then
+    echo -e "${YELLOW}⚠ No tests directory found, skipping tests${NC}"
+    return 0
+  fi
+
   if ! kyverno test "$TEMP_DIR" 2>&1 | tee "$TEMP_DIR/test-results.txt"; then
     echo -e "${RED}✗ Kyverno policy tests failed${NC}"
     exit 1
   fi
 
-  echo -e "${GREEN}✓ All Kyverno tests passed${NC}"
+  echo -e "${GREEN}✓ Kyverno tests passed for this values set${NC}"
+}
+
+validate_with_tests() {
+  local values_file=$1
+  local deny_external_secrets_test_override=${2:-}
+
+  render_chart "$values_file"
+  validate_rendered_policies
+  wipe_policy_directories
+  split_rendered_policies
+  copy_chart_tests
+
+  if [ -n "$deny_external_secrets_test_override" ]; then
+    override_src="$CHART_DIR/tests/deny-external-secrets/$deny_external_secrets_test_override"
+    override_dst="$TEMP_DIR/deny-external-secrets/.kyverno-test/kyverno-test.yaml"
+    if [ -f "$override_src" ] && [ -f "$override_dst" ]; then
+      cp "$override_src" "$override_dst"
+    fi
+  fi
+
+  run_kyverno_cli_tests
 }
 
 validate_chart_structure() {
   echo -e "${YELLOW}→ Validating Helm chart structure...${NC}"
 
-  # Validate Chart.yaml and values.yaml exist
   if [ ! -f "$CHART_DIR/Chart.yaml" ]; then
     echo -e "${RED}✗ Chart.yaml not found${NC}"
     exit 1
@@ -128,7 +144,6 @@ validate_chart_structure() {
     exit 1
   fi
 
-  # Validate .helmignore excludes tests/
   if [ -f "$CHART_DIR/.helmignore" ]; then
     if ! grep -q "^tests/" "$CHART_DIR/.helmignore"; then
       echo -e "${YELLOW}⚠ Warning: tests/ not in .helmignore${NC}"
@@ -148,9 +163,8 @@ main() {
   check_kyverno
   check_helm
   validate_chart_structure
-  render_chart
-  validate_rendered_policies
-  validate_with_tests
+  validate_with_tests "$TEST_VALUES"
+  validate_with_tests "scripts/test-kyverno-external-secrets-aws-values.yaml" "kyverno-test-aws.yaml"
 
   echo ""
   echo -e "${GREEN}========================================${NC}"

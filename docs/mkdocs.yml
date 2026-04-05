@@ -33,6 +33,7 @@ nav:
           - Admission Policy:
               - Kyverno: platform/security/kyverno.md
               - Policies: platform/security/kyverno-policies.md
+              - External Secrets (AWS paths): platform/security/external-secrets-aws-paths.md
               - Pod Security: platform/security/pod-security.md
       - Workloads:
           - Tenant Applications: platform/tenant/applications.md

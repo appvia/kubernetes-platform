@@ -9,13 +9,13 @@ resources:
 results:
   - kind: ExternalSecret
     policy: deny-external-secrets
+    rule: namespace-prefix-keys
     resources:
-      - bad
+      - bad-legacy
     result: fail
-    rule: namespace-prefix
   - kind: ExternalSecret
     policy: deny-external-secrets
+    rule: namespace-prefix-keys
     resources:
-      - good
-    result: fail
-    rule: namespace-prefix
+      - good-legacy
+    result: pass
