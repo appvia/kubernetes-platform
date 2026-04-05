@@ -7,7 +7,18 @@ metadata:
   annotations:
     app.kubernetes.io/managed-by: argocd
 spec:
+  # This store can be used by any namespace in the cluster - in order
+  # to ensure namespaces can only access secrets they are allowed to,
+  # a kyverno policy is added to restrict access based on the
+  #
+  # /CLUSTER_NAME/NAMESPACE_NAME/SECRET_NAME
+  # We will also allow global secrets, avilable to all namespaces,
+  # with the following format:
+  # /CLUSTER_NAME/global/SECRET_NAME
   provider:
     aws:
+      # The service to use for secrets management - should not be changed
       service: SecretsManager
+      # The region where your secrets are stored - this will be patched
+      # by ArgoCD based on the annotation
       region: PATCH_ME

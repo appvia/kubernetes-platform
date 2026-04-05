@@ -1,0 +1,25 @@
+ArgoCD Slack Notifications has been configured.
+
+To enable notifications for your applications, add the following annotation to your Application resource:
+
+  notifications.argoproj.io/subscribe.on-deployed.slack: "#channel-name"
+
+Available notification triggers:
+  - on-deployed: Triggered when application sync succeeds
+  - on-health-degraded: Triggered when application health becomes degraded
+  - on-sync-failed: Triggered when application sync fails
+
+Example Application annotation:
+
+  apiVersion: argoproj.io/v1alpha1
+  kind: Application
+  metadata:
+    name: my-app
+    annotations:
+      notifications.argoproj.io/subscribe.on-deployed.slack: "#deployments"
+      notifications.argoproj.io/subscribe.on-sync-failed.slack: "#alerts"
+
+To use a different channel per trigger, add multiple annotations.
+
+For more information, see:
+https://argo-cd.readthedocs.io/en/stable/operator-manual/notifications/
