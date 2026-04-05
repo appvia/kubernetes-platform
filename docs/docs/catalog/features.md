@@ -12,6 +12,7 @@ Each addon is enabled from the cluster definition using the feature flag label `
 | argo-rollouts | argocd-rollouts | `enable_argo_rollouts` | Progressive delivery controller for canary, blue-green, and experiments. | [docs](https://argoproj.github.io/argo-rollouts/) | `addons/helm/oss.yaml` |
 | argo-workflows | argo-workflows | `enable_argo_workflows` | Workflow engine for orchestrating parallel jobs on Kubernetes. | [docs](https://argoproj.github.io/argo-workflows/) | `addons/helm/oss.yaml` |
 | argo-cd | argocd | `enable_argocd` | Declarative GitOps continuous delivery tool for Kubernetes. | [docs](https://argo-cd.readthedocs.io/) | `addons/helm/oss.yaml` |
+| argocd-notifications | argocd | `enable_argocd_notifications` | Enables ArgoCD to send notifications (Slack, Email, etc.) for application events. | [docs](https://argo-cd.readthedocs.io/en/stable/operator-manual/notifications/) | `addons/helm/oss.yaml` |
 | argo-workflows | argocd | `enable_aws_argo_workflows_ingress` | Argo Workflows chart configured with AWS-oriented ingress patterns. | [docs](https://argoproj.github.io/argo-helm) | `addons/helm/cloud/aws.yaml` |
 | argo-cd | argocd | `enable_aws_argocd` | Argo CD release tuned for AWS reference architectures. | [docs](https://argoproj.github.io/argo-helm) | `addons/helm/cloud/aws.yaml` |
 | argo-cd | argocd | `enable_aws_argocd_ingress` | Argo CD with ingress settings for AWS load balancers and DNS. | [docs](https://argoproj.github.io/argo-helm) | `addons/helm/cloud/aws.yaml` |
