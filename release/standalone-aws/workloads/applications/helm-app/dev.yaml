@@ -2,8 +2,15 @@
 ## The Helm application being deployed
 helm:
   ## The repository containing the helm repository
-  repository: https://helm.github.io/examples
-  ## The chart to install
-  chart: hello-world
+  repository: https://github.com/appvia/kubernetes-platform
+  # The path into the repository to find the chart to install.
+  path: charts/validation-application
   ## The chart version to install
   version: "0.1.0"
+  ## Provide values to the helm chart from the app configuration
+  values:
+    commonLabels:
+      helm-app: validation-application
+    commonAnnotations:
+      app.kubernetes.io/managed-by: argocd
+      notifications.argoproj.io/subscribe.on-sync-succeeded.slack: cloud-notifications
