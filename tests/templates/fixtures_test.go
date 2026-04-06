@@ -241,8 +241,12 @@ spec:
                 value: "{{ $namespace }}"
 
     - repoURL: "{{ .helm.repository }}"
+      {{- if .helm.version }}
       targetRevision: "{{ .helm.version }}"
+      {{- end }}
+      {{- if .helm.chart }}
       chart: "{{ .helm.chart }}"
+      {{- end }}
       path: "{{ .helm.path }}"
       helm:
         releaseName: "{{ default .path.basenameNormalized .helm.release_name }}"
@@ -466,8 +470,12 @@ spec:
                 value: "tenant-system"
 
     - repoURL: "{{ .helm.repository }}"
+      {{- if .helm.version }}
       targetRevision: "{{ .helm.version }}"
+      {{- end }}
+      {{- if .helm.chart }}
       chart: "{{ .helm.chart }}"
+      {{- end }}
       path: "{{ .helm.path }}"
       helm:
         releaseName: "{{ default .path.basenameNormalized .helm.release_name }}"
