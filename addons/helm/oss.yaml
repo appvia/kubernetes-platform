@@ -29,7 +29,7 @@
   link: https://argoproj.github.io/argo-workflows/
   chart: argo-workflows
   repository: https://argoproj.github.io/argo-helm
-  version: "1.0.6"
+  version: "1.0.7"
   namespace: argo-workflows
 - feature: argocd_notifications
   category: gitops
