@@ -20,7 +20,10 @@ externalSecret:
   # The name of the secret in the secrets manager that contains OAuth token for Slack.
   # The should be within the path /CLUSTER_NAME/global/SECRET_NAME
   secretName: ""
-  key: "webhook-url"
+  # The name of the key within the secret that contains the OAuth token.
+  key: "slack-token"
+  # The namespace where the ExternalSecret will be created. This should match the
+  # namespace where ArgoCD is deployed.
   namespace: argocd
 
 # Notification configuration
