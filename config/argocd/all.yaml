@@ -52,6 +52,8 @@ configs:
 
 # Configuration for argocd notifications
 notifications:
+  # Enable the argocd notifications controller
+  enabled: true
   # COnfiguration for the config map that holds the notification
   # templates and triggers
   cm:
