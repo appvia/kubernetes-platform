@@ -8,7 +8,7 @@ helm:
   ## The chart version to install
   version: "0.1.0"
   ## Provide values to the helm chart from the app configuration
-  values:
+  values: |
     commonLabels:
       helm-app: validation-application
     commonAnnotations:
