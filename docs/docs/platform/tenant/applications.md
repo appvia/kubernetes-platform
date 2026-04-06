@@ -26,22 +26,28 @@ You can deploy using a helm chart, by adding a `CLUSTER_NAME.yaml`.
 
 ```yaml
 helm:
-  ## (Optional) The chart to use for the deployment.
-  chart: ./charts/platform
-  ## (Optional) The path inside a repository to the chart to use for the deployment.
-  path: ./charts/platform
-  ## (Required) The release name to use for the deployment.
-  release_name: platform
+  ## (Required) The Helm chart repository URL.
+  repository: https://charts.example.com
   ## (Required) The version of the chart to use for the deployment.
   version: 0.1.0
+  ## (Optional) The chart name or path within the repository.
+  chart: my-chart
+  ## (Optional) The path inside the repository to the chart.
+  repository_path: ./charts
+  ## (Required) The release name to use for the deployment.
+  release_name: platform
   ## (Optional) A collection of additional parameters - note these can reference metadata
   ## from the selected cluster definition.
   parameters:
     - name: serviceAccount.annotations.test
       value: default_value
-    # Reference metadata from the cluster definition
+    # When referencing cluster metadata, the value MUST begin with a dot (.)
+    # Supported metadata paths: .metadata.labels.*, .metadata.annotations.*, .server
     - name: serviceAccount.annotations.test2
-      value: metadata.labels.cloud_vendor
+      value: .metadata.labels.cloud_vendor
+  ## (Optional) Inline Helm values as a string
+  values: |
+    key: value
 
 ## Sync Options
 sync:
@@ -53,10 +59,20 @@ sync:
   max_duration: 5m
 ```
 
-In order to use helm values, you need to create a `values.yaml` file.
+### Helm Values Resolution
 
-1. For the helm values, create a folder called `values` inside the folder you created in step 1.
-2. Add a `all.yaml` file to the values folder, which will be used to deploy the application.
+Helm values are resolved in the following order (first match wins):
+
+1. `values/{{ .metadata.labels.cluster_name }}.yaml` - cluster-specific values
+2. `values/{{ .metadata.labels.environment }}.yaml` - environment-specific values
+3. `values/{{ .metadata.annotations.tenant }}.yaml` - tenant-specific values
+4. `values/all.yaml` - default values for all deployments
+5. Inline `helm.values` if provided
+
+To use helm values:
+
+1. Create a folder called `values` inside the folder created in step 1.
+2. Add value files for different scopes (`all.yaml`, environment-specific like `dev.yaml`, tenant-specific, or cluster-specific values).
 
 ## :material-application-array-outline: Helm with Multiple Charts
 
@@ -82,9 +98,9 @@ kustomize:
   path: kustomize
   # (Optional) Override the namespace to use for the deployment.
   namespace: override-namespace
-  # (Required) Details the revision to point; this is a revision within those repository and
+  # (Required) Details the revision to point; this is a revision within the repository and
   # is used to control a point in time of the manifests.
-  revision: <GIT+SHA>
+  revision: <GIT_SHA>
   # (Optional) Patches to apply to the deployment.
   patches:
     - target:
@@ -93,18 +109,24 @@ kustomize:
       patch:
         - op: replace
           path: /spec/template/spec/containers/0/image
-          ## This value is looked from the cluster definition.
-          value: metadata.annotations.image
-          ## This is the default value to use if the value is not found.
+          ## When referencing cluster metadata, the key MUST begin with a dot (.)
+          ## Supported metadata paths: .metadata.labels.*, .metadata.annotations.*, .server
+          key: .metadata.annotations.image
+          ## This is the default value to use if the key is not found.
           default: nginx:1.21.3
         - op: replace
           path: /spec/template/spec/containers/0/version
-          ## This value is looked from the cluster definition.
-          value: metadata.annotations.version
-          ## This is the default value to use if the value is not found.
+          ## Keys referencing metadata must start with a dot
+          key: .metadata.annotations.version
           default: "1.21.3"
-          ## An optional prefix can be applied to to value 
-          prefix: my-prefix-
+          ## An optional prefix can be prepended to the resolved value
+          ## If both are specified, final value = prefix + resolved_value
+          prefix: v-
+        - op: replace
+          path: /spec/template/spec/containers/0/registry
+          ## Literal values (without metadata lookup) should NOT start with a dot
+          value: my-registry.example.com
+          default: registry.example.com
 
   ## Optional labels applied to all resources
   commonLabels:
@@ -133,20 +155,25 @@ To provide better control and safety, the `revision` field is used to pin Kustom
 
 ## :material-application-array-outline: Kustomize with External Source
 
-For teams that prefer to maintain their Kustomize manifests in a separate repository, you can reference external sources directly. This provides flexibility in managing deployment configurations and allows for independent versioning strategies. A typical example would be to use floating tags to represent the environments.
+By default, Kustomize manifests are sourced from the tenant repository at the path you specify. However, you can also reference Kustomize configurations from external repositories for greater flexibility in managing deployment configurations and enabling independent versioning strategies.
+
+To use an external Kustomize repository:
 
 1. Create a folder for your application (this becomes the namespace by default)
 2. Add the `CLUSTER_NAME.yaml` file with external repository configuration:
 
 ```yaml
 kustomize:
-  # (Required) The URL to the kustomize repository
-  repository: GIT_URL
-  # (Required) The path inside the repository
+  # (Required) The URL to the external kustomize repository
+  repository: https://github.com/example/kustomize-configs.git
+  # (Required) The path inside the repository to the kustomize base
   path: overlays/dev
-  # (Required) Use a floating tag 'dev' for the development cluster and similar for the prod
+  # (Required) The Git revision (can be a commit SHA, branch, or tag)
+  # A common pattern is to use floating tags to represent environments (e.g., 'dev', 'staging', 'prod')
   revision: dev
 ```
+
+When `repository` is specified, Kustomize manifests are pulled from that external repository. When `repository` is not specified, manifests are sourced from the tenant repository at the same path as the CLUSTER_NAME.yaml file.
 
 ## :material-application-array-outline: Combinational Deployment
 
