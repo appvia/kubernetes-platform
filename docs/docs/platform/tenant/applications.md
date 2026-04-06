@@ -80,10 +80,26 @@ Similar to the helm deployment, create a folder for your deployments. Taking the
 
 1. Create a folder called for the application, e.g. `myapp`
 2. Create two folders inside the `myapp` folder, `frontend` and `backend`
-3. Add a `helm.yaml` file to the `frontend` folder.
-4. You can same format as above for the `helm.yaml` file.
-5. Add a `values` folder to the `frontend` folder, and add a `all.yaml` file to the values folder.
-6. Add a `values` folder to the `backend` folder, and add a `all.yaml` file to the values folder.
+3. Add a `CLUSTER_NAME.yaml` file to the `frontend` and `backend` folders.
+4. Use the same format as the basic Helm example for each file.
+5. Add a `values` folder to the `frontend` folder, and add value files as needed.
+6. Add a `values` folder to the `backend` folder, and add value files as needed.
+
+Example structure:
+
+```
+myapp/
+  frontend/
+    dev.yaml
+    values/
+      all.yaml
+  backend/
+    dev.yaml
+    values/
+      all.yaml
+```
+
+Each `CLUSTER_NAME.yaml` file follows the helm format shown in the Helm Applications section.
 
 ## :material-application-array-outline: Kustomize
 
@@ -184,14 +200,16 @@ You can combine both helm and kustomize deployments in a single file. This allow
 
 ```yaml
 helm:
-  ## (Optional) The chart to use for the deployment.
-  chart: ./charts/platform
-  ## (Optional) The path inside a repository to the chart to use for the deployment.
-  path: ./charts/platform
-  ## (Required) The release name to use for the deployment.
-  release_name: platform
+  ## (Required) The Helm chart repository URL.
+  repository: https://charts.example.com
   ## (Required) The version of the chart to use for the deployment.
   version: 0.1.0
+  ## (Optional) The chart name or path within the repository.
+  chart: my-chart
+  ## (Optional) The path inside the repository to the chart.
+  repository_path: ./charts
+  ## (Required) The release name to use for the deployment.
+  release_name: platform
 
 kustomize:
   # (Required) The path to the kustomize base.
