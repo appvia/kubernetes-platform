@@ -9,10 +9,6 @@ configMapName: argocd-notifications-cm
 # This will be created to hold sensitive data like webhook URLs
 secretName: argocd-notifications-secret
 
-# Name of the cluster secret store for External Secrets
-clusterSecretsStoreName: secrets-store
-
-  Secret configuration
 # The tenant repository must provide the Slack webhook URL via ExternalSecrets
 externalSecret:
   # Name of the secret in your cloud provider's secrets manager (e.g., AWS Secrets Manager)
