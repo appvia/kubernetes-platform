@@ -4,3 +4,11 @@ externalSecret:
   # The name of the secret in the secrets manager that contains OAuth token for Slack.
   # The should be within the path /CLUSTER_NAME/global/SECRET_NAME
   secretName: dev/global/notifications
+
+# Notification configuration
+notifications:
+  # Slack service configuration
+  slack:
+    # The default Slack channel where notifications will be sent if
+    # not overridden by application annotations
+    channel: "#cloud-notifications"

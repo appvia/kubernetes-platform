@@ -43,7 +43,7 @@ notifications:
 
   slack:
     serviceName: slack
-    channel: "#argocd-notifications"
+    channel: "#cloud-notifications"
     username: "ArgoCD"
     iconEmoji: ":rocket:"
 
