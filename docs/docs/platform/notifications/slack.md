@@ -6,10 +6,10 @@ This guide walks you through setting up Slack as your ArgoCD notification servic
 
 - ArgoCD is installed on your cluster (typically with `enable_argocd: "true"` in your cluster definition)
 - External Secrets Operator is installed (typically with `enable_external_secrets: "true"`)
-- You have a Slack workspace where you can create webhooks
+- You have a Slack workspace where you can create applications
 - You have permissions to store secrets in your cloud provider's secrets manager
 
-## Step 1: Create a Slack Webhook
+## Step 1: Create a Slack OAuth Token
 
 ### In Your Slack Workspace
 
@@ -17,27 +17,28 @@ This guide walks you through setting up Slack as your ArgoCD notification servic
 2. Click **"Create New App"** → **"From scratch"**
 3. Name your app (e.g., "ArgoCD Notifications")
 4. Select your workspace and click **"Create App"**
-5. Go to **"Incoming Webhooks"** in the left sidebar
-6. Toggle **"Activate Incoming Webhooks"** to **"On"**
-7. Click **"Add New Webhook to Workspace"**
-8. Select the channel where ArgoCD should post notifications (e.g., `#argocd-notifications`)
-9. Click **"Allow"**
-10. Copy the webhook URL (looks like: `https://hooks.slack.com/services/T00000000/B00000000/XXXXXXXXXXXXXXXXXXXX`)
+5. Go to **"OAuth & Permissions"** in the left sidebar
+6. Under **"Scopes"**, add the following bot token scopes:
+   - `chat:write` - Send messages
+   - `chat:write.public` - Post to public channels
+7. Under **"OAuth Tokens for Your Workspace"**, click **"Install to Workspace"**
+8. Review the permissions and click **"Allow"**
+9. Copy the **"Bot User OAuth Token"** (starts with `xoxb-`)
 
-**Important:** Keep this webhook URL secret. Anyone with this URL can post messages to your Slack channel.
+**Important:** Keep this OAuth token secret. Anyone with this token can post messages to your Slack workspace within the scope of the permissions granted.
 
-## Step 2: Store Webhook URL in Secrets Manager
+## Step 2: Store OAuth Token in Secrets Manager
 
-Store the webhook URL in your cloud provider's secrets manager following the global secrets path.
+Store the OAuth token in your cloud provider's secrets manager following the global secrets path.
 
 ### AWS Secrets Manager
 
 ```bash
-# Create the secret with the webhook URL
-# Format: /CLUSTER_NAME/global/argocd-slack-webhook
+# Create the secret with the OAuth token
+# Format: /CLUSTER_NAME/global/argocd-slack-token
 aws secretsmanager create-secret \
-  --name /my-cluster/global/argocd-slack-webhook \
-  --secret-string '{"webhook-url": "https://hooks.slack.com/services/T00000000/B00000000/XXXXXXXXXXXXXXXXXXXX"}'
+  --name /my-cluster/global/argocd-slack-token \
+  --secret-string '{"slack-token": "xoxb-YOUR_BOT_TOKEN"}'
 ```
 
 Alternatively, use the AWS Console:
@@ -47,10 +48,10 @@ Alternatively, use the AWS Console:
 3. Choose **"Other type of secret"**
 4. Configure as follows:
    - **Key/value pairs:**
-     - Key: `webhook-url`
-     - Value: (paste your webhook URL)
+     - Key: `slack-token`
+     - Value: (paste your OAuth bot token starting with `xoxb-`)
 5. Click **"Next"**
-6. **Secret name:** `/my-cluster/global/argocd-slack-webhook`
+6. **Secret name:** `/my-cluster/global/argocd-slack-token`
 7. Click **"Store"**
 
 ### Azure Key Vault
@@ -59,8 +60,8 @@ Alternatively, use the AWS Console:
 # Create the secret in Azure Key Vault
 az keyvault secret set \
   --vault-name my-keyvault \
-  --name my-cluster-global-argocd-slack-webhook \
-  --value '{"webhook-url": "https://hooks.slack.com/services/T00000000/B00000000/XXXXXXXXXXXXXXXXXXXX"}'
+  --name my-cluster-global-argocd-slack-token \
+  --value '{"slack-token": "xoxb-YOUR_BOT_TOKEN"}'
 ```
 
 ## Step 3: Enable ArgoCD Notifications in Your Cluster Definition
@@ -76,10 +77,10 @@ metadata:
   labels:
     enable_argocd: "true"
     enable_external_secrets: "true"
-    enable_argocd_notifications: "true"  # Enable notifications
+    enable_argocd_notifications: "true" # Enable notifications
   annotations:
-    # Secret path to the Slack webhook URL in Secrets Manager
-    argocd_notifications_secret_name: "my-cluster/global/argocd-slack-webhook"
+    # Secret path to the Slack OAuth token in Secrets Manager
+    argocd_notifications_secret_name: "my-cluster/global/argocd-slack-token"
 spec:
   # ... rest of cluster definition
 ```
@@ -91,32 +92,32 @@ Create notification configuration in your tenant repository:
 ```yaml
 # config/argocd_notifications/all.yaml
 externalSecret:
-  secretName: "my-cluster/global/argocd-slack-webhook"
-  key: "webhook-url"
+  secretName: "my-cluster/global/argocd-slack-token"
+  key: "slack-token"
   namespace: argocd
 
 notifications:
   enabled: true
-  
+
   slack:
     serviceName: slack
-    channel: "#argocd-notifications"  # Can be overridden per app
+    channel: "#argocd-notifications" # Can be overridden per app
     username: "ArgoCD"
     iconEmoji: ":rocket:"
-  
+
   triggers:
     - name: on-deployed
       enabled: true
       when: app.status.operationState.phase in ['Succeeded'] and app.status.operationState.finishedAt != ''
       oncePer: app.status.operationState.finishedAt
       template: app-deployed
-    
+
     - name: on-health-degraded
       enabled: true
       when: app.status.health.status == 'Degraded'
       oncePer: app.status.health.status
       template: app-health-degraded
-    
+
     - name: on-sync-failed
       enabled: true
       when: app.status.operationState.phase in ['Error', 'Failed']
@@ -131,12 +132,12 @@ For cluster-specific configuration, create:
 ```yaml
 # config/argocd_notifications/my-cluster.yaml
 externalSecret:
-  secretName: "my-cluster/global/argocd-slack-webhook"
-  key: "webhook-url"
+  secretName: "my-cluster/global/argocd-slack-token"
+  key: "slack-token"
 
 notifications:
   slack:
-    channel: "#my-cluster-deployments"  # Different channel for this cluster
+    channel: "#my-cluster-deployments" # Different channel for this cluster
 ```
 
 ## Step 5: Enable Notifications on Your Applications
@@ -152,7 +153,7 @@ metadata:
   annotations:
     # Subscribe to on-deployed trigger for the default channel
     notifications.argoproj.io/subscribe.on-deployed.slack: "true"
-    
+
     # Subscribe to specific channels per trigger
     notifications.argoproj.io/subscribe.on-deployed.slack: "#deployments"
     notifications.argoproj.io/subscribe.on-sync-failed.slack: "#alerts"
@@ -214,23 +215,27 @@ Repository: https://github.com/my-org/my-repo
 ### Notifications Not Sending
 
 1. **Check the ExternalSecret is synced:**
+
    ```bash
    kubectl get externalsecret -n argocd
    kubectl describe externalsecret argocd-notifications-secret -n argocd
    ```
 
 2. **Verify the Secret was created:**
+
    ```bash
    kubectl get secret argocd-notifications-secret -n argocd
    kubectl get secret argocd-notifications-secret -n argocd -o jsonpath='{.data.slack-token}' | base64 -d
    ```
 
 3. **Check the ConfigMap:**
+
    ```bash
    kubectl get configmap argocd-notifications-cm -n argocd
    ```
 
 4. **Review ArgoCD Notifications logs:**
+
    ```bash
    kubectl logs -n argocd -l app.kubernetes.io/name=argocd-notifications -f
    ```
@@ -240,13 +245,14 @@ Repository: https://github.com/my-org/my-repo
    kubectl get application my-app -n argocd -o yaml
    ```
 
-### Invalid Webhook URL
+### Invalid OAuth Token
 
-If you see errors like "Invalid webhook URL" in ArgoCD Notifications logs:
+If you see errors like "Invalid token" or "Invalid Slack token" in ArgoCD Notifications logs:
 
-1. Verify the webhook URL in Secrets Manager is correct
+1. Verify the OAuth token in Secrets Manager is correct and starts with `xoxb-`
 2. Ensure the secret path in `argocd_notifications_secret_name` annotation matches the stored secret
-3. Verify the key name in `externalSecret.key` matches the JSON key in the secret
+3. Verify the key name in `externalSecret.key` matches the JSON key in the secret (`slack-token`)
+4. Verify the OAuth token has the required scopes: `chat:write` and `chat:write.public`
 
 ### Secret Not Syncing
 
