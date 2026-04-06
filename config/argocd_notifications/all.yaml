@@ -25,9 +25,12 @@ secretName: argocd-notifications-secret
 
 # Configuration for fetching the Slack OAuth token from an external secrets manager
 externalSecret:
+  # Indicates whether to use ExternalSecrets to fetch the Slack OAuth token from
+  # a cloud provider's secrets manager (e.g., AWS Secrets Manager).
+  enabled: true
   # The name of the secret in the secrets manager that contains OAuth token for Slack.
   # The should be within the path /CLUSTER_NAME/global/SECRET_NAME
-  secretName: ""
+  secretName: "UPDATE_ME"
   # The name of the key within the secret that contains the OAuth token.
   key: "slack-token"
   # The namespace where the ExternalSecret will be created. This should match the

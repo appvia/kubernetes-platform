@@ -1,0 +1,6 @@
+---
+# Configuration for fetching the Slack OAuth token from an external secrets manager
+externalSecret:
+  # The name of the secret in the secrets manager that contains OAuth token for Slack.
+  # The should be within the path /CLUSTER_NAME/global/SECRET_NAME
+  secretName: dev/global/notifications
