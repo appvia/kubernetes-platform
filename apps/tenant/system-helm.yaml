@@ -200,7 +200,7 @@ spec:
               - "$values/{{ .path.path }}/values/{{ .metadata.labels.cluster_name }}.yaml"
             {{- if and (.helm.parameters) (gt (len .helm.parameters) 0) }}
             parameters:
-            {{- range $param := .parameters }}
+            {{- range $param := .helm.parameters }}
               - name: {{ $param.name }}
             {{- if not (hasPrefix "." $param.value) }}
                 value: "{{ $param.value }}"
