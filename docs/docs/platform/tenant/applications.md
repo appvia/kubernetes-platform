@@ -33,7 +33,7 @@ helm:
   ## (Optional) The chart name or path within the repository.
   chart: my-chart
   ## (Optional) The path inside the repository to the chart.
-  repository_path: ./charts
+  path: ./charts
   ## (Required) The release name to use for the deployment.
   release_name: platform
   ## (Optional) A collection of additional parameters - note these can reference metadata
@@ -207,7 +207,7 @@ helm:
   ## (Optional) The chart name or path within the repository.
   chart: my-chart
   ## (Optional) The path inside the repository to the chart.
-  repository_path: ./charts
+  path: ./charts
   ## (Required) The release name to use for the deployment.
   release_name: platform
 
