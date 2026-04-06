@@ -1,0 +1,149 @@
+# Default values for test-app
+# This is a YAML-formatted file for Helm template rendering.
+# Customize these values by creating values files in the tenant repository:
+# - config/test_app/<cluster_name>.yaml (cluster-specific)
+# - config/test_app/<cloud_vendor>.yaml (cloud-specific)
+# - config/test_app/all.yaml (global tenant override)
+
+# -- Number of Deployment replicas
+replicaCount: 2
+
+# Container image configuration
+image:
+  # -- Container image repository
+  repository: nginx
+  # -- Image pull policy. Options: Always, IfNotPresent, Never
+  pullPolicy: IfNotPresent
+  # -- Container image tag. Defaults to Chart.appVersion if not set
+  tag: "1.24-alpine"
+
+# -- Image pull secrets for private registries
+imagePullSecrets: []
+
+# -- Override the chart name
+nameOverride: ""
+
+# -- Override the full release name
+fullnameOverride: ""
+
+# -- Common labels applied to all resources
+commonLabels: {}
+
+# -- Common annotations applied to all resources
+commonAnnotations: {}
+
+# ServiceAccount configuration
+serviceAccount:
+  # -- Create a ServiceAccount for the deployment
+  create: true
+  # -- Additional ServiceAccount annotations
+  annotations: {}
+  # -- ServiceAccount name. If empty, defaults to release name
+  name: ""
+
+# -- Pod annotations. Prometheus scrape annotations are included by default
+podAnnotations:
+  prometheus.io/scrape: "true"
+  prometheus.io/port: "8080"
+
+# -- Additional pod labels
+podLabels:
+  app.kubernetes.io/component: web
+
+# Pod security context applied to all containers
+podSecurityContext:
+  # -- Run containers as non-root user
+  runAsNonRoot: true
+  # -- User ID for the container (nginx runs as uid 101)
+  runAsUser: 101
+  # -- File system group for mounted volumes
+  fsGroup: 101
+
+# Container security context
+securityContext:
+  # -- Prevent privilege escalation
+  allowPrivilegeEscalation: false
+  # -- Drop all Linux capabilities
+  capabilities:
+    drop:
+      - ALL
+  # -- Mount filesystem as read-only
+  readOnlyRootFilesystem: true
+
+# Service configuration
+service:
+  # -- Service type. Options: ClusterIP, LoadBalancer, NodePort
+  type: ClusterIP
+  # -- Service port (external)
+  port: 80
+  # -- Container port (internal)
+  targetPort: 8080
+  # -- Additional service annotations
+  annotations: {}
+
+# Resource requests and limits for the container
+resources:
+  # -- Resource limits (maximum allowed consumption)
+  limits:
+    cpu: 250m
+    memory: 128Mi
+  # -- Resource requests (guaranteed allocation)
+  requests:
+    cpu: 100m
+    memory: 64Mi
+
+# Horizontal Pod Autoscaler configuration
+autoscaling:
+  # -- Enable HPA
+  enabled: false
+  # -- Minimum number of replicas
+  minReplicas: 1
+  # -- Maximum number of replicas
+  maxReplicas: 10
+  # -- Target CPU utilization percentage for scaling
+  targetCPUUtilizationPercentage: 80
+
+# -- Node selector for pod scheduling. Example: {"node-role": "app"}
+nodeSelector: {}
+
+# -- Tolerations for pod scheduling on tainted nodes
+tolerations: []
+
+# -- Pod affinity and anti-affinity rules
+affinity: {}
+
+# Kubernetes NetworkPolicy configuration
+# Controls ingress and egress traffic to/from pods
+networkPolicy:
+  # -- Enable NetworkPolicy creation
+  enabled: true
+  # -- Policy types to enforce (Ingress, Egress, or both)
+  policyTypes:
+    - Ingress
+    - Egress
+  # -- Ingress rules: allowed sources and ports
+  ingress:
+    # Allow traffic from ingress-nginx namespace on port 8080
+    - from:
+        - namespaceSelector:
+            matchLabels:
+              name: ingress-nginx
+      ports:
+        - protocol: TCP
+          port: 8080
+  # -- Egress rules: allowed destinations and ports
+  egress:
+    # Allow DNS queries (port 53)
+    - to:
+        - namespaceSelector: {}
+      ports:
+        - protocol: TCP
+          port: 53
+        - protocol: UDP
+          port: 53
+    # Allow HTTPS traffic to any pod
+    - to:
+        - podSelector: {}
+      ports:
+        - protocol: TCP
+          port: 443
