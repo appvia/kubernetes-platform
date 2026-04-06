@@ -1,6 +1,6 @@
 apiVersion: v2
 name: argocd-notifications
-description: A Helm chart for configuring ArgoCD Slack notifications with ExternalSecrets integration
+description: A Helm chart for configuring ArgoCD Slack notifications with optional ExternalSecrets or direct secret value integration
 type: application
 version: 0.1.0
 appVersion: "0.1.0"

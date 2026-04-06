@@ -9,8 +9,17 @@ configMapName: argocd-notifications-cm
 # This will be created to hold sensitive data like webhook URLs
 secretName: argocd-notifications-secret
 
-# The tenant repository must provide the Slack webhook URL via ExternalSecrets
+# Secret management configuration
+# Choose one of two approaches:
+# 1. Use ExternalSecrets to fetch from cloud provider's secrets manager (recommended for production)
+# 2. Provide the secret directly as a Helm value (useful for local development)
+
 externalSecret:
+  # Enable ExternalSecrets integration
+  # If enabled, the chart will create an ExternalSecret resource to fetch the Slack webhook URL
+  # from your cloud provider's secrets manager (e.g., AWS Secrets Manager)
+  enabled: false
+
   # Name of the secret in your cloud provider's secrets manager (e.g., AWS Secrets Manager)
   # This follows the secret policy path: /CLUSTER_NAME/global/SECRETS
   # The tenant must provide this value in config/argocd_notifications/all.yaml or config/argocd_notifications/<cluster_name>.yaml
@@ -23,6 +32,15 @@ externalSecret:
 
   # Namespace where the external secret will be created
   namespace: argocd
+
+# Direct secret value configuration
+# Use this approach if you prefer to provide the Slack webhook URL directly via Helm values
+# This is simpler for local development but less secure than ExternalSecrets for production use
+directSecret:
+  # The Slack webhook URL or token
+  # When provided, a Kubernetes Secret will be created with this value
+  # You can also provide this via: --set directSecret.slackToken="your-token-here"
+  slackToken: ""
 
 # ArgoCD Notification Controller configuration
 # These values configure how ArgoCD sends Slack notifications
