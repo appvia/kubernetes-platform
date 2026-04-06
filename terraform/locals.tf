@@ -13,7 +13,7 @@ locals {
   ## The platform revision
   platform_revision = local.cluster.platform_revision
   ## Collection of tags to apply to resources
-  tags = merge(var.tags, {})
+  tags = merge(var.tags, { EksClusterName = local.cluster_name })
   ## The tenant path
   tenant_path = local.cluster.tenant_path
   ## The tenant repository

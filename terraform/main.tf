@@ -65,7 +65,9 @@ module "eks" {
   }
   ## External Secrets configuration
   external_secrets = {
-    enable = true
+    enable               = true
+    ssm_parameter_arns   = ["arn:aws:ssm:${local.region}:${local.account_id}:parameter/eks/*"]
+    secrets_manager_arns = ["arn:aws:secretsmanager:${local.region}:${local.account_id}:secret:*"]
   }
   ## External DNS configuration
   external_dns = {
