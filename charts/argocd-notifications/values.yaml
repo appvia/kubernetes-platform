@@ -21,9 +21,9 @@ externalSecret:
   # Example: my-cluster/global/argocd-slack-webhook
   secretName: ""
 
-  # Key within the secret that contains the webhook URL
+  # Key within the secret that contains the OAuth token
   # This is the JSON key if the secret is stored as a JSON object
-  key: "token"
+  key: "slack-token"
 
   # Namespace where the external secret will be created
   namespace: argocd
