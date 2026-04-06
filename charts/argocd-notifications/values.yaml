@@ -38,7 +38,7 @@ notifications:
 
     # Slack channel where notifications will be sent
     # Can be overridden per application via annotations
-    channel: "#argocd-notifications"
+    channel: "#cloud-notifications"
 
     # Username displayed in Slack messages
     username: "ArgoCD"
