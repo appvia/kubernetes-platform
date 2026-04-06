@@ -1,7 +1,18 @@
 # ArgoCD Notifications Configuration
 # This chart configures ArgoCD to send Slack notifications for application events
 
-# External Secret configuration
+# ConfigMap name for notification configuration
+# This will be created to hold the notification service and trigger configurations
+configMapName: argocd-notifications-cm
+
+# Secret name for notification credentials
+# This will be created to hold sensitive data like webhook URLs
+secretName: argocd-notifications-secret
+
+# Name of the cluster secret store for External Secrets
+clusterSecretsStoreName: secrets-store
+
+  Secret configuration
 # The tenant repository must provide the Slack webhook URL via ExternalSecrets
 externalSecret:
   # Name of the secret in your cloud provider's secrets manager (e.g., AWS Secrets Manager)
@@ -9,11 +20,11 @@ externalSecret:
   # The tenant must provide this value in config/argocd_notifications/all.yaml or config/argocd_notifications/<cluster_name>.yaml
   # Example: my-cluster/global/argocd-slack-webhook
   secretName: ""
-  
+
   # Key within the secret that contains the webhook URL
   # This is the JSON key if the secret is stored as a JSON object
-  key: "webhook-url"
-  
+  key: "token"
+
   # Namespace where the external secret will be created
   namespace: argocd
 
@@ -23,22 +34,22 @@ externalSecret:
 notifications:
   # Enable/disable Slack notifications
   enabled: true
-  
+
   # Slack service configuration
   slack:
     # Service name - should not be changed
     serviceName: slack
-    
+
     # Slack channel where notifications will be sent
     # Can be overridden per application via annotations
     channel: "#argocd-notifications"
-    
+
     # Username displayed in Slack messages
     username: "ArgoCD"
-    
+
     # Icon emoji or URL for the bot
     iconEmoji: ":rocket:"
-  
+
   # Notification triggers and templates
   # These define which application events trigger notifications
   triggers:
@@ -48,33 +59,33 @@ notifications:
       when: app.status.operationState.phase in ['Succeeded']
       oncePer: app.status.operationState.finishedAt
       template: app-deployed
-    
+
     # Trigger on application sync failure
     - name: on-health-degraded
       enabled: true
       when: app.status.health.status == 'Degraded'
       oncePer: app.status.health.status
       template: app-health-degraded
-    
+
     # Trigger on application sync error
     - name: on-sync-failed
       enabled: true
       when: app.status.operationState.phase in ['Error', 'Failed']
       oncePer: app.status.operationState.finishedAt
       template: app-sync-failed
-  
+
   # Message templates for different notification types
   templates:
     # Template for successful deployments
     appDeployed: |
       Application {{.app.metadata.name}} deployment is healthy.
       {{if eq .app.status.operationState.phase "Succeeded"}}✔{{end}} Application details: {{.context.argocdUrl}}/applications/{{.app.metadata.name}}
-    
+
     # Template for health degraded
     appHealthDegraded: |
       ⚠️ Application {{.app.metadata.name}} health status is {{.app.status.health.status}}
       Application details: {{.context.argocdUrl}}/applications/{{.app.metadata.name}}
-    
+
     # Template for sync failed
     appSyncFailed: |
       ❌ Application {{.app.metadata.name}} sync is {{.app.status.operationState.phase}}.
@@ -85,11 +96,3 @@ notifications:
       {{end}}
       {{end}}
       Application details: {{.context.argocdUrl}}/applications/{{.app.metadata.name}}
-
-# ConfigMap name for notification configuration
-# This will be created to hold the notification service and trigger configurations
-configMapName: argocd-notifications-cm
-
-# Secret name for notification credentials
-# This will be created to hold sensitive data like webhook URLs
-secretName: argocd-notifications-secret
