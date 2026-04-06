@@ -174,7 +174,7 @@ Commit your changes to your tenant repository. The platform will:
 
 1. Detect the `enable_argocd_notifications: "true"` label in your cluster definition
 2. Deploy the ArgoCD Notifications chart
-3. Create an ExternalSecret to fetch the webhook URL from Secrets Manager
+3. Create an ExternalSecret to fetch the Oauth token from Secrets Manager
 4. Create the ConfigMap with notification triggers and templates
 5. Configure ArgoCD to send notifications to Slack
 
