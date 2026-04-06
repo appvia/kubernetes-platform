@@ -243,7 +243,7 @@ spec:
     - repoURL: "{{ .helm.repository }}"
       targetRevision: "{{ .helm.version }}"
       chart: "{{ .helm.chart }}"
-      path: "{{ .helm.repository_path }}"
+      path: "{{ .helm.path }}"
       helm:
         releaseName: "{{ default .path.basenameNormalized .helm.release_name }}"
         ignoreMissingValueFiles: true
@@ -254,11 +254,11 @@ spec:
           - "$values/{{ .path.path }}/values/{{ .metadata.labels.cluster_name }}.yaml"
         {{- if .helm.values }}
         values: |
-          {{ .helm.values }}
+          {{- .helm.values | nindent 14 }}
         {{- end }}
         {{- if and (.helm.parameters) (gt (len .helm.parameters) 0) }}
         parameters:
-        {{- range $param := .parameters }}
+        {{- range $param := .helm.parameters }}
           - name: {{ $param.name }}
         {{- if not (hasPrefix "." $param.value) }}
             value: "{{ $param.value }}"
@@ -479,7 +479,7 @@ spec:
           - "$values/{{ .path.path }}/values/{{ .metadata.labels.cluster_name }}.yaml"
         {{- if and (.helm.parameters) (gt (len .helm.parameters) 0) }}
         parameters:
-        {{- range $param := .parameters }}
+        {{- range $param := .helm.parameters }}
           - name: {{ $param.name }}
         {{- if not (hasPrefix "." $param.value) }}
             value: "{{ $param.value }}"

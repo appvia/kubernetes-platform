@@ -142,6 +142,101 @@ const (
 }
 `
 
+	paramsTenantAppsHelmWithValues = `
+{
+  "server": "https://kubernetes.default.svc",
+  "sync": {
+    "phase": "secondary"
+  },
+  "metadata": {
+    "labels": {
+      "cluster_name": "dev",
+      "environment": "release",
+      "cloud_vendor": "aws"
+    },
+    "annotations": {
+      "platform_repository": "https://github.com/appvia/kubernetes-platform.git",
+      "platform_revision": "main",
+      "tenant_repository": "https://github.com/appvia/kubernetes-platform.git",
+      "tenant_revision": "main",
+      "tenant_path": "release/hub-aws",
+      "tenant": "tenant"
+    }
+  },
+  "path": {
+    "basenameNormalized": "dev",
+    "path": "release/hub-aws/workloads/applications/helm-app",
+    "segments": [
+      "release",
+      "hub-aws",
+      "workloads",
+      "applications",
+      "helm-app"
+    ]
+  },
+   "helm": {
+     "repository": "https://helm.github.io/examples",
+     "version": "0.1.0",
+     "chart": "hello-world",
+     "path": "",
+     "values": "replicaCount: 2\nimage:\n  repository: hello-world\n  tag: 1.0.0\nresources:\n  limits:\n    cpu: 100m\n    memory: 128Mi\n  requests:\n    cpu: 50m\n    memory: 64Mi\n"
+   }
+}
+`
+
+	paramsTenantAppsHelmWithParameters = `
+{
+  "server": "https://kubernetes.default.svc",
+  "sync": {
+    "phase": "secondary"
+  },
+  "metadata": {
+    "labels": {
+      "cluster_name": "dev",
+      "environment": "release",
+      "cloud_vendor": "aws"
+    },
+    "annotations": {
+      "platform_repository": "https://github.com/appvia/kubernetes-platform.git",
+      "platform_revision": "main",
+      "tenant_repository": "https://github.com/appvia/kubernetes-platform.git",
+      "tenant_revision": "main",
+      "tenant_path": "release/hub-aws",
+      "tenant": "tenant",
+      "region": "eu-west-1"
+    }
+  },
+  "path": {
+    "basenameNormalized": "dev",
+    "path": "release/hub-aws/workloads/applications/helm-app",
+    "segments": [
+      "release",
+      "hub-aws",
+      "workloads",
+      "applications",
+      "helm-app"
+    ]
+  },
+  "helm": {
+    "repository": "https://helm.github.io/examples",
+    "version": "0.1.0",
+    "chart": "hello-world",
+    "path": "",
+    "parameters": [
+      {
+        "name": "environment",
+        "value": "production"
+      },
+      {
+        "name": "region",
+        "value": ".metadata.annotations.region",
+        "default": "us-east-1"
+      }
+    ]
+  }
+}
+`
+
 	paramsTenantAppsKustomize = `
 {
   "server": "https://kubernetes.default.svc",
@@ -300,6 +395,18 @@ var _ = Describe("ApplicationSet templatePatch", func() {
 		When("apps-helm ApplicationSet", func() {
 			It("renders without error and produces valid YAML", func() {
 				assertRenderedPatchIsValidYAML(patchTenantAppsHelm, paramsTenantAppsHelm)
+			})
+		})
+
+		When("apps-helm ApplicationSet with values", func() {
+			It("renders without error and produces valid YAML", func() {
+				assertRenderedPatchIsValidYAML(patchTenantAppsHelm, paramsTenantAppsHelmWithValues)
+			})
+		})
+
+		When("apps-helm ApplicationSet with parameters", func() {
+			It("renders without error and produces valid YAML", func() {
+				assertRenderedPatchIsValidYAML(patchTenantAppsHelm, paramsTenantAppsHelmWithParameters)
 			})
 		})
 
