@@ -16,6 +16,14 @@
 # - config/argocd_notifications/<cluster_name>.yaml (cluster-specific override)
 # - config/argocd_notifications/<cloud_vendor>.yaml (cloud-specific defaults)
 
+# Name of the config map that will be created in Kubernetes to hold the notification
+# configuration
+configMapName: argocd-notifications-cm
+# Name of the secret that will be created in Kubernetes to hold sensitive
+# data like Slack tokens
+secretName: argocd-notifications-secret
+
+# Configuration for fetching the Slack OAuth token from an external secrets manager
 externalSecret:
   # The name of the secret in the secrets manager that contains OAuth token for Slack.
   # The should be within the path /CLUSTER_NAME/global/SECRET_NAME
@@ -55,7 +63,3 @@ notifications:
       when: app.status.operationState.phase in ['Error', 'Failed']
       oncePer: app.status.operationState.finishedAt
       template: app-sync-failed
-
-# ConfigMap and Secret names
-configMapName: argocd-notifications-cm
-secretName: argocd-notifications-secret
