@@ -41,7 +41,10 @@ jobs:
         run: |
           bash scripts/update-helm-addon-versions.sh --file addons/helm/oss.yaml
 
-      - name: Validate Helm addons
+      - name: Install Dependencies and Validate
+        run: pip install check-jsonschema
+
+      - name: Validate Helm Addons
         run: make validate-helm-addons
 
       - name: Create pull request
