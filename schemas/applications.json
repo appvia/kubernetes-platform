@@ -65,7 +65,7 @@
           }
         }
       },
-      "required": ["repository"]
+      "required": ["repository", "version"]
     },
     "helmParameter": {
       "type": "object",
