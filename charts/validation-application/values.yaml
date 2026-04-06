@@ -11,7 +11,7 @@ replicaCount: 2
 # Container image configuration
 image:
   # -- Container image repository
-  repository: nginx
+  repository: docker.io/nginx
   # -- Image pull policy. Options: Always, IfNotPresent, Never
   pullPolicy: IfNotPresent
   # -- Container image tag. Defaults to Chart.appVersion if not set
