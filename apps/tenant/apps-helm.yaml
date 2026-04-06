@@ -199,7 +199,7 @@ spec:
               - "$values/{{ .path.path }}/values/{{ .metadata.labels.cluster_name }}.yaml"
             {{- if .helm.values }}
             values: |
-              {{- .helm.values | toYaml | nindent 14 }}
+              {{- .helm.values | nindent 14 }}
             {{- end }}
             {{- if and (.helm.parameters) (gt (len .helm.parameters) 0) }}
             parameters:
