@@ -1,0 +1,17 @@
+---
+# Service account configuration for AWS Load Balancer Controller
+serviceAccount:
+  name: aws-load-balancer
+
+# Configuration for the AWS Load Balancer Controller
+controllerConfig:
+  # Feature gates to enable or disable specific features in the
+  # AWS Load Balancer Controller
+  featureGates:
+    # Layer 7 (L7) load balancing features, such as path-based
+    # routing and host-based routing
+    ALBGatewayAPI: true
+    # Layer 4 (L4) load balancing features, such as TCP and UDP
+    # load balancing (part of experimental features in AWS Load
+    # Balancer Controller)
+    NLBGatewayAPI: false

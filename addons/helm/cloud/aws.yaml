@@ -14,12 +14,6 @@
       value: .metadata.annotations.region
     - name: vpcTags.Name
       value: .metadata.labels.cluster_name
-    - name: serviceAccount.name
-      value: aws-load-balancer
-    - name: controllerConfig.featureGates.ALBGatewayAPI
-      value: "true"
-    - name: controllerConfig.featureGates.NLBGatewayAPI
-      value: "false"
 - feature: aws_ebs_csi_resources
   category: storage
   description: Default StorageClass and related helpers for AWS EBS CSI volumes.
