@@ -2,3 +2,17 @@
 configs:
   ## Set the timeout for the reconciliation to 10s
   timeout.reconciliation: 10s
+## Configuration for redis high availability
+redis-ha:
+  ## Enable redis high availability
+  enabled: false
+
+## Configuration for the argocd application controller
+controller:
+  ## Set the number of replicas for the argocd application controller
+  replicas: 1
+
+## Configuration for the application set controller
+applicationSet:
+  ## Set the number of replicas for the application set controller
+  replicas: 1
