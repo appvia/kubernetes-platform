@@ -17,6 +17,7 @@ spec:
   background: true
   rules:
     - name: deny-eks-resources
+      skipBackgroundRequests: true
       match:
         any:
           - resources:
@@ -29,6 +30,7 @@ spec:
                 - Nodegroup
                 - PodIdentityAssociation
       validate:
+        allowExistingViolations: true
         message: "EKS resources can only be provisioned in the ack-system namespace."
         deny:
           conditions:

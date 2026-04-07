@@ -19,12 +19,14 @@ spec:
   background: true
   rules:
     - name: deny-no-traffic-distribution
+      skipBackgroundRequests: true
       match:
         any:
           - resources:
               kinds:
                 - Service
       validate:
+        allowExistingViolations: true
         message: "Service must have .spec.trafficDistribution set to either PreferSameZone or PreferSameNode when Kubernetes version >= 1.34"
         pattern:
           spec:

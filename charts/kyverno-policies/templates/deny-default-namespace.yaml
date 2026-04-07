@@ -23,17 +23,20 @@ spec:
   background: true
   rules:
     - name: deny-default-namespace
+      skipBackgroundRequests: true
       match:
         any:
           - resources:
               kinds:
                 - Pod
       validate:
+        allowExistingViolations: true
         message: "Using 'default' namespace is not allowed."
         pattern:
           metadata:
             namespace: "!default"
     - name: validate-podcontroller-namespace
+      skipBackgroundRequests: true
       match:
         any:
           - resources:
@@ -43,6 +46,7 @@ spec:
                 - Job
                 - StatefulSet
       validate:
+        allowExistingViolations: true
         message: "Using 'default' namespace is not allowed for pod controllers."
         pattern:
           metadata:

@@ -21,6 +21,7 @@ spec:
   background: true
   rules:
     - name: deny-no-limits
+      skipBackgroundRequests: true
       match:
         any:
           - resources:
@@ -31,6 +32,7 @@ spec:
           namespaces:
             {{- include "kyverno-policies.excludedNamespaces" . | nindent 12 }}
       validate:
+        allowExistingViolations: true
         message: "CPU and memory resource requests and limits are required."
         pattern:
           spec:

@@ -19,6 +19,7 @@ spec:
   background: true
   rules:
     - name: require-image-tag
+      skipBackgroundRequests: true
       match:
         any:
           - resources:
@@ -29,12 +30,14 @@ spec:
           namespaces:
             {{- include "kyverno-policies.excludedNamespaces" . | nindent 12 }}
       validate:
+        allowExistingViolations: true
         message: "An image tag is required."
         pattern:
           spec:
             containers:
               - image: "*:*"
     - name: validate-image-tag
+      skipBackgroundRequests: true
       match:
         any:
           - resources:
@@ -45,6 +48,7 @@ spec:
           namespaces:
             {{- include "kyverno-policies.excludedNamespaces" . | nindent 12 }}
       validate:
+        allowExistingViolations: true
         message: "Using a mutable image tag e.g. 'latest' is not allowed."
         pattern:
           spec:

@@ -19,6 +19,7 @@ spec:
   background: true
   rules:
     - name: check-for-labels
+      skipBackgroundRequests: true
       match:
         any:
           - resources:
@@ -29,6 +30,7 @@ spec:
                 - Ingress
                 - DaemonSet
       validate:
+        allowExistingViolations: true
         message: "The labels `app.kubernetes.io/name`, `app.kubernetes.io/version`, and `app.kubernetes.io/part-of` are required."
         pattern:
           metadata:
@@ -37,12 +39,14 @@ spec:
               app.kubernetes.io/version: "?*"
               app.kubernetes.io/part-of: "?*"
     - name: check-deployment-template-labels
+      skipBackgroundRequests: true
       match:
         any:
           - resources:
               kinds:
                 - Deployment
       validate:
+        allowExistingViolations: true
         message: "The labels `app.kubernetes.io/name`, `app.kubernetes.io/version`, and `app.kubernetes.io/part-of` are required in the deployment template."
         pattern:
           spec:

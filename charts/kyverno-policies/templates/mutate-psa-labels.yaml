@@ -23,6 +23,7 @@ metadata:
 spec:
   rules:
     - name: add-psa-labels
+      skipBackgroundRequests: true
       match:
         any:
           - resources:

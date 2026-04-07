@@ -16,6 +16,7 @@ metadata:
 spec:
   rules:
     - name: rewrite-images-for-ecr-cache
+      skipBackgroundRequests: true
       match:
         any:
           - resources:

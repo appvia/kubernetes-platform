@@ -18,12 +18,14 @@ spec:
   background: false
   rules:
     - name: deny-empty-ingress-host
+      skipBackgroundRequests: true
       match:
         any:
           - resources:
               kinds:
                 - Ingress
       validate:
+        allowExistingViolations: true
         message: "The Ingress host name must be defined, not empty."
         deny:
           conditions:

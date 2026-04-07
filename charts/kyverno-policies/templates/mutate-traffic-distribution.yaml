@@ -17,6 +17,7 @@ metadata:
 spec:
   rules:
     - name: add-traffic-distribution
+      skipBackgroundRequests: true
       match:
         any:
           - resources:

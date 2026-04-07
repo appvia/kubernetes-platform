@@ -77,6 +77,7 @@ spec:
   background: {{ .Values.policies.restrictImageRegistries.background }}
   rules:
     - name: validate-registries
+      skipBackgroundRequests: true
       match:
         any:
           - resources:
@@ -126,6 +127,7 @@ spec:
     {{- $allExcluded := concat $globalExclude $additionalExclude $policyExclude | uniq }}
     {{- range $registry := .Values.policies.restrictImageRegistries.registries }}
     - name: validate-registry-{{ $registry.name | replace "." "-" | replace "/" "-" }}
+      skipBackgroundRequests: true
       match:
         any:
           - resources:

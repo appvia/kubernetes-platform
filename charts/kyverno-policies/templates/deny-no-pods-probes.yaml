@@ -23,6 +23,7 @@ spec:
   background: true
   rules:
     - name: deny-no-pod-probes
+      skipBackgroundRequests: true
       match:
         any:
           - resources:
@@ -40,6 +41,7 @@ spec:
               - CREATE
               - UPDATE
       validate:
+        allowExistingViolations: true
         message: "Liveness, readiness, or startup probes are required for all containers."
         foreach:
           - list: "{{ "{{ request.object.spec.containers[] }}" }}"
