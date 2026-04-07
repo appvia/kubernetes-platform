@@ -1,0 +1,10 @@
+---
+# Admission controller configuration
+admissionController:
+  autoscaling:
+    # -- Enable horizontal pod autoscaling
+    enabled: true
+    # -- Minimum number of pods
+    minReplicas: 2
+    # -- Maximum number of pods
+    maxReplicas: 10
