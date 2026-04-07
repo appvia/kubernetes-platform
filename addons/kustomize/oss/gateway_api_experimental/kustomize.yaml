@@ -1,0 +1,22 @@
+---
+kustomize:
+  ## The features to enable in the tenant cluster
+  feature: gateway_api
+  category: networking
+  description: Experimental Gateway API CRDs for ingress and mesh-style routing.
+  link: https://gateway-api.sigs.k8s.io/
+  ## The path to the kustomize overlay
+  path: config/crd/experimental
+  ## The location of an external kustomize repository (optional)
+  repository: https://github.com/kubernetes-sigs/gateway-api
+  ## The revision of the external repository (optional)
+  revision: v1.5.1
+
+namespace:
+  ## Name of the namespace to deploy the application
+  name: kube-system
+
+## Synchronization options
+sync:
+  ## We want to deploy gateway-api after the platform
+  phase: secondary

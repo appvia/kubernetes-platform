@@ -53,6 +53,7 @@ Each addon is enabled from the cluster definition using the feature flag label `
 
 | Path | Namespace | Feature flag | Description | Link | Source |
 |------|-----------|--------------|-------------|------|--------|
+| https://github.com/kubernetes-sigs/gateway-api@config/crd/experimental | kube-system | `enable_gateway_api` | Experimental Gateway API CRDs for ingress and mesh-style routing. | [docs](https://gateway-api.sigs.k8s.io/) | `addons/kustomize/oss/gateway_api_experimental/kustomize.yaml` |
 | https://github.com/kubernetes-sigs/gateway-api@config/crd | kube-system | `enable_gateway_api` | Gateway API CRDs for ingress and mesh-style routing. | [docs](https://gateway-api.sigs.k8s.io/) | `addons/kustomize/oss/gateway_api/kustomize.yaml` |
 
 ## Observability
