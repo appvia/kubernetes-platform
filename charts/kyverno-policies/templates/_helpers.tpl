@@ -94,6 +94,7 @@ spec:
             - {{ . }}
             {{- end }}
       validate:
+        allowExistingViolations: true
         message: "Image registry not allowed. Allowed registries are: {{ .Values.policies.restrictImageRegistries.allowedRegistries | join ", " }}"
         pattern:
           spec:
@@ -146,6 +147,7 @@ spec:
             - {{ . }}
             {{- end }}
       validate:
+        allowExistingViolations: true
         message: "Image must come from {{ $registry.name }} registry"
         pattern:
           spec:
