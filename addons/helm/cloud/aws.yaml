@@ -19,7 +19,7 @@
     - name: controllerConfig.featureGates.ALBGatewayAPI
       value: "true"
     - name: controllerConfig.featureGates.NLBGatewayAPI
-      value: "true"
+      value: "false"
 - feature: aws_ebs_csi_resources
   category: storage
   description: Default StorageClass and related helpers for AWS EBS CSI volumes.
