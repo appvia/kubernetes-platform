@@ -30,7 +30,7 @@ jobs:
           helm repo add argo https://argoproj.github.io/argo-helm
           helm repo update
       - name: Install Bats
-        uses: bats-core/bats-action@3.0.0
+        uses: bats-core/bats-action@4.0.0
       - name: Provision Cluster
         run: scripts/make-dev.sh --cluster-type standalone --cluster dev --use-git-commit
       - name: Running E2E
@@ -57,7 +57,7 @@ jobs:
           helm repo add argo https://argoproj.github.io/argo-helm
           helm repo update
       - name: Install Bats
-        uses: bats-core/bats-action@3.0.0
+        uses: bats-core/bats-action@4.0.0
       - name: Provision Cluster
         run: scripts/make-dev.sh --cluster-type hub --cluster hub --use-git-commit
       - name: Running E2E
