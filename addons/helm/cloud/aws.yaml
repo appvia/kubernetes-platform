@@ -5,7 +5,7 @@
   link: https://kubernetes-sigs.github.io/aws-load-balancer-controller/
   chart: aws-load-balancer-controller
   repository: https://aws.github.io/eks-charts
-  version: "3.2.1"
+  version: "3.2.2"
   namespace: ingress-system
   parameters:
     - name: clusterName
@@ -44,7 +44,7 @@
   link: https://github.com/kubernetes-sigs/aws-fsx-csi-driver
   chart: aws-fsx-csi-driver
   repository: https://kubernetes-sigs.github.io/aws-fsx-csi-driver
-  version: "1.16.0"
+  version: "1.17.0"
   namespace: kube-system
 - feature: aws_for_fluentbit
   category: observability
