@@ -55,9 +55,15 @@ spec:
         valueFiles:
           - "$values/config/{{ .feature }}/all.yaml"
           - "$values/config/{{ .feature }}/{{ .metadata.labels.cloud_vendor }}.yaml"
+          {{- if eq .metadata.annotations.tenant_path "." }}
+          - "$tenant/config/{{ .feature }}/all.yaml"
+          - "$tenant/config/{{ .feature }}/{{ .metadata.labels.cloud_vendor }}.yaml"
+          - "$tenant/config/{{ .feature }}/{{ .metadata.labels.cluster_name }}.yaml"
+          {{- else }}
           - "$tenant/{{ .metadata.annotations.tenant_path }}/config/{{ .feature }}/all.yaml"
           - "$tenant/{{ .metadata.annotations.tenant_path }}/config/{{ .feature }}/{{ .metadata.labels.cloud_vendor }}.yaml"
           - "$tenant/{{ .metadata.annotations.tenant_path }}/config/{{ .feature }}/{{ .metadata.labels.cluster_name }}.yaml"
+          {{- end }}
         {{- if .values }}
         values: |
           {{ .values }}

@@ -76,7 +76,7 @@ test:
 	@echo "--> Testing the configuration..."
 	@$(MAKE) validate
 	@$(MAKE) lint
-	@$(MAKE) test-templates
+	@$(MAKE) validate-templates
 
 validate-templates: generate-template-fixtures
 	@echo "--> Testing ApplicationSet templatePatch rendering (Ginkgo)..."
