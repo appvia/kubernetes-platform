@@ -93,7 +93,7 @@
   description: The CRDs for Kubernetes Gateway API, a next-generation Ingress API for Kubernetes.
   link: https://kgateway.dev/
   repository: oci://cr.kgateway.dev/kgateway-dev/charts/kgateway-crds
-  version: "v2.2.1"
+  version: "v2.2.4"
   repository_path: .
   namespace: ingress-system
 - feature: kgateway
@@ -102,7 +102,7 @@
   link: https://kgateway.dev/
   chart: kgateway
   repository: oci://cr.kgateway.dev/kgateway-dev/charts/kgateway
-  version: "v2.2.1"
+  version: "v2.2.4"
   repository_path: .
   namespace: ingress-system
 - feature: kro
