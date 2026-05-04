@@ -5,7 +5,7 @@
   link: https://argo-cd.readthedocs.io/
   chart: argo-cd
   repository: https://argoproj.github.io/argo-helm
-  version: "9.4.17"
+  version: "9.5.2"
   namespace: argocd
 - feature: argo_events
   category: gitops
@@ -29,7 +29,7 @@
   link: https://argoproj.github.io/argo-workflows/
   chart: argo-workflows
   repository: https://argoproj.github.io/argo-helm
-  version: "1.0.7"
+  version: "1.0.10"
   namespace: argo-workflows
 - feature: argocd_notifications
   category: gitops
@@ -46,7 +46,7 @@
   link: https://cert-manager.io/
   chart: cert-manager
   repository: https://charts.jetstack.io
-  version: "v1.20.1"
+  version: "v1.20.2"
   namespace: cert-manager
 - feature: cilium
   category: networking
@@ -54,7 +54,7 @@
   link: https://cilium.io/
   chart: cilium
   repository: https://helm.cilium.io/
-  version: "1.19.2"
+  version: "1.19.3"
   namespace: cilium-system
 - feature: cluster_autoscaler
   category: compute
@@ -78,7 +78,7 @@
   link: https://external-secrets.io/
   chart: external-secrets
   repository: https://charts.external-secrets.io
-  version: "2.2.0"
+  version: "2.3.0"
   namespace: external-secrets
 - feature: keda
   category: workloads
@@ -169,7 +169,7 @@
   link: https://www.opencost.io/
   chart: opencost
   repository: https://opencost.github.io/opencost-helm-chart
-  version: "2.5.12"
+  version: "2.5.14"
   namespace: opencost
   parameters:
     - name: opencost.exporter.defaultClusterId
