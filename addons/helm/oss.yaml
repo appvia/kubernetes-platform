@@ -88,6 +88,23 @@
   repository: https://kedacore.github.io/charts
   version: "2.19.0"
   namespace: keda-system
+- feature: kgateway-crds
+  category: networking
+  description: The CRDs for Kubernetes Gateway API, a next-generation Ingress API for Kubernetes.
+  link: https://kgateway.dev/
+  repository: oci://cr.kgateway.dev/kgateway-dev/charts/kgateway-crds
+  version: "v2.2.1"
+  repository_path: .
+  namespace: ingress-system
+- feature: kgateway
+  category: networking
+  description: Kubernetes Gateway API controller for advanced Ingress and service mesh capabilities.
+  link: https://kgateway.dev/
+  chart: kgateway
+  repository: oci://cr.kgateway.dev/kgateway-dev/charts/kgateway
+  version: "v2.2.1"
+  repository_path: .
+  namespace: ingress-system
 - feature: kro
   category: platform
   description: Kubernetes Resource Orchestrator for managing groups of custom resources.

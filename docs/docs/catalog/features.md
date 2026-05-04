@@ -48,12 +48,13 @@ Each addon is enabled from the cluster definition using the feature flag label `
 | aws-load-balancer-controller | ingress-system | `enable_aws_load_balancer` | AWS Load Balancer Controller for ALB/NLB and Gateway API integration. | [docs](https://kubernetes-sigs.github.io/aws-load-balancer-controller/) | `addons/helm/cloud/aws.yaml` |
 | cilium | cilium-system | `enable_cilium` | eBPF-based CNI, service mesh, and network security for Kubernetes. | [docs](https://cilium.io/) | `addons/helm/oss.yaml` |
 | external-dns | kube-system | `enable_external_dns` | Synchronizes Kubernetes Services and Ingresses with DNS providers. | [docs](https://github.com/kubernetes-sigs/external-dns) | `addons/helm/oss.yaml` |
+| kgateway | ingress-system | `enable_kgateway` | Kubernetes Gateway API controller for advanced Ingress and service mesh capabilities. | [docs](https://kgateway.dev/) | `addons/helm/oss.yaml` |
+| — | ingress-system | `enable_kgateway-crds` | The CRDs for Kubernetes Gateway API, a next-generation Ingress API for Kubernetes. | [docs](https://kgateway.dev/) | `addons/helm/oss.yaml` |
 
 ### Kustomize
 
 | Path | Namespace | Feature flag | Description | Link | Source |
 |------|-----------|--------------|-------------|------|--------|
-| https://github.com/kubernetes-sigs/gateway-api@config/crd/experimental | kube-system | `enable_gateway_api` | Experimental Gateway API CRDs for ingress and mesh-style routing. | [docs](https://gateway-api.sigs.k8s.io/) | `addons/kustomize/oss/gateway_api_experimental/kustomize.yaml` |
 | https://github.com/kubernetes-sigs/gateway-api@config/crd | kube-system | `enable_gateway_api` | Gateway API CRDs for ingress and mesh-style routing. | [docs](https://gateway-api.sigs.k8s.io/) | `addons/kustomize/oss/gateway_api/kustomize.yaml` |
 
 ## Observability
