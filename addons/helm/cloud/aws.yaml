@@ -257,6 +257,9 @@
   repository: public.ecr.aws
   version: "1.3.6"
   namespace: ack-system
+  parameters:
+    - name: aws.region
+      value: .metadata.annotations.region
 - feature: aws_ack_sfn
   category: aws
   description: ACK controller for AWS Step Functions.
