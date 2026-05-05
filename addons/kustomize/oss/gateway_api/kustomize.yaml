@@ -10,7 +10,7 @@ kustomize:
   ## The location of an external kustomize repository (optional)
   repository: https://github.com/kubernetes-sigs/gateway-api
   ## The revision of the external repository (optional)
-  revision: v1.5.1
+  revision: v1.5.0
 
 namespace:
   ## Name of the namespace to deploy the application
