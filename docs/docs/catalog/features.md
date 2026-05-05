@@ -122,18 +122,19 @@ Each addon is enabled from the cluster definition using the feature flag label `
 
 | Chart | Namespace | Feature flag | Description | Link | Source |
 |-------|-----------|--------------|-------------|------|--------|
-| aws-controllers-k8s/apigatewayv2-chart | ack-system | `enable_aws_ack_apigatewayv2` | ACK controller for Amazon API Gateway v2. | [docs](https://aws-controllers-k8s.github.io/community/) | `addons/helm/cloud/aws.yaml` |
-| aws-controllers-k8s/dynamodb-chart | ack-system | `enable_aws_ack_dynamodb` | ACK controller for Amazon DynamoDB. | [docs](https://aws-controllers-k8s.github.io/community/) | `addons/helm/cloud/aws.yaml` |
-| aws-controllers-k8s/eks-chart | ack-system | `enable_aws_ack_eks` | ACK controller for Amazon EKS. | [docs](https://aws-controllers-k8s.github.io/community/) | `addons/helm/cloud/aws.yaml` |
-| aws-controllers-k8s/eventbridge-chart | ack-system | `enable_aws_ack_eventbridge` | ACK controller for Amazon EventBridge. | [docs](https://aws-controllers-k8s.github.io/community/) | `addons/helm/cloud/aws.yaml` |
-| aws-controllers-k8s/iam-chart | ack-system | `enable_aws_ack_iam` | ACK controller for AWS IAM. | [docs](https://aws-controllers-k8s.github.io/community/) | `addons/helm/cloud/aws.yaml` |
-| aws-controllers-k8s/prometheusservice-chart | ack-system | `enable_aws_ack_prometheusservice` | ACK controller for Amazon Managed Service for Prometheus. | [docs](https://aws-controllers-k8s.github.io/community/) | `addons/helm/cloud/aws.yaml` |
-| aws-controllers-k8s/rds-chart | ack-system | `enable_aws_ack_rds` | ACK controller for Amazon RDS. | [docs](https://aws-controllers-k8s.github.io/community/) | `addons/helm/cloud/aws.yaml` |
-| aws-controllers-k8s/s3-chart | ack-system | `enable_aws_ack_s3` | ACK controller for Amazon S3. | [docs](https://aws-controllers-k8s.github.io/community/) | `addons/helm/cloud/aws.yaml` |
-| aws-controllers-k8s/ses-chart | ack-system | `enable_aws_ack_ses` | ACK controller for Amazon SES. | [docs](https://aws-controllers-k8s.github.io/community/) | `addons/helm/cloud/aws.yaml` |
-| aws-controllers-k8s/sfn-chart | ack-system | `enable_aws_ack_sfn` | ACK controller for AWS Step Functions. | [docs](https://aws-controllers-k8s.github.io/community/) | `addons/helm/cloud/aws.yaml` |
-| aws-controllers-k8s/sns-chart | ack-system | `enable_aws_ack_sns` | ACK controller for Amazon SNS. | [docs](https://aws-controllers-k8s.github.io/community/) | `addons/helm/cloud/aws.yaml` |
-| aws-controllers-k8s/sqs-chart | ack-system | `enable_aws_ack_sqs` | ACK controller for Amazon SQS. | [docs](https://aws-controllers-k8s.github.io/community/) | `addons/helm/cloud/aws.yaml` |
+| aws-controllers-k8s/acm-chart | ack-system | `enable_aws_ack_acm` | ACK controller for AWS Certificate Manager. | [docs](https://aws-controllers-k8s.github.io/docs/) | `addons/helm/cloud/aws.yaml` |
+| aws-controllers-k8s/apigatewayv2-chart | ack-system | `enable_aws_ack_apigatewayv2` | ACK controller for Amazon API Gateway v2. | [docs](https://aws-controllers-k8s.github.io/docs/) | `addons/helm/cloud/aws.yaml` |
+| aws-controllers-k8s/dynamodb-chart | ack-system | `enable_aws_ack_dynamodb` | ACK controller for Amazon DynamoDB. | [docs](https://aws-controllers-k8s.github.io/docs/) | `addons/helm/cloud/aws.yaml` |
+| aws-controllers-k8s/eks-chart | ack-system | `enable_aws_ack_eks` | ACK controller for Amazon EKS. | [docs](https://aws-controllers-k8s.github.io/docs/) | `addons/helm/cloud/aws.yaml` |
+| aws-controllers-k8s/eventbridge-chart | ack-system | `enable_aws_ack_eventbridge` | ACK controller for Amazon EventBridge. | [docs](https://aws-controllers-k8s.github.io/docs/) | `addons/helm/cloud/aws.yaml` |
+| aws-controllers-k8s/iam-chart | ack-system | `enable_aws_ack_iam` | ACK controller for AWS IAM. | [docs](https://aws-controllers-k8s.github.io/docs/) | `addons/helm/cloud/aws.yaml` |
+| aws-controllers-k8s/prometheusservice-chart | ack-system | `enable_aws_ack_prometheusservice` | ACK controller for Amazon Managed Service for Prometheus. | [docs](https://aws-controllers-k8s.github.io/docs/) | `addons/helm/cloud/aws.yaml` |
+| aws-controllers-k8s/rds-chart | ack-system | `enable_aws_ack_rds` | ACK controller for Amazon RDS. | [docs](https://aws-controllers-k8s.github.io/docs/) | `addons/helm/cloud/aws.yaml` |
+| aws-controllers-k8s/s3-chart | ack-system | `enable_aws_ack_s3` | ACK controller for Amazon S3. | [docs](https://aws-controllers-k8s.github.io/docs/) | `addons/helm/cloud/aws.yaml` |
+| aws-controllers-k8s/ses-chart | ack-system | `enable_aws_ack_ses` | ACK controller for Amazon SES. | [docs](https://aws-controllers-k8s.github.io/docs/) | `addons/helm/cloud/aws.yaml` |
+| aws-controllers-k8s/sfn-chart | ack-system | `enable_aws_ack_sfn` | ACK controller for AWS Step Functions. | [docs](https://aws-controllers-k8s.github.io/docs/) | `addons/helm/cloud/aws.yaml` |
+| aws-controllers-k8s/sns-chart | ack-system | `enable_aws_ack_sns` | ACK controller for Amazon SNS. | [docs](https://aws-controllers-k8s.github.io/docs/) | `addons/helm/cloud/aws.yaml` |
+| aws-controllers-k8s/sqs-chart | ack-system | `enable_aws_ack_sqs` | ACK controller for Amazon SQS. | [docs](https://aws-controllers-k8s.github.io/docs/) | `addons/helm/cloud/aws.yaml` |
 | crossplane-aws | crossplane-system | `enable_aws_crossplane_provider` | Crossplane AWS provider bundle for GitOps Bridge-style installs. | [docs](https://github.com/gitops-bridge-dev/gitops-bridge) | `addons/helm/cloud/aws.yaml` |
 | crossplane-aws-upbound | crossplane-system | `enable_aws_crossplane_upbound_provider` | Upbound AWS provider family for Crossplane on EKS. | [docs](https://github.com/gitops-bridge-dev/gitops-bridge) | `addons/helm/cloud/aws.yaml` |
 
