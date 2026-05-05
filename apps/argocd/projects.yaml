@@ -106,3 +106,7 @@ spec:
   namespaceResourceBlacklist:
     - group: apps
       kind: Daemonsets
+    - group: gateway.networking.k8s.io
+      kind: Gateways
+    - group: gateway.networking.k8s.io
+      kind: GatewayClasses
