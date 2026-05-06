@@ -28,8 +28,9 @@ This separation of applications and system components allows for proper access c
 
 You can deploy using a helm chart, by adding a `CLUSTER_NAME.yaml`.
 
-1. Create a folder (by default this becomes the namespace)
+1. Create a folder
 2. Add a `CLUSTER_NAME.yaml` file
+3. Specify the `namespace.name` field to define the namespace for deployment
 
 ```yaml
 helm:
@@ -41,6 +42,13 @@ helm:
   release_name: platform
   ## (Required) The version of the chart to use for the deployment.
   version: 0.1.0
+
+## (Required) Namespace configuration for this application
+namespace:
+  ## (Required) The namespace where the application will be deployed
+  name: my-namespace
+  ## (Optional) Whether to create the namespace if it doesn't exist (default: true)
+  create: true
 
 ## Sync Options
 sync:
@@ -59,17 +67,16 @@ In order to use helm values, you need to create a `values.yaml` file.
 
 ## :material-application-array-outline: Tenant Kustomize Application Set
 
-The [tenant kustomize application](https://github.com/appvia/kubernetes-platform/blob/main/apps/tenant/apps-kustomize.yaml) set is responsible for provisioning any kustomize related functionality from the tenant. The application set use's a [git generator](https://argo-cd.readthedocs.io/en/stable/operator-manual/applicationset/Generators-Git/) to source all the `kustomize.yml` from the [workloads](
+The [tenant kustomize application](https://github.com/appvia/kubernetes-platform/blob/main/apps/tenant/apps-kustomize.yaml) set is responsible for provisioning any kustomize related functionality from the tenant. The application set uses a [git generator](https://argo-cd.readthedocs.io/en/stable/operator-manual/applicationset/Generators-Git/) to source all the `CLUSTER_NAME.yaml` files from the tenant repository.
 
 Kustomize applications are defined in a similar manner to helm applications, with the following fields:
 
 ```YAML
----
 kustomize:
   # (Required) The path to the kustomize base.
   path: kustomize
-  # (Optional) Override the namespace to use for the deployment.
-  namespace: override-namespace
+  # (Required) Details the revision to point at
+  revision: main
   # (Optional) Patches to apply to the deployment.
   patches:
     - target:
@@ -78,14 +85,14 @@ kustomize:
       patch:
         - op: replace
           path: /spec/template/spec/containers/0/image
-          ## This value is looked from the cluster definition.
-          value: .metadata.annotations.image
+          ## When referencing cluster metadata, the key MUST begin with a dot (.)
+          key: .metadata.annotations.image
           ## This is the default value to use if the value is not found.
           default: nginx:1.21.3
         - op: replace
           path: /spec/template/spec/containers/0/version
-          ## This value is looked from the cluster definition.
-          value: .metadata.annotations.version
+          ## Keys referencing metadata must start with a dot
+          key: .metadata.annotations.version
           ## This is the default value to use if the value is not found.
           default: "1.21.3"
 
@@ -96,12 +103,23 @@ kustomize:
   # (Optional) Common annotations to apply to the resources.
   commonAnnotations:
     argocd.argoproj.io/sync-options: Prune=false
+
+## (Required) Namespace configuration for this application
+namespace:
+  ## (Required) The namespace where the application will be deployed
+  name: my-namespace
+  ## (Optional) Whether to create the namespace if it doesn't exist (default: true)
+  create: true
 ```
 
-## :material-application-array-outline: Tenant System Application Sets:
+## :material-application-array-outline: Tenant System Application Sets
 
-The platform will also deploy an additional applications for tenant system applications i.e. applications created in the `workspace/system` folder. These applications are deployed under the `tenant-system` ArgoCD project, which has elevated permissions. Note, these application sets are identical the above but are deployed under a different project, the only reason they are duplicated is at present ArgoCD does not permit to template the project name.
+The platform also deploys additional ApplicationSets for tenant system applications (applications created in the `workloads/system/` folder). These applications are deployed under the `tenant-system` ArgoCD project, which has elevated permissions.
 
-:material-arrow-right-bold-circle-outline: [tenant-system-helm](https://github.com/appvia/kubernetes-platform/blob/main/apps/tenant/system-helm.yaml) - Deploys system applications from the tenant repository.
+System applications follow the same deployment patterns as regular tenant applications:
 
-:material-arrow-right-bold-circle-outline: [tenant-system-kustomize](https://github.com/appvia/kubernetes-platform/blob/main/apps/tenant/tenant-system-kustomize.yaml) - Deploys system applications from the tenant repository using kustomize.
+:material-arrow-right-bold-circle-outline: [tenant-system-helm](https://github.com/appvia/kubernetes-platform/blob/main/apps/tenant/system-helm.yaml) - Deploys system applications from the tenant repository using Helm.
+
+:material-arrow-right-bold-circle-outline: [tenant-system-kustomize](https://github.com/appvia/kubernetes-platform/blob/main/apps/tenant/system-kustomize.yaml) - Deploys system applications from the tenant repository using Kustomize.
+
+Both application sets require the `namespace.name` field to be explicitly specified in the workload definition, determining where the system application and its resources will be deployed.

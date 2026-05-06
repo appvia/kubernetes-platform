@@ -33,9 +33,9 @@ When deploying system applications:
 
 The separation between system and regular applications helps maintain proper security boundaries while enabling necessary cluster-wide functionality.
 
-## :material-cog-outline: Namespace Override
+## :material-cog-outline: Namespace Configuration
 
-By default, applications are deployed into a namespace matching their folder name. However, system applications can override this default namespace using the `namespace` field:
+System applications require explicit namespace specification using the `namespace.name` field. This namespace is used to determine where the application and its resources will be deployed.
 
 ### Helm Example
 
@@ -51,6 +51,24 @@ helm:
   version: 0.1.0
 
 namespace:
-  ## Override the namespace
+  ## (Required) The namespace where the application will be deployed
   name: kube-system
+  ## (Optional) Whether to create the namespace if it doesn't exist (default: true)
+  create: true
+  ## (Optional) Pod Security policy level for the namespace (default: baseline)
+  pod_security: baseline
+```
+
+### Kustomize Example
+
+```yaml
+kustomize:
+  ## (Required) The path to the kustomize base
+  path: base
+  ## (Required) Details the revision to point at
+  revision: main
+
+namespace:
+  ## (Required) The namespace where the application will be deployed
+  name: ingress-nginx
 ```
