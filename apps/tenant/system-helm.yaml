@@ -120,6 +120,7 @@ spec:
 
   ## Template patch
   templatePatch: |
+    {{ $create_namespace := default true .namespace.create }}
     {{- $index := 0 }}
     {{- range $i, $k := .path.segments }}
     {{- if (eq "system" $k) }}
@@ -167,6 +168,7 @@ spec:
         server: "{{ .server }}"
 
       sources:
+        {{- if $create_namespace }}
         ## The kustomize folder includes the default settings and manifests
         ## for all namespace creations for the tenant applications - i.e.
         ## service accounts, network policies, etc.
@@ -185,6 +187,7 @@ spec:
                   - op: replace
                     path: /metadata/labels/platform.local~1namespace-type
                     value: "tenant-system"
+        {{- end }}
 
         - repoURL: "{{ .helm.repository }}"
           {{- if .helm.version }}

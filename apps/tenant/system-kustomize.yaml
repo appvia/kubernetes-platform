@@ -116,6 +116,7 @@ spec:
   ## If a kustomize.repository is defines we use the environment as the targetRevision. Its
   ## the responsibility of the repository to control the floating revisions.
   templatePatch: |
+    {{ $create_namespace := default true .namespace.create }}
     {{- $index := 0 }}
     {{- range $i, $k := .path.segments }}
     {{- if (eq "system" $k) }}
@@ -163,6 +164,9 @@ spec:
         server: "{{ .server }}"
 
       sources:
+        # We don't create the namespace if the user has explicity set the
+        # .namespace.create = false - else defaults to true
+        {{- if $create_namespace }}
         - repoURL: "{{ .metadata.annotations.platform_repository }}"
           targetRevision: "{{ .metadata.annotations.platform_revision }}"
           path: "apps/tenant/namespace"
@@ -183,6 +187,7 @@ spec:
                   - op: replace
                     path: /metadata/name
                     value: "{{ $namespace }}"
+        {{- end }}
 
         ## We either use the tenant repository of the kustomize.repository
         - repoURL: "{{ default .metadata.annotations.tenant_repository .kustomize.repository }}"
