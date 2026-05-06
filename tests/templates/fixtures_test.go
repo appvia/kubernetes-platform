@@ -409,14 +409,8 @@ spec:
           {{- end }}
         {{- end }}`
 
-	patchTenantSystemHelm = `{{- $index := 0 }}
-{{- range $i, $k := .path.segments }}
-{{- if (eq "system" $k) }}
-{{- $index = $i }}
-{{- break }}
-{{- end }}
-{{- end }}
-{{- $namespace := index .path.segments (add1 $index) }}
+	patchTenantSystemHelm = `{{- $create_namespace := default true .namespace.create }}
+{{- $namespace = .namespace.name }}
 {{- $context := toJson . | fromJson }}
 spec:
   {{- if and .ignoreDifferences (gt (len .ignoreDifferences) 0) }}
@@ -456,6 +450,7 @@ spec:
     server: "{{ .server }}"
 
   sources:
+    {{- if $create_namespace }}
     ## The kustomize folder includes the default settings and manifests
     ## for all namespace creations for the tenant applications - i.e.
     ## service accounts, network policies, etc.
@@ -474,6 +469,7 @@ spec:
               - op: replace
                 path: /metadata/labels/platform.local~1namespace-type
                 value: "tenant-system"
+    {{- end }}
 
     - repoURL: "{{ .helm.repository }}"
       {{- if .helm.version }}
@@ -519,14 +515,8 @@ spec:
       targetRevision: "{{ .metadata.annotations.tenant_revision }}"
       ref: values`
 
-	patchTenantSystemKustomize = `{{- $index := 0 }}
-{{- range $i, $k := .path.segments }}
-{{- if (eq "system" $k) }}
-{{- $index = $i }}
-{{- break }}
-{{- end }}
-{{- end }}
-{{- $namespace := index .path.segments (add1 $index) }}
+	patchTenantSystemKustomize = `{{- $create_namespace := default true .namespace.create }}
+{{- $namespace := .namespace.name }}
 {{- $context := toJson . | fromJson }}
 spec:
   {{- if and .ignoreDifferences (gt (len .ignoreDifferences) 0) }}
@@ -566,6 +556,9 @@ spec:
     server: "{{ .server }}"
 
   sources:
+    # We don't create the namespace if the user has explicity set the
+    # .namespace.create = false - else defaults to true
+    {{- if $create_namespace }}
     - repoURL: "{{ .metadata.annotations.platform_repository }}"
       targetRevision: "{{ .metadata.annotations.platform_revision }}"
       path: "apps/tenant/namespace"
@@ -586,6 +579,7 @@ spec:
               - op: replace
                 path: /metadata/name
                 value: "{{ $namespace }}"
+    {{- end }}
 
     ## We either use the tenant repository of the kustomize.repository
     - repoURL: "{{ default .metadata.annotations.tenant_repository .kustomize.repository }}"

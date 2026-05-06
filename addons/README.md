@@ -223,7 +223,12 @@ kustomize:
 
 ## Namespace configuration (required)
 namespace:
-  ## The name of the namespace where this addon will be deployed (required)
+  ## Indicates that this add-on requires a namespace to be created for it.
+  ## The namespace will be created if it does not exist, and the add-on resources
+  ## will be deployed into this namespace.
+  create: false # defaults to true
+
+  ## The name of the namespace where this add-on will be deployed (required)
   name: kyverno-system
 
   ## Pod Security Standards level for this namespace (optional)

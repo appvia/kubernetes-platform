@@ -56,6 +56,8 @@ spec:
                   operator: Exists
                 - key: kustomize.revision
                   operator: Exists
+                - key: namespace.name
+                  operator: Exists
 
   ## Sync Policy for the ApplicationSet
   syncPolicy:
@@ -83,7 +85,7 @@ spec:
       destination:
         server: "{{ .server }}"
         ## /workloads/applications/NAMESPACE/FILE.yaml
-        namespace: "{{ index .path.path 3 }}"
+        namespace: "{{ .namespace.name }}"
 
       ## Sync policy for the application
       syncPolicy:
@@ -116,15 +118,8 @@ spec:
   ## If a kustomize.repository is defines we use the environment as the targetRevision. Its
   ## the responsibility of the repository to control the floating revisions.
   templatePatch: |
-    {{ $create_namespace := default true .namespace.create }}
-    {{- $index := 0 }}
-    {{- range $i, $k := .path.segments }}
-    {{- if (eq "system" $k) }}
-    {{- $index = $i }}
-    {{- break }}
-    {{- end }}
-    {{- end }}
-    {{- $namespace := index .path.segments (add1 $index) }}
+    {{- $create_namespace := default true .namespace.create }}
+    {{- $namespace := .namespace.name }}
     {{- $context := toJson . | fromJson }}
     spec:
       {{- if and .ignoreDifferences (gt (len .ignoreDifferences) 0) }}
