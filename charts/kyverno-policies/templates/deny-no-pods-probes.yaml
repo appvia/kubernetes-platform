@@ -32,7 +32,7 @@ spec:
       exclude:
         resources:
           namespaces:
-            {{- include "kyverno-policies.excludedNamespaces" . | nindent 12 }}
+            {{- include "kyverno-policies.excludedNamespacesWithPolicy" (dict "context" . "policyExclusions" .Values.policies.denyNoPodProbes.excludeNamespaces) | nindent 12 }}
       preconditions:
         all:
           - key: "{{ "{{ request.operation || 'BACKGROUND' }}" }}"

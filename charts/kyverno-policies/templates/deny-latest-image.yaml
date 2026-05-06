@@ -28,7 +28,7 @@ spec:
       exclude:
         resources:
           namespaces:
-            {{- include "kyverno-policies.excludedNamespaces" . | nindent 12 }}
+            {{- include "kyverno-policies.excludedNamespacesWithPolicy" (dict "context" . "policyExclusions" .Values.policies.denyLatestImage.excludeNamespaces) | nindent 12 }}
       validate:
         allowExistingViolations: true
         message: "An image tag is required."
@@ -46,7 +46,7 @@ spec:
       exclude:
         resources:
           namespaces:
-            {{- include "kyverno-policies.excludedNamespaces" . | nindent 12 }}
+            {{- include "kyverno-policies.excludedNamespacesWithPolicy" (dict "context" . "policyExclusions" .Values.policies.denyLatestImage.excludeNamespaces) | nindent 12 }}
       validate:
         allowExistingViolations: true
         message: "Using a mutable image tag e.g. 'latest' is not allowed."

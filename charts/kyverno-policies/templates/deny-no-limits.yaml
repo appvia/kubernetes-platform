@@ -30,7 +30,7 @@ spec:
       exclude:
         resources:
           namespaces:
-            {{- include "kyverno-policies.excludedNamespaces" . | nindent 12 }}
+            {{- include "kyverno-policies.excludedNamespacesWithPolicy" (dict "context" . "policyExclusions" .Values.policies.denyNoLimits.excludeNamespaces) | nindent 12 }}
       validate:
         allowExistingViolations: true
         message: "CPU and memory resource requests and limits are required."

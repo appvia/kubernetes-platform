@@ -13,21 +13,29 @@ policies:
   denyDefaultNamespace:
     enabled: true
     validationFailureAction: enforce
+    # Additional namespaces to exclude (merged with globalExclusions)
+    excludeNamespaces: []
 
   # Deny direct EKS resource manipulation
   denyEksResources:
     enabled: true
     validationFailureAction: enforce
+    # Additional namespaces to exclude (merged with globalExclusions)
+    excludeNamespaces: []
 
   # Deny empty Ingress definitions
   denyEmptyIngress:
     enabled: true
     validationFailureAction: enforce
+    # Additional namespaces to exclude (merged with globalExclusions)
+    excludeNamespaces: []
 
   # ExternalSecret remote key layout (deny-external-secrets ClusterPolicy)
   denyExternalSecrets:
     enabled: true
     validationFailureAction: enforce
+    # Additional namespaces to exclude (merged with globalExclusions)
+    excludeNamespaces: []
     # When true and aws.clusterName is non-empty, require AWS SM names:
     #   <clusterName>/global/<secretsPrefix>*  OR  <clusterName>/<namespace>/<secretsPrefix>*
     # Intended for the platform AWS ClusterSecretStore (see docs).
@@ -43,50 +51,70 @@ policies:
   denyLatestImage:
     enabled: true
     validationFailureAction: enforce
+    # Additional namespaces to exclude (merged with globalExclusions)
+    excludeNamespaces: []
 
   # Deny workloads without labels
   denyNoLabels:
     enabled: true
     validationFailureAction: enforce
+    # Additional namespaces to exclude (merged with globalExclusions)
+    excludeNamespaces: []
 
   # Deny containers without resource limits
   denyNoLimits:
     enabled: true
     validationFailureAction: enforce
+    # Additional namespaces to exclude (merged with globalExclusions)
+    excludeNamespaces: []
 
   # Deny containers without health probes
   denyNoPodProbes:
     enabled: true
     validationFailureAction: enforce
+    # Additional namespaces to exclude (merged with globalExclusions)
+    excludeNamespaces: []
 
   # Deny traffic distribution policies (deprecated/legacy)
   denyNoTrafficDistribution:
-    enabled: false  # Disabled by default
+    enabled: false # Disabled by default
     validationFailureAction: audit
+    # Additional namespaces to exclude (merged with globalExclusions)
+    excludeNamespaces: []
 
   # Deny NodePort services
   denyNodeportService:
     enabled: true
     validationFailureAction: enforce
+    # Additional namespaces to exclude (merged with globalExclusions)
+    # Example: excludeNamespaces: ["ingress-system"]
+    excludeNamespaces:
+      - ingress-system
 
   # Mutate ECR images to use cache
   mutateEcrCache:
-    enabled: false  # Disabled by default - requires ECR configuration
+    enabled: false # Disabled by default - requires ECR configuration
     validationFailureAction: audit
+    # Additional namespaces to exclude (merged with globalExclusions)
+    excludeNamespaces: []
 
   # Mutate Pod Security Admission labels
   mutatePsaLabels:
     enabled: true
     validationFailureAction: audit
+    # Additional namespaces to exclude (merged with globalExclusions)
+    excludeNamespaces: []
 
   # Mutate traffic distribution (deprecated/legacy)
   mutateTrafficDistribution:
-    enabled: false  # Disabled by default
+    enabled: false # Disabled by default
     validationFailureAction: audit
+    # Additional namespaces to exclude (merged with globalExclusions)
+    excludeNamespaces: []
 
   # Restrict images to specific registries
   restrictImageRegistries:
-    enabled: false  # Opt-in - requires configuration
+    enabled: false # Opt-in - requires configuration
     validationFailureAction: audit
     background: true
 

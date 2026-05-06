@@ -29,8 +29,8 @@ Create chart name and version as used by the chart label.
 {{- end }}
 
 {{/*
-Return combined excluded namespaces (always + additional + policy-specific)
-Used by all policies to exclude system namespaces and user-configured namespaces.
+Return combined excluded namespaces (always + additional).
+Used as a base for policies that only use global exclusions.
 */}}
 {{- define "kyverno-policies.excludedNamespaces" -}}
 {{- $always := .Values.globalExclusions.always | default list }}
@@ -43,14 +43,16 @@ Used by all policies to exclude system namespaces and user-configured namespaces
 
 {{/*
 Return combined excluded namespaces including policy-specific exclusions.
-Args: policy-specific exclusions list
+Pass context as first arg, policy exclusions list as second arg.
+Usage: include "kyverno-policies.excludedNamespacesWithPolicy" (dict "context" . "policyExclusions" .Values.policies.policyName.excludeNamespaces)
 */}}
 {{- define "kyverno-policies.excludedNamespacesWithPolicy" -}}
-{{- $policyExclusions := . }}
-{{- $always := .Values.globalExclusions.always | default list }}
-{{- $additional := .Values.globalExclusions.additional | default list }}
-{{- $combined := concat $always $additional $policyExclusions | uniq }}
-{{- range $combined | sortAlpha }}
+{{- $context := .context }}
+{{- $policyExclusions := .policyExclusions | default list }}
+{{- $always := $context.Values.globalExclusions.always | default list }}
+{{- $additional := $context.Values.globalExclusions.additional | default list }}
+{{- $combined := concat $always $additional $policyExclusions | uniq | sortAlpha }}
+{{- range $combined }}
 - {{ . }}
 {{- end }}
 {{- end }}

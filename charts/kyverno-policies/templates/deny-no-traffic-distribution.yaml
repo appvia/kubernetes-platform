@@ -25,6 +25,10 @@ spec:
           - resources:
               kinds:
                 - Service
+      exclude:
+        resources:
+          namespaces:
+            {{- include "kyverno-policies.excludedNamespacesWithPolicy" (dict "context" . "policyExclusions" .Values.policies.denyNoTrafficDistribution.excludeNamespaces) | nindent 12 }}
       validate:
         allowExistingViolations: true
         message: "Service must have .spec.trafficDistribution set to either PreferSameZone or PreferSameNode when Kubernetes version >= 1.34"
