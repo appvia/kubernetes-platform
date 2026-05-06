@@ -82,15 +82,6 @@ policies:
     # Additional namespaces to exclude (merged with globalExclusions)
     excludeNamespaces: []
 
-  # Deny NodePort services
-  denyNodeportService:
-    enabled: true
-    validationFailureAction: enforce
-    # Additional namespaces to exclude (merged with globalExclusions)
-    # Example: excludeNamespaces: ["ingress-system"]
-    excludeNamespaces:
-      - ingress-system
-
   # Mutate ECR images to use cache
   mutateEcrCache:
     enabled: false # Disabled by default - requires ECR configuration
