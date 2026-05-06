@@ -21,9 +21,8 @@ This separation of applications and system components allows for proper access c
 
 You can deploy using a helm chart, by adding a `CLUSTER_NAME.yaml`.
 
-1. Create a folder 
+1. Create a folder (this becomes the namespace)
 2. Add a `CLUSTER_NAME.yaml` file
-3. Specify the `namespace.name` field to define the namespace for deployment
 
 ```yaml
 helm:
@@ -50,15 +49,6 @@ helm:
   values: |
     key: value
 
-## (Required) Namespace configuration for this application
-namespace:
-  ## (Required) The namespace where the application will be deployed
-  name: my-namespace
-  ## (Optional) Whether to create the namespace if it doesn't exist (default: true)
-  create: true
-  ## (Optional) Pod Security policy level for the namespace (default: baseline)
-  pod_security: baseline
-
 ## Sync Options
 sync:
   # (Optional) The phase to use for the deployment, used to determine the order of the deployment.
@@ -68,6 +58,8 @@ sync:
   # (Optional) The max duration to use for the deployment.
   max_duration: 5m
 ```
+
+The namespace for regular tenant applications is derived from the folder structure. When you create a folder under `workloads/applications/`, that folder name becomes the namespace where the application will be deployed.
 
 ### Helm Values Resolution
 
@@ -86,39 +78,38 @@ To use helm values:
 
 ## :material-application-array-outline: Helm with Multiple Charts
 
-Similar to the helm deployment, create a folder for your deployments. Taking the example of two charts, frontend and backend, you would create folders called `frontend` and `backend`, each with their own namespace configuration.
+Similar to the helm deployment, create a folder for your deployments. Taking the example of two charts, frontend and backend, you would create a folder called `frontend` and `backend`.
 
 1. Create a folder called for the application, e.g. `myapp`
 2. Create two folders inside the `myapp` folder, `frontend` and `backend`
-3. Add a `CLUSTER_NAME.yaml` file to the `frontend` and `backend` folders
-4. Specify the `namespace.name` for each deployment
-5. Use the same format as the basic Helm example for each file
-6. Add a `values` folder to the `frontend` folder, and add value files as needed
-7. Add a `values` folder to the `backend` folder, and add value files as needed
+3. Add a `CLUSTER_NAME.yaml` file to the `frontend` and `backend` folders.
+4. Use the same format as the basic Helm example for each file.
+5. Add a `values` folder to the `frontend` folder, and add value files as needed.
+6. Add a `values` folder to the `backend` folder, and add value files as needed.
 
 Example structure:
 
 ```
-myapp/
-  frontend/
-    dev.yaml
-    values/
-      all.yaml
-  backend/
-    dev.yaml
-    values/
-      all.yaml
+workloads/applications/
+  myapp/
+    frontend/
+      dev.yaml
+      values/
+        all.yaml
+    backend/
+      dev.yaml
+      values/
+        all.yaml
 ```
 
-Each `CLUSTER_NAME.yaml` file follows the helm format shown in the Helm Applications section and **must include** a `namespace.name` field.
+Each `CLUSTER_NAME.yaml` file follows the helm format shown in the Helm Applications section. The namespace for each deployment is derived from its immediate folder name (e.g., `frontend` and `backend` in this example).
 
 ## :material-application-array-outline: Kustomize
 
 You can deploy using kustomize, by adding a `CLUSTER_NAME.yaml`.
 
-1. Create a folder
+1. Create a folder (this becomes the namespace)
 2. Add the `CLUSTER_NAME.yaml` file
-3. Specify the `namespace.name` field to define the namespace for deployment
 
 ```yaml
 kustomize:
@@ -161,16 +152,9 @@ kustomize:
   ## Optional annotations applied to all resources
   commonAnnotations:
     argocd.argoproj.io/sync-options: Prune=false
-
-## (Required) Namespace configuration for this application
-namespace:
-  ## (Required) The namespace where the application will be deployed
-  name: my-namespace
-  ## (Optional) Whether to create the namespace if it doesn't exist (default: true)
-  create: true
-  ## (Optional) Pod Security policy level for the namespace (default: baseline)
-  pod_security: baseline
 ```
+
+The namespace for regular tenant applications is derived from the folder structure. When you create a folder under `workloads/applications/`, that folder name becomes the namespace where the application will be deployed.
 
 Unlike Helm where versions are managed externally through chart repositories, Kustomize manifests are typically stored directly in your repository. While Kustomize overlays provide environment-specific customization, changes to shared base configurations could potentially affect all environments simultaneously.
 
@@ -194,9 +178,8 @@ By default, Kustomize manifests are sourced from the tenant repository at the pa
 
 To use an external Kustomize repository:
 
-1. Create a folder for your application
-2. Add the `CLUSTER_NAME.yaml` file with external repository configuration
-3. Specify the `namespace.name` field to define the deployment namespace
+1. Create a folder for your application (this becomes the namespace)
+2. Add the `CLUSTER_NAME.yaml` file with external repository configuration:
 
 ```yaml
 kustomize:
@@ -207,14 +190,11 @@ kustomize:
   # (Required) The Git revision (can be a commit SHA, branch, or tag)
   # A common pattern is to use floating tags to represent environments (e.g., 'dev', 'staging', 'prod')
   revision: dev
-
-## (Required) Namespace configuration for this application
-namespace:
-  ## (Required) The namespace where the application will be deployed
-  name: my-namespace
 ```
 
 When `repository` is specified, Kustomize manifests are pulled from that external repository. When `repository` is not specified, manifests are sourced from the tenant repository at the same path as the CLUSTER_NAME.yaml file.
+
+The namespace is derived from the folder structure: the folder name under `workloads/applications/` becomes the namespace where the application will be deployed.
 
 ## :material-application-array-outline: Combinational Deployment
 
@@ -222,7 +202,6 @@ You can combine both helm and kustomize deployments in a single file. This allow
 
 1. Create a folder for your application, e.g. `myapp`
 2. Add a `CLUSTER_NAME.yaml` file that contains both helm and kustomize configurations
-3. Specify the `namespace.name` field to define the deployment namespace
 
 ```yaml
 helm:
@@ -242,9 +221,6 @@ kustomize:
   path: kustomize
   # (Required) Git revision
   revision: git+sha
-
-## (Required) Namespace configuration for this application
-namespace:
-  ## (Required) The namespace where the application will be deployed
-  name: my-namespace
 ```
+
+The namespace is derived from the folder structure: the folder name under `workloads/applications/` becomes the namespace where the application will be deployed.

@@ -35,7 +35,7 @@ The separation between system and regular applications helps maintain proper sec
 
 ## :material-cog-outline: Namespace Configuration
 
-System applications require explicit namespace specification using the `namespace.name` field. This namespace is used to determine where the application and its resources will be deployed.
+System applications deployed under `workloads/system/` require explicit namespace specification using the `namespace.name` field. Unlike regular tenant applications which derive the namespace from their folder structure, system applications must explicitly define their deployment namespace.
 
 ### Helm Example
 

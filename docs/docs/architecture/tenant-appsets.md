@@ -28,9 +28,8 @@ This separation of applications and system components allows for proper access c
 
 You can deploy using a helm chart, by adding a `CLUSTER_NAME.yaml`.
 
-1. Create a folder
+1. Create a folder (this becomes the namespace)
 2. Add a `CLUSTER_NAME.yaml` file
-3. Specify the `namespace.name` field to define the namespace for deployment
 
 ```yaml
 helm:
@@ -43,13 +42,6 @@ helm:
   ## (Required) The version of the chart to use for the deployment.
   version: 0.1.0
 
-## (Required) Namespace configuration for this application
-namespace:
-  ## (Required) The namespace where the application will be deployed
-  name: my-namespace
-  ## (Optional) Whether to create the namespace if it doesn't exist (default: true)
-  create: true
-
 ## Sync Options
 sync:
   # (Optional) The phase to use for the deployment, used to determine the order of the deployment.
@@ -59,6 +51,8 @@ sync:
   # (Optional) The max duration to use for the deployment.
   max_duration: 5m
 ```
+
+The namespace is automatically derived from the folder structure. The folder name under `workloads/applications/` becomes the namespace where the application will be deployed.
 
 In order to use helm values, you need to create a `values.yaml` file.
 
@@ -75,8 +69,6 @@ Kustomize applications are defined in a similar manner to helm applications, wit
 kustomize:
   # (Required) The path to the kustomize base.
   path: kustomize
-  # (Required) Details the revision to point at
-  revision: main
   # (Optional) Patches to apply to the deployment.
   patches:
     - target:
@@ -103,23 +95,18 @@ kustomize:
   # (Optional) Common annotations to apply to the resources.
   commonAnnotations:
     argocd.argoproj.io/sync-options: Prune=false
-
-## (Required) Namespace configuration for this application
-namespace:
-  ## (Required) The namespace where the application will be deployed
-  name: my-namespace
-  ## (Optional) Whether to create the namespace if it doesn't exist (default: true)
-  create: true
 ```
+
+The namespace is automatically derived from the folder structure. The folder name under `workloads/applications/` becomes the namespace where the application will be deployed.
 
 ## :material-application-array-outline: Tenant System Application Sets
 
 The platform also deploys additional ApplicationSets for tenant system applications (applications created in the `workloads/system/` folder). These applications are deployed under the `tenant-system` ArgoCD project, which has elevated permissions.
 
-System applications follow the same deployment patterns as regular tenant applications:
+**Key difference:** Unlike regular tenant applications which derive the namespace from folder structure, system applications **require explicit namespace specification** using the `namespace.name` field in the workload definition.
 
 :material-arrow-right-bold-circle-outline: [tenant-system-helm](https://github.com/appvia/kubernetes-platform/blob/main/apps/tenant/system-helm.yaml) - Deploys system applications from the tenant repository using Helm.
 
 :material-arrow-right-bold-circle-outline: [tenant-system-kustomize](https://github.com/appvia/kubernetes-platform/blob/main/apps/tenant/system-kustomize.yaml) - Deploys system applications from the tenant repository using Kustomize.
 
-Both application sets require the `namespace.name` field to be explicitly specified in the workload definition, determining where the system application and its resources will be deployed.
+System application workload definitions must include the `namespace.name` field to explicitly specify the deployment namespace.
