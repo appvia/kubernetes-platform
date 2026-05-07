@@ -47,6 +47,7 @@ Each addon is enabled from the cluster definition using the feature flag label `
 | aws-gateway-controller-chart | kube-system | `enable_aws_gateway_api_controller` | AWS Gateway API controller for VPC Lattice-backed HTTP routes. | [docs](https://github.com/aws/aws-application-networking-k8s) | `addons/helm/cloud/aws.yaml` |
 | aws-load-balancer-controller | ingress-system | `enable_aws_load_balancer` | AWS Load Balancer Controller for ALB/NLB and Gateway API integration. | [docs](https://kubernetes-sigs.github.io/aws-load-balancer-controller/) | `addons/helm/cloud/aws.yaml` |
 | cilium | cilium-system | `enable_cilium` | eBPF-based CNI, service mesh, and network security for Kubernetes. | [docs](https://cilium.io/) | `addons/helm/oss.yaml` |
+| gateway-helm | ingress-system | `enable_envoy_gateway` | Envoy-based implementation of the Kubernetes Gateway API for ingress and service mesh. | [docs](https://gateway.envoyproxy.io/) | `addons/helm/oss.yaml` |
 | external-dns | kube-system | `enable_external_dns` | Synchronizes Kubernetes Services and Ingresses with DNS providers. | [docs](https://github.com/kubernetes-sigs/external-dns) | `addons/helm/oss.yaml` |
 | kgateway | ingress-system | `enable_kgateway` | Kubernetes Gateway API controller for advanced Ingress and service mesh capabilities. | [docs](https://kgateway.dev/) | `addons/helm/oss.yaml` |
 | — | ingress-system | `enable_kgateway_crds` | The CRDs for Kubernetes Gateway API, a next-generation Ingress API for Kubernetes. | [docs](https://kgateway.dev/) | `addons/helm/oss.yaml` |
