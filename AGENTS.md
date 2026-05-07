@@ -69,8 +69,7 @@ This is the tenant workload engine.
 - `system-kustomize.yaml`: deploys tenant-managed system Kustomize workloads.
 - `namespace/`: baseline namespace manifests, labels, bindings, and policies applied before tenant workloads.
 
-The tenant application sets derive namespace names from the tenant repository path layout under
-`workloads/applications/<namespace>/...` and `workloads/system/<namespace>/...`.
+The tenant application sets derive namespace names from the tenant repository path layout. Regular tenant applications use folder structure at `workloads/applications/<namespace>/...` where the namespace is derived from the folder name. However, system applications at `workloads/system/<folder>/...` require explicit `namespace.name` specification in the workload definition.
 
 ### `apps/registration/`
 
@@ -261,8 +260,12 @@ Application workloads:
 
 System workloads:
 
-- `workloads/system/<namespace>/<app>/<cluster>.yaml`
-- `workloads/system/<namespace>/<cluster>.yaml`
+- `workloads/system/<folder>/<app>/<cluster>.yaml`
+- `workloads/system/<folder>/<cluster>.yaml`
+
+**Important:** For system workloads, each definition file must include a `namespace.name` field that explicitly specifies
+the namespace where the application will be deployed. The folder structure is organizational only for system applications;
+namespace names are no longer derived from the folder path for system workloads.
 
 Helm tenant apps can add values files under a sibling `values/` directory. The application sets
 look for:
