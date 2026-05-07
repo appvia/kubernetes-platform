@@ -410,7 +410,7 @@ spec:
         {{- end }}`
 
 	patchTenantSystemHelm = `{{- $create_namespace := default true .namespace.create }}
-{{- $namespace = .namespace.name }}
+{{- $namespace := .namespace.name }}
 {{- $context := toJson . | fromJson }}
 spec:
   {{- if and .ignoreDifferences (gt (len .ignoreDifferences) 0) }}

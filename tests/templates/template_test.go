@@ -312,6 +312,8 @@ const (
     "path": ""
   },
   "namespace": {
+    "name": "ingress-system",
+    "create": true,
     "pod_security": "baseline"
   }
 }
@@ -355,6 +357,7 @@ const (
   },
   "namespace": {
     "name": "ingress-system",
+    "create": true,
     "pod_security": "baseline"
   }
 }
