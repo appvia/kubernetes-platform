@@ -1,0 +1,14 @@
+---
+# Configuration for the Envoy Gateway CRDs
+crds:
+  # Indicates we want to deploy the Envoy Gateway CRDs
+  gatewayAPI:
+    enabled: true
+  # Indicates we want to install CRDs for the Envoy Gateway controller
+  envoyGateway:
+    enabled: true
+
+# Deployment configuration
+deployment:
+  # Number of replicas for the Envoy Gateway controller
+  replicas: 2

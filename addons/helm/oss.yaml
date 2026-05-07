@@ -215,3 +215,11 @@
   repository: https://charts.fairwinds.com/stable
   version: "4.11.0"
   namespace: kube-system
+- feature: envoy_gateway
+  category: networking
+  description: Envoy-based implementation of the Kubernetes Gateway API for ingress and service mesh.
+  link: https://gateway.envoyproxy.io/
+  chart: gateway-helm
+  repository: oci://docker.io/envoyproxy/gateway-helm
+  version: "v1.7.2"
+  namespace: ingress-system
