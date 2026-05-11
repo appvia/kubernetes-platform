@@ -5,7 +5,7 @@
   link: https://argo-cd.readthedocs.io/
   chart: argo-cd
   repository: https://argoproj.github.io/argo-helm
-  version: "9.5.11"
+  version: "9.5.13"
   namespace: argocd
 - feature: argo_events
   category: gitops
@@ -127,7 +127,7 @@
   link: https://www.kubecost.com/
   chart: kubecost
   repository: https://kubecost.github.io/kubecost
-  version: "3.1.6"
+  version: "3.1.7"
   namespace: kubecost
   parameters:
     - name: global.clusterName
@@ -205,7 +205,7 @@
   link: https://volcano.sh/
   chart: volcano
   repository: https://volcano-sh.github.io/helm-charts
-  version: "1.14.1"
+  version: "1.14.2"
   namespace: volcano-system
 - feature: vpa
   category: compute
