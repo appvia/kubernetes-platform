@@ -1,46 +1,73 @@
 ---
-# KEDA operator configuration
-# KEDA (Kubernetes Event Autoscaling) automatically scales workloads based on event sources
-# and metrics from external systems (e.g., message queues, HTTP requests, cloud metrics)
+# KEDA (Kubernetes Event-driven Autoscaling) Helm chart values.
+#
+# KEDA scales workloads in response to event sources and external metrics
+# (queues, HTTP traffic, cloud metrics, Prometheus, etc.).
+#
+# Upstream chart: https://github.com/kedacore/charts/tree/main/keda
+# Chart version is pinned in addons/helm/oss.yaml.
+#
+# IMPORTANT:
+#   Per-workload scaling behaviour (cool-down, HPA behaviour, fallback,
+#   restoreToOriginalReplicaCount, etc.) is NOT configured here. Those
+#   fields live on the ScaledObject CRD under `spec.advanced` and must
+#   be set by tenants on each ScaledObject. See:
+#   https://keda.sh/docs/latest/reference/scaledobject-spec/#advanced
 
+# ---------------------------------------------------------------------------
+# KEDA operator (control plane reconciler for ScaledObject / ScaledJob CRs).
+# ---------------------------------------------------------------------------
 operator:
-  # Number of replicas for the KEDA operator deployment
+  # Run multiple replicas for HA. Only one replica is the active leader;
+  # the others stand by and take over on failover. More replicas do not
+  # increase throughput, they only reduce downtime during pod loss.
+  # https://keda.sh/docs/latest/operate/cluster/#high-availability
   replicaCount: 3
 
-  # Pod anti-affinity rules to spread operator replicas across different nodes
-  # Improves availability by preventing multiple replicas on the same host
+  # Spread operator pods across nodes so a single node failure cannot take
+  # out every replica. `required...` makes this a hard scheduling constraint.
   affinity:
     podAntiAffinity:
-      # Pod anti-affinity is strictly enforced during scheduling
-      # Scheduling fails if no nodes with different hostnames are available
       requiredDuringSchedulingIgnoredDuringExecution:
         - labelSelector:
             matchExpressions:
               - key: app
                 operator: In
                 values: [keda-operator]
-          # Spread pods across different physical/virtual hosts
           topologyKey: kubernetes.io/hostname
 
-# KEDA metrics server configuration
-# The metrics server exposes custom metrics for HPA autoscaling decisions
+# ---------------------------------------------------------------------------
+# KEDA metrics API server (exposes external metrics to the HPA via the
+# external.metrics.k8s.io API). Like the operator, only one instance serves
+# traffic at a time; extra replicas exist for failover.
+# ---------------------------------------------------------------------------
 metricsServer:
-  # Number of replicas for the metrics server deployment
   replicaCount: 3
 
-# Security context for KEDA pods (user/group ID settings)
+# ---------------------------------------------------------------------------
+# Pod-level security context applied to KEDA pods.
+#
+# NOTE: The KEDA chart expects podSecurityContext to be keyed per component
+# (operator / metricServer / webhooks). The top-level form below is a
+# convenience shape this platform applies uniformly; if you need to override
+# per-component, switch to the per-component map documented in the chart's
+# values.yaml.
+# ---------------------------------------------------------------------------
 podSecurityContext:
-  # Run containers as a non-root user for improved security
   runAsNonRoot: true
-  # Specific user ID the container will run as (1000 is a standard unprivileged user)
+  # Unprivileged UID; matches the default non-root user shipped in the
+  # upstream KEDA images.
   runAsUser: 1000
 
-# Container-level security settings
+# ---------------------------------------------------------------------------
+# Container-level security context. Same per-component caveat as above
+# applies for the upstream chart.
+# ---------------------------------------------------------------------------
 securityContext:
-  # Drop all Linux capabilities to reduce attack surface
+  # Drop every Linux capability; KEDA does not require any.
   capabilities:
     drop: [ALL]
-  # Mount the filesystem as read-only to prevent tampering
+  # Immutable container filesystem - KEDA writes nothing to disk at runtime.
   readOnlyRootFilesystem: true
-  # Prevent containers from gaining elevated privileges (e.g., via setuid binaries)
+  # Block privilege escalation (e.g. via setuid binaries).
   allowPrivilegeEscalation: false
