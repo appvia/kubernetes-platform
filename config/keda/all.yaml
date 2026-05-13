@@ -1,0 +1,46 @@
+---
+# KEDA operator configuration
+# KEDA (Kubernetes Event Autoscaling) automatically scales workloads based on event sources
+# and metrics from external systems (e.g., message queues, HTTP requests, cloud metrics)
+
+operator:
+  # Number of replicas for the KEDA operator deployment
+  replicaCount: 3
+
+  # Pod anti-affinity rules to spread operator replicas across different nodes
+  # Improves availability by preventing multiple replicas on the same host
+  affinity:
+    podAntiAffinity:
+      # Pod anti-affinity is strictly enforced during scheduling
+      # Scheduling fails if no nodes with different hostnames are available
+      requiredDuringSchedulingIgnoredDuringExecution:
+        - labelSelector:
+            matchExpressions:
+              - key: app
+                operator: In
+                values: [keda-operator]
+          # Spread pods across different physical/virtual hosts
+          topologyKey: kubernetes.io/hostname
+
+# KEDA metrics server configuration
+# The metrics server exposes custom metrics for HPA autoscaling decisions
+metricsServer:
+  # Number of replicas for the metrics server deployment
+  replicaCount: 3
+
+# Security context for KEDA pods (user/group ID settings)
+podSecurityContext:
+  # Run containers as a non-root user for improved security
+  runAsNonRoot: true
+  # Specific user ID the container will run as (1000 is a standard unprivileged user)
+  runAsUser: 1000
+
+# Container-level security settings
+securityContext:
+  # Drop all Linux capabilities to reduce attack surface
+  capabilities:
+    drop: [ALL]
+  # Mount the filesystem as read-only to prevent tampering
+  readOnlyRootFilesystem: true
+  # Prevent containers from gaining elevated privileges (e.g., via setuid binaries)
+  allowPrivilegeEscalation: false
