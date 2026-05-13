@@ -41,6 +41,9 @@ nav:
       - Workloads:
           - Tenant Applications: platform/tenant/applications.md
           - Tenant System: platform/tenant/system.md
+          - Autoscaling:
+              - Overview: platform/workloads/autoscaling/overview.md
+              - KEDA: platform/workloads/autoscaling/keda.md
 
 theme:
   name: material
