@@ -20,10 +20,11 @@
 12. [Example Configurations](#example-configurations)
 13. [CPU-Based Scaling with KEDA](#cpu-based-scaling-with-keda)
 14. [Time-Based Scaling — Scale to Zero on a Schedule](#time-based-scaling-scale-to-zero-on-a-schedule)
-15. [Vertical Scaling — Pod Resource Requests (VPA + KEDA)](#vertical-scaling-pod-resource-requests-vpa-keda)
-16. [Operational Commands & Debugging](#operational-commands-debugging)
-17. [Known Constraints & Gotchas](#known-constraints-gotchas)
-18. [When to Use KEDA vs Plain HPA](#when-to-use-keda-vs-plain-hpa)
+15. [Cron + CPU: schedule vs load](#cron-cpu-schedule-vs-load)
+16. [Vertical Scaling — Pod Resource Requests (VPA + KEDA)](#vertical-scaling-pod-resource-requests-vpa-keda)
+17. [Operational Commands & Debugging](#operational-commands-debugging)
+18. [Known Constraints & Gotchas](#known-constraints-gotchas)
+19. [When to Use KEDA vs Plain HPA](#when-to-use-keda-vs-plain-hpa)
 
 ---
 
@@ -701,6 +702,8 @@ spec:
         name: rabbitmq-auth
 ```
 
+If you combine **`cpu` with `cron`** (for example scale to zero on weekends while scaling on CPU during the week), both triggers still feed **one** KEDA-managed HPA; Kubernetes takes the **maximum** of the replica counts each metric implies. There is no separate CPU autoscaler “arguing” with cron. For behaviour across inactive windows, `minReplicaCount: 0`, and strict off-hours policies, see [Cron + CPU: schedule vs load](#cron-cpu-schedule-vs-load).
+
 ### `metricType` options
 
 | metricType | Behaviour |
@@ -866,6 +869,23 @@ spec:
 ```
 
 **Result:** Outside business hours with an empty queue and low CPU, the service scales to zero. During business hours, it holds at least 5 replicas. If traffic spikes beyond what 5 replicas can handle, queue depth and CPU triggers push it higher — up to 50.
+
+### Cron + CPU: schedule vs load {#cron-cpu-schedule-vs-load}
+
+A common question is whether a **weekend / overnight “off” schedule** (`cron` + `minReplicaCount: 0`) will **fight** **CPU-based** scaling.
+
+**They do not run as two separate autoscalers.** Cron and CPU are **triggers on the same `ScaledObject`**, and KEDA still creates **one** managed HPA for that object. Each trigger contributes a metric; the HPA evaluates the replica count implied by **each** metric and adopts the **maximum** — the same “highest desired replica count wins” rule described for other multi-trigger setups ([HPA-backed scale-up](#hpa-backed-scale-up-configuration), [CPU + queue example](#cpu-based-scaling-with-keda)). That is coordination, not two controllers overwriting each other. The case that *does* cause fights is a **second, manually created HPA** on the same workload ([Known constraints](#known-constraints-gotchas)).
+
+**How to read it operationally**
+
+| Situation | What usually happens |
+|---|---|
+| Cron window **active** (`desiredReplicas` set), traffic is low | Cron sets a **floor** at least that high; CPU is satisfied or also drives replicas — you get `max(cron, cpu)` capped by `maxReplicaCount`. |
+| Cron window **active**, traffic is high | CPU can push replicas **above** the cron baseline up to `maxReplicaCount`. |
+| Cron window **inactive**, `minReplicaCount: 0`, **no pods** | There is no CPU utilisation to measure; the workload can stay at **zero** unless another trigger can activate scale-from-zero (for example queue depth). |
+| Cron window **inactive**, but **pods are running** | CPU (and any other triggers) can still recommend replicas. Autoscaling alone cannot enforce a “hard” blackout if something keeps pods alive—use pausing (`autoscaling.keda.sh/paused`), ingress or policy controls, or remove other scale-from-zero triggers if you need a strict off window. |
+
+**Practical pattern:** Use `cron` for a **time-based baseline** during known hours (for example weekdays 08:00–18:00) and `cpu` for **burst scaling on top**. Use `minReplicaCount` and any non-CPU triggers to define behaviour outside those windows (for example full scale-to-zero on nights and weekends).
 
 ### Cron timezone reference
 
