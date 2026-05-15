@@ -44,6 +44,7 @@ nav:
           - Autoscaling:
               - Overview: platform/workloads/autoscaling/overview.md
               - KEDA: platform/workloads/autoscaling/keda.md
+              - VPA: platform/workloads/autoscaling/vpa.md
 
 theme:
   name: material

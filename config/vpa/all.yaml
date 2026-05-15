@@ -1,0 +1,182 @@
+# VPA Helm Values — Platform Defaults
+# =====================================
+# Production-grade configuration for the Vertical Pod Autoscaler
+# Reference: https://github.com/FairwindsOps/charts/tree/master/stable/vpa
+
+# RBAC Configuration
+rbac:
+  create: true
+  extraRules: {}
+
+# Service Account Configuration
+serviceAccount:
+  create: true
+  annotations: {}
+  automountServiceAccountToken: true
+
+# Recommender Component — core VPA logic
+# Monitors pod resource usage and recommends right-sized requests
+recommender:
+  enabled: true
+  replicaCount: 2
+  revisionHistoryLimit: 10
+
+  # Resource recommendations are conservative by default
+  extraArgs:
+    v: "2"
+    # Minimum CPU recommendation floor (prevents under-sizing for small workloads)
+    pod-recommendation-min-cpu-millicores: "25"
+    # Minimum memory recommendation floor
+    pod-recommendation-min-memory-mb: "128"
+    # History length for deciding whether metrics are sufficient for recommendation
+    recommendationMarginFraction: "0.15"
+    # How frequently update VPA resource recommendation
+    recommendation-margin-fraction: "0.15"
+
+  # Pod disruption budget — prevent simultaneous evictions during updates
+  podDisruptionBudget:
+    minAvailable: 1
+
+  image:
+    repository: registry.k8s.io/autoscaling/vpa-recommender
+    pullPolicy: IfNotPresent
+
+  # Security hardening
+  podSecurityContext:
+    runAsNonRoot: true
+    runAsUser: 65534
+    seccompProfile:
+      type: RuntimeDefault
+
+  securityContext:
+    readOnlyRootFilesystem: true
+    allowPrivilegeEscalation: false
+    capabilities:
+      drop:
+        - ALL
+
+  # Resource requests/limits for the recommender itself (tightly constrained)
+  resources:
+    requests:
+      cpu: 50m
+      memory: 128Mi
+    limits:
+      cpu: 200m
+      memory: 512Mi
+
+  livenessProbe:
+    failureThreshold: 6
+    periodSeconds: 5
+    timeoutSeconds: 3
+
+  readinessProbe:
+    failureThreshold: 3
+    periodSeconds: 5
+    timeoutSeconds: 3
+
+# Updater Component — applies VPA recommendations
+# In production, use updateMode: "Off" (recommendations only)
+# and apply updates manually or through GitOps pipeline
+updater:
+  enabled: true
+  replicaCount: 2
+  revisionHistoryLimit: 10
+
+  podDisruptionBudget:
+    minAvailable: 1
+
+  image:
+    repository: registry.k8s.io/autoscaling/vpa-updater
+    pullPolicy: IfNotPresent
+
+  securityContext:
+    readOnlyRootFilesystem: true
+    allowPrivilegeEscalation: false
+    capabilities:
+      drop:
+        - ALL
+
+  resources:
+    requests:
+      cpu: 50m
+      memory: 64Mi
+    limits:
+      cpu: 200m
+      memory: 256Mi
+
+  livenessProbe:
+    failureThreshold: 6
+    periodSeconds: 5
+    timeoutSeconds: 3
+
+  readinessProbe:
+    failureThreshold: 3
+    periodSeconds: 5
+    timeoutSeconds: 3
+
+# Admission Controller — validates VPA resources and stores checkpoint history
+admissionController:
+  enabled: true
+  replicas: 2
+
+  podDisruptionBudget:
+    minAvailable: 1
+
+  image:
+    repository: registry.k8s.io/autoscaling/vpa-admission-controller
+    pullPolicy: IfNotPresent
+
+  securityContext:
+    readOnlyRootFilesystem: true
+    allowPrivilegeEscalation: false
+    capabilities:
+      drop:
+        - ALL
+
+  resources:
+    requests:
+      cpu: 50m
+      memory: 64Mi
+    limits:
+      cpu: 200m
+      memory: 256Mi
+
+  livenessProbe:
+    failureThreshold: 6
+    periodSeconds: 5
+    timeoutSeconds: 3
+
+  readinessProbe:
+    failureThreshold: 3
+    periodSeconds: 5
+    timeoutSeconds: 3
+
+# Persistence for Admission Controller — stores checkpoint data
+# WARNING: Do not use for cost visibility — use kubecost for that
+persistence:
+  enabled: false
+  # storageClassName: standard
+  # accessMode: ReadWriteOnce
+  # size: 2Gi
+
+# Global pod annotations (applied to all VPA components)
+podAnnotations: {}
+
+# Pod affinity for spreading components across nodes (optional)
+# Example: spread recommender and updater across different nodes
+affinity: {}
+  # podAntiAffinity:
+  #   preferredDuringSchedulingIgnoredDuringExecution:
+  #     - weight: 100
+  #       podAffinityTerm:
+  #         labelSelector:
+  #           matchExpressions:
+  #             - key: app.kubernetes.io/name
+  #               operator: In
+  #               values:
+  #                 - vpa
+  #         topologyKey: kubernetes.io/hostname
+
+# Priority class — keep VPA control plane running during resource pressure
+# Requires an existing PriorityClass (e.g., system-cluster-critical)
+# priorityClassName: system-cluster-critical

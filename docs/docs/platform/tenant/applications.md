@@ -57,9 +57,77 @@ sync:
   duration: 30s
   # (Optional) The max duration to use for the deployment.
   max_duration: 5m
+
+## ignoreDifferences — Allow Controllers to Manage Specific Fields
+## (Optional) Tell ArgoCD to ignore differences in specific fields, allowing other controllers
+## (e.g., VPA, HPA, mutating webhooks) to manage them without ArgoCD reverting changes.
+ignoreDifferences:
+  - kind: Deployment
+    group: apps
+    jsonPointers:
+      # Let VPA manage resource requests and limits
+      - /spec/template/spec/containers/0/resources/requests
+      - /spec/template/spec/containers/0/resources/limits
+      # Repeat for additional containers as needed:
+      # - /spec/template/spec/containers/1/resources/requests
+      # - /spec/template/spec/containers/1/resources/limits
 ```
 
 The namespace for regular tenant applications is derived from the folder structure. When you create a folder under `workloads/applications/`, that folder name becomes the namespace where the application will be deployed.
+
+### Allowing Controllers to Manage Fields — ignoreDifferences
+
+By default, ArgoCD maintains the exact state defined in git — any drift is considered out-of-sync and will be corrected on the next sync. However, some controllers (like VPA, HPA, or mutating webhooks) may legitimately modify resource fields after deployment.
+
+Use `ignoreDifferences` to tell ArgoCD to stop managing specific fields, allowing other controllers to manage them without ArgoCD reverting the changes.
+
+**Example: VPA managing resource requests**
+
+If you're using the [Vertical Pod Autoscaler (VPA)](../../platform/workloads/autoscaling/vpa.md) and want it to update resource requests/limits in-cluster:
+
+```yaml
+helm:
+  repository: https://charts.example.com
+  version: 1.0.0
+  release_name: my-app
+
+ignoreDifferences:
+  - kind: Deployment
+    group: apps
+    jsonPointers:
+      # VPA will manage these fields
+      - /spec/template/spec/containers/0/resources/requests
+      - /spec/template/spec/containers/0/resources/limits
+      # For additional containers:
+      # - /spec/template/spec/containers/1/resources/requests
+      # - /spec/template/spec/containers/1/resources/limits
+```
+
+**Example: HPA managing replica count**
+
+If you're using the standard Horizontal Pod Autoscaler:
+
+```yaml
+ignoreDifferences:
+  - kind: Deployment
+    group: apps
+    jsonPointers:
+      # HPA will manage replica count
+      - /spec/replicas
+```
+
+**When to use ignoreDifferences:**
+
+- ✅ VPA automatically adjusting resource requests in `Auto` or `Recreate` mode
+- ✅ HPA scaling replicas up and down
+- ✅ Mutating webhooks injecting sidecar containers
+- ✅ Controllers that legitimately modify workload spec after deployment
+
+**When NOT to use ignoreDifferences:**
+
+- ❌ Normal configuration values that should be in git
+- ❌ Image versions, environment variables, config maps
+- ❌ Anything you want to track and review before applying
 
 ### Helm Values Resolution
 
