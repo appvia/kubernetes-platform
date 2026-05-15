@@ -1,0 +1,26 @@
+---
+## The Helm application being deployed
+helm:
+  ## The repository containing the helm repository
+  repository: https://helm.github.io/examples
+  ## The chart to install
+  chart: hello-world
+  ## The chart version to install
+  version: "0.1.0"
+
+## Namespace configuration
+namespace:
+  name: tenant-ignore-difference-app
+
+## Synchronization options
+sync:
+  phase: primary
+
+## ignoreDifferences configuration for testing
+## This tells Argo CD to ignore differences in the /data field
+ignoreDifferences:
+  - group: ""
+    kind: ConfigMap
+    name: test-ignore-difference
+    jsonPointers:
+      - /data
