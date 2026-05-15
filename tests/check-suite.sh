@@ -60,6 +60,7 @@ run_checks() {
     "${UNITS}/${CLUSTER_TYPE}/tenant-helm-apps.sh"
     "${UNITS}/${CLUSTER_TYPE}/tenant-helm-apps-values.sh"
     "${UNITS}/${CLUSTER_TYPE}/tenant-helm-system.sh"
+    "${UNITS}/${CLUSTER_TYPE}/tenant-helm-app-diff.sh"
     "${UNITS}/${CLUSTER_TYPE}/tenant-kustomize-apps.sh"
     "${UNITS}/${CLUSTER_TYPE}/cilium.sh"
     "${UNITS}/${CLUSTER_TYPE}/cert-manager.sh"
