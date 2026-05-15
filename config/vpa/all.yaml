@@ -39,6 +39,7 @@ recommender:
 
   image:
     repository: registry.k8s.io/autoscaling/vpa-recommender
+    tag: 1.6.0
     pullPolicy: IfNotPresent
 
   # Security hardening
