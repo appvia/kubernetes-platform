@@ -141,7 +141,7 @@ jobs:
 
   publish-docs:
     name: Publish Docs
-    if: needs.changes.outputs.docs == 'true'
+    if: needs.changes.outputs.docs == 'true' && github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
     permissions:
       contents: write
