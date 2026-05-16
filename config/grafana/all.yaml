@@ -46,7 +46,7 @@ replicas: 1
 # - If pods don't scale up, check metrics-server and resource requests are correct
 # - Scale-down happens gradually (cooldown ~5 minutes by default)
 autoscaling:
-  enabled: true
+  enabled: false
   minReplicas: 1 # Never scale below 3 for HA (matches pod disruption budget)
   maxReplicas: 10 # Adjust based on expected traffic and cluster capacity
   targetCPU: "70" # Scale up when avg CPU usage > 70% of request
