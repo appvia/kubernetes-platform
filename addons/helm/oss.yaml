@@ -121,6 +121,14 @@
   repository: https://prometheus-community.github.io/helm-charts
   version: "79.12.0"
   namespace: prometheus
+- feature: grafana
+  category: observability
+  description: Visualization and alerting platform for metrics and logs from Kubernetes.
+  link: https://grafana.com/docs/grafana/latest/
+  chart: grafana
+  repository: https://grafana.github.io/helm-charts
+  version: "10.5.15"
+  namespace: grafana
 - feature: kubecost
   category: cost
   description: Kubernetes cost monitoring and allocation.

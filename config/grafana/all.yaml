@@ -1,0 +1,595 @@
+# Production-Grade Grafana Helm Values Configuration
+# =====================================================
+# This configuration enables high availability, persistence, security, and observability.
+# It's designed for production deployments with multi-replica setup, persistent storage,
+# and comprehensive security controls.
+#
+# MODIFICATION NOTES:
+# - Update 'grafana.example.com' to your actual Grafana domain
+# - Configure 'storageClassName' based on your cluster's storage classes
+# - Adjust resource requests/limits based on your workload metrics
+# - Use external secrets for admin credentials (set existingSecret)
+# - Enable ingress only when you have proper TLS certificates
+
+# Global image registry settings
+# These settings apply to all container images pulled for Grafana
+global:
+  # imagePullSecrets: Required if using private container registries
+  # Format: [{name: "my-docker-secret"}]
+  imagePullSecrets: []
+
+# RBAC (Role-Based Access Control) Configuration
+# Enables Grafana service account to interact with Kubernetes API if needed
+rbac:
+  create: true # Create ClusterRole and ClusterRoleBinding
+  pspEnabled: false # Pod Security Policy deprecated in K8s 1.25+, use PSS instead
+  namespaced: false # false=ClusterRole, true=Role (namespaced)
+  extraClusterRoleRules: [] # Add custom permissions if Grafana needs K8s API access
+
+# ServiceAccount for Grafana pods
+# Allows pods to authenticate with the Kubernetes API
+serviceAccount:
+  create: true # Automatically create service account
+  automountServiceAccountToken: true # Enable serviceaccount token mounting
+  labels:
+    app.kubernetes.io/part-of: kubernetes-platform # For platform-wide identification
+
+# Deployment replicas for high availability
+# IMPORTANT: Minimum 3 replicas recommended for production to handle node failures
+# Each replica requires ~512Mi memory minimum. Monitor cluster capacity before increasing.
+replicas: 3
+
+# Horizontal Pod Autoscaler (HPA)
+# Automatically scales Grafana pods based on CPU/memory utilization
+# TUNING TIPS:
+# - If scaling too aggressively, increase targetCPU/targetMemory values
+# - If pods don't scale up, check metrics-server and resource requests are correct
+# - Scale-down happens gradually (cooldown ~5 minutes by default)
+autoscaling:
+  enabled: true
+  minReplicas: 3 # Never scale below 3 for HA (matches pod disruption budget)
+  maxReplicas: 10 # Adjust based on expected traffic and cluster capacity
+  targetCPU: "70" # Scale up when avg CPU usage > 70% of request
+  targetMemory: "80" # Scale up when avg memory usage > 80% of request
+  behavior: {} # Advanced HPA behavior tuning (see K8s docs)
+
+# Pod Disruption Budget (PDB)
+# Ensures minimum availability during voluntary disruptions (node drains, updates)
+# IMPORTANT: With 3 replicas and minAvailable: 2, cluster maintenance will evict only 1 pod
+# This prevents service degradation during cluster upgrades or node maintenance
+podDisruptionBudget:
+  minAvailable: 2 # Keep at least 2 pods running (allows 1 disruption)
+  unhealthyPodEvictionPolicy: IfHealthyBudget # Don't evict unhealthy pods
+
+# Deployment strategy
+# RollingUpdate ensures zero-downtime deployments with gradual pod replacement
+# TROUBLESHOOTING: If updates are slow, reduce maxSurge and monitor resources
+deploymentStrategy:
+  type: RollingUpdate
+  rollingUpdate:
+    maxSurge: 1 # Can temporarily have 4 pods during update (3+1)
+    maxUnavailable: 0 # Always keep all 3 pods available (zero-downtime)
+
+# Health Check Probes
+# These determine pod readiness and liveness for rolling updates and traffic routing
+# IMPORTANT: If Grafana is slow to start, increase initialDelaySeconds
+# If seeing false restarts, increase timeoutSeconds or failureThreshold
+
+# Readiness Probe: Determines when pod is ready to serve traffic
+# Used during deployment rolling updates and for load balancer routing
+readinessProbe:
+  httpGet:
+    path: /api/health # Grafana health endpoint (lightweight)
+    port: grafana
+  initialDelaySeconds: 10 # Wait 10s after pod start before checking
+  periodSeconds: 10 # Check every 10s
+  timeoutSeconds: 5 # Wait max 5s for response
+  failureThreshold: 3 # Pod marked unready after 3 consecutive failures
+
+# Liveness Probe: Determines if pod should be restarted
+# If stuck/hung, kubelet will terminate and restart the pod
+# TUNING: More lenient than readiness to avoid flapping restarts
+livenessProbe:
+  httpGet:
+    path: /api/health
+    port: grafana
+  initialDelaySeconds: 60 # Wait 60s before first check (allow startup)
+  periodSeconds: 30 # Check every 30s (less frequent than readiness)
+  timeoutSeconds: 10 # Allow up to 10s for response
+  failureThreshold: 5 # Restart after 5 consecutive failures (~2.5 minutes)
+
+# Container Image Configuration
+# UPGRADE NOTES: Check Grafana release notes before upgrading versions
+# Breaking changes or plugin incompatibilities may occur between major versions
+image:
+  registry: docker.io # Change to private registry if mirroring images
+  repository: grafana/grafana
+  tag: "11.0.0" # Update to latest stable from https://hub.docker.com/r/grafana/grafana
+  pullPolicy: IfNotPresent # Use IfNotPresent to reduce pull overhead on node restarts
+
+# Test framework configuration
+# Helm test hook for validation (disabled in production, enable for CI/CD)
+testFramework:
+  enabled: false # Set to true to run tests during helm install/upgrade
+
+# Pod Security Context
+# Enforces user/group constraints at the pod level
+# UID 472 is Grafana's standard non-root user (defined in Grafana's Dockerfile)
+# SECURITY: Prevents container escape attacks and accidental privilege escalation
+securityContext:
+  runAsNonRoot: true # Enforce: container must not run as root (UID 0)
+  runAsUser: 472 # UID for grafana user (standard)
+  runAsGroup: 472 # GID for grafana user
+  fsGroup: 472 # Ensures volume mounts have correct ownership
+  seccompProfile:
+    type: RuntimeDefault # Use kernel's default seccomp profile
+
+# Container Security Context
+# Additional security hardening at container level (more restrictive)
+# COMPLIANCE: Follows NIST and CIS Kubernetes benchmarks
+containerSecurityContext:
+  allowPrivilegeEscalation: false # Prevent: can't gain more privileges than parent
+  privileged: false # Prevent: full host access
+  readOnlyRootFilesystem: false # Keep false: Grafana writes to /var/lib/grafana
+  capabilities:
+    drop:
+      - ALL # Remove all Linux capabilities (strongest security)
+  seccompProfile:
+    type: RuntimeDefault # Use kernel seccomp profile
+
+# Persistence Configuration
+# CRITICAL FOR PRODUCTION: Enables persistent storage for Grafana data, dashboards, and configuration
+# Without persistence, all data is lost on pod restart. Use PVC for database files.
+# SIZING NOTES:
+# - 50Gi is suitable for ~1000 dashboards and historical data
+# - Monitor PVC usage: kubectl get pvc -n grafana
+# - Increase size if usage >80% (add volume expansion support to storage class)
+persistence:
+  type: pvc # Use PersistentVolumeClaim (vs emptyDir)
+  enabled: true # MUST be true for production
+  storageClassName:
+    "" # Leave empty to use cluster default, or set specific class
+    # Examples: "ebs" (AWS), "pd-ssd" (GCP), "fast" (on-prem)
+  accessModes:
+    - ReadWriteOnce # Pod can write (RWO = single pod mount, not shared)
+  size: 50Gi # Initial PVC size. Monitor and increase if needed
+  finalizers:
+    - kubernetes.io/pvc-protection # Prevent accidental PVC deletion
+  extraPvcLabels:
+    app.kubernetes.io/part-of: kubernetes-platform # For backup/cost allocation
+
+# Init container for volume ownership
+# Ensures PVC has correct permissions (UID 472, GID 472) before Grafana starts
+initChownData:
+  enabled: true # Must be true when persistence is enabled
+  image:
+    registry: docker.io
+    repository: library/busybox
+    tag: "1.35.0" # Lightweight init image
+    pullPolicy: IfNotPresent
+
+# Resource Requests and Limits
+# IMPORTANT FOR CLUSTER STABILITY:
+# - Requests: Reserved resources for scheduling (must fit on node)
+# - Limits: Maximum resources a pod can consume (prevents noisy neighbor)
+# TUNING GUIDE:
+# 1. Monitor: kubectl top pod -n grafana
+# 2. If hitting limits: increase both request and limit
+# 3. If under-utilized: decrease to save cluster resources
+resources:
+  limits:
+    cpu: 1000m # Max 1 CPU core (prevent runaway)
+    memory: 1Gi # Max 1GB RAM (prevent OOMKill)
+  requests:
+    cpu: 100m # Reserve 0.1 CPU core for scheduling
+    memory: 32Mi # Reserve 32MB RAM
+
+# Pod Anti-Affinity Rules for High Availability
+# STRATEGY: Distribute Grafana pods across different nodes and zones
+# BENEFIT: If one node fails, other pods continue serving traffic
+# NOTE: "preferred" means best-effort; doesn't fail if can't satisfy
+# - Weight 100: Try to place on different nodes (higher priority)
+# - Weight 50: Try to place in different zones (lower priority)
+affinity:
+  podAntiAffinity:
+    preferredDuringSchedulingIgnoredDuringExecution:
+      # Try to spread pods across different nodes (within same zone)
+      - weight: 100
+        podAffinityTerm:
+          labelSelector:
+            matchExpressions:
+              - key: app.kubernetes.io/name
+                operator: In
+                values:
+                  - grafana
+          topologyKey: kubernetes.io/hostname
+      # Try to spread pods across different zones (e.g., us-east-1a, us-east-1b)
+      - weight: 50
+        podAffinityTerm:
+          labelSelector:
+            matchExpressions:
+              - key: app.kubernetes.io/name
+                operator: In
+                values:
+                  - grafana
+          topologyKey: topology.kubernetes.io/zone
+
+# Topology Spread Constraints
+# KUBERNETES 1.19+: More declarative way to spread pods evenly
+# BENEFIT: Prevents uneven distribution if some nodes are full
+# maxSkew: 1 means difference between most/least pods is max 1 (perfectly balanced)
+# whenUnsatisfiable: DoNotSchedule = fail scheduling rather than unbalanced
+topologySpreadConstraints:
+  - maxSkew: 1 # Max 1 pod difference between nodes
+    topologyKey: kubernetes.io/hostname # Spread across nodes
+    whenUnsatisfiable: DoNotSchedule # Fail scheduling if can't balance
+    labelSelector:
+      matchLabels:
+        app.kubernetes.io/name: grafana
+
+# Admin User Credentials Configuration
+# SECURITY: Highly recommended to use external secrets for credentials
+# INSTRUCTIONS:
+# 1. Create secret: kubectl create secret generic grafana-admin --from-literal=admin-user=admin --from-literal=admin-password=YOUR_STRONG_PASSWORD -n grafana
+# 2. Set existingSecret: grafana-admin below
+# 3. Leave blank to use default (insecure)
+adminUser: admin
+admin:
+  existingSecret: "" # Set to secret name containing admin credentials (recommended)
+  userKey: admin-user # Key in secret containing username
+  passwordKey: admin-password # Key in secret containing password
+
+# Kubernetes Service Configuration
+# Exposes Grafana to other pods and external clients
+# NOTE: This is ClusterIP (internal). Use Ingress for external HTTPS access
+service:
+  enabled: true
+  type: ClusterIP # ClusterIP=internal only, LoadBalancer=external, NodePort=node ports
+  port: 80 # Service port (exposed to clients)
+  targetPort: 3000 # Container port (Grafana listens here)
+  annotations:
+    # Prometheus auto-discovery annotations
+    prometheus.io/scrape: "true" # Tell Prometheus to scrape this service
+    prometheus.io/port: "3000" # On port 3000
+    prometheus.io/path: "/metrics" # At /metrics endpoint
+  labels:
+    app.kubernetes.io/part-of: kubernetes-platform
+
+# ServiceMonitor for Prometheus Operator
+# REQUIREMENTS: Prometheus Operator must be installed (CRD: ServiceMonitor)
+# If Prometheus Operator not installed, disable this or create a manual Prometheus scrape config
+# BENEFIT: Automatic metric collection from Grafana (for Grafana's own health monitoring)
+serviceMonitor:
+  enabled: true # Requires prometheus-operator installed
+  path: /metrics # Metrics endpoint
+  labels:
+    prometheus: kube-prometheus # Label for Prometheus to discover this monitor
+  interval: 30s # Scrape every 30 seconds
+  scheme: http # Use https if TLS enabled
+  tlsConfig: {} # TLS configuration (empty = no TLS)
+  scrapeTimeout: 30s # Timeout waiting for response
+  relabelings: [] # Modify metric labels (advanced)
+  metricRelabelings: [] # Drop/rename metrics (advanced)
+
+# Ingress Configuration for External Access
+# SETUP REQUIRED: Enable ingress for external HTTPS access to Grafana
+# PREREQUISITES:
+# 1. Nginx Ingress Controller installed (helm install ingress-nginx ingress-nginx/ingress-nginx)
+# 2. cert-manager installed for automatic TLS (helm install cert-manager jetstack/cert-manager)
+# 3. DNS pointing to ingress IP
+# STEPS TO ENABLE:
+# 1. Set enabled: true
+# 2. Update 'grafana.example.com' to your actual domain
+# 3. Update 'letsencrypt-prod' to match your ClusterIssuer name
+# 4. Run: helm upgrade grafana grafana/grafana -f config/grafana/all.yaml -n grafana
+ingress:
+  enabled: false # Set to true to enable external HTTPS access
+  ingressClassName: nginx # Change to your ingress controller (e.g., "traefik")
+  annotations:
+    # Cert-manager auto-certificate provisioning
+    cert-manager.io/cluster-issuer: letsencrypt-prod # Must exist as ClusterIssuer
+    # Nginx security headers
+    nginx.ingress.kubernetes.io/force-ssl-redirect: "true" # Redirect HTTP to HTTPS
+    nginx.ingress.kubernetes.io/ssl-protocols: "TLSv1.2 TLSv1.3" # Disable old TLS versions
+  labels:
+    app.kubernetes.io/part-of: kubernetes-platform
+  path: / # Route all requests to Grafana
+  pathType: Prefix # Prefix matching (/ matches /*, /api, etc)
+  hosts:
+    - grafana.example.com # CHANGE THIS: Your Grafana domain
+  tls:
+    - secretName: grafana-tls # Secret stores TLS cert/key
+      hosts:
+        - grafana.example.com # CHANGE THIS: Must match host above
+
+# Grafana INI Configuration
+# Maps to /etc/grafana/grafana.ini inside container
+# Comprehensive Grafana application settings
+# REFERENCE: https://grafana.com/docs/grafana/latest/setup-grafana/configure-grafana/
+grafana.ini:
+  # Filesystem paths inside container
+  paths:
+    data: /var/lib/grafana/ # Database, dashboards, plugins storage
+    logs: /var/log/grafana # Application logs
+    plugins: /var/lib/grafana/plugins # Plugin directory
+    provisioning: /etc/grafana/provisioning # Provisioning configs
+
+  # =====================================================================
+  # SECURITY SETTINGS - Production hardening
+  # =====================================================================
+  security:
+    admin_user: admin # Default admin username
+    disable_initial_admin_creation: false # Create default admin user
+    disable_gravatar: true # Don't load avatars from gravatar.com
+    cookie_secure: true # Only send cookies over HTTPS
+    cookie_samesite: Strict # Prevent CSRF attacks
+    # HTTP Security Headers - Strict Content Security Policy
+    strict_transport_security: true # Enable HSTS header
+    strict_transport_security_max_age_seconds: 31536000 # Cache for 1 year
+    x_content_type_options: nosniff # Prevent MIME type sniffing
+    x_frame_options: DENY # Prevent clickjacking
+    x_xss_protection: "1; mode=block" # XSS filter header
+    content_security_policy: true # Enable CSP
+    # CSP restricts where content can be loaded from (prevents XSS attacks)
+    content_security_policy_template: "default-src 'self'; script-src 'self' 'unsafe-eval' 'unsafe-inline' $NONCE; style-src 'self' 'unsafe-inline'; img-src *; font-src 'self'; connect-src 'self' datasource; media-src 'none'; object-src 'none'; frame-ancestors 'none';"
+
+  # =====================================================================
+  # SERVER SETTINGS
+  # =====================================================================
+  server:
+    protocol: http # Use 'https' if behind TLS proxy
+    http_port: 3000 # Container port (matches service targetPort)
+    enable_gzip: true # Compress responses for bandwidth savings
+    root_url: "http://grafana.example.com/" # CHANGE THIS: External URL
+    serve_from_sub_path: false # Set true if Grafana behind /grafana/ path
+
+  # =====================================================================
+  # SESSION & COOKIES
+  # =====================================================================
+  session:
+    provider: file # Session storage (file = local, redis = distributed)
+    cookie_name: grafana_session # Session cookie name
+    cookie_secure: true # Require HTTPS for cookies
+    cookie_samesite: Strict # CSRF protection
+    session_life_time: 86400 # Session timeout = 24 hours
+
+  # =====================================================================
+  # ANALYTICS & TELEMETRY
+  # =====================================================================
+  analytics:
+    check_for_updates: true # Check for Grafana updates
+    check_for_plugin_updates: true # Check plugin updates
+    reporting_enabled: false # Don't send usage data to Grafana Labs
+
+  # =====================================================================
+  # LOGGING
+  # =====================================================================
+  log:
+    mode: console # Log to stdout (captured by Docker/K8s)
+    level: info # Log levels: debug, info, warn, error
+    format: json # JSON format for structured logging (easier to parse)
+
+  # =====================================================================
+  # DATABASE
+  # =====================================================================
+  # NOTE: SQLite works for small deployments but consider PostgreSQL for >100 users
+  # For HA: Use external PostgreSQL (not SQLite on shared NFS)
+  database:
+    type: sqlite3 # sqlite3=embedded, postgres=recommended for HA
+    path: /var/lib/grafana/grafana.db # Database file (in PVC)
+    max_idle_conn: 2 # Keep connections alive for performance
+    max_open_conn: 0 # 0 = unlimited connections
+    log_queries: false # Don't log every SQL query (performance)
+
+  # =====================================================================
+  # USER MANAGEMENT
+  # =====================================================================
+  users:
+    allow_sign_up: false # Disable self-registration (security)
+    allow_org_create: false # Only admins can create orgs
+    auto_assign_org: true # Auto-assign new users to default org
+    auto_assign_org_id: 1 # Default org ID
+    auto_assign_org_role: Viewer # New users get Viewer role (read-only)
+    default_theme: dark # Dark theme by default
+
+  # =====================================================================
+  # AUTHENTICATION
+  # =====================================================================
+  # Supports: local, OAuth2 (GitHub, Google), LDAP, SAML, Okta, etc
+  auth:
+    disable_login_form: false # Keep login form enabled for local auth
+    disable_signout_menu: false # Allow users to sign out
+
+  # =====================================================================
+  # METRICS & MONITORING
+  # =====================================================================
+  # Internal Grafana metrics (different from datasource metrics)
+  metrics:
+    enabled: true # Expose /metrics for Prometheus
+    interval_seconds: 10 # Collect metrics every 10s
+    graphite:
+      enabled: false # Graphite metrics (rarely used)
+
+  # =====================================================================
+  # ALERTING
+  # =====================================================================
+  # Classic alerting (older) - recommend using unified_alerting instead
+  alerting:
+    enabled: true # Enable classic alerts
+    execute_alerts: true # Actually send alerts (vs just evaluating)
+
+  # =====================================================================
+  # UNIFIED ALERTING (Modern/Recommended)
+  # =====================================================================
+  unified_alerting:
+    enabled: true # Modern alerting system
+
+  # =====================================================================
+  # EXPERIMENTAL FEATURES
+  # =====================================================================
+  feature_toggles:
+    sloRules: true # Service Level Objective rules
+    publicDashboards: true # Allow public (unauthenticated) dashboard sharing
+
+# Plugins Configuration
+# Install optional Grafana plugins for additional features
+# IMPORTANT: Plugins must be compatible with Grafana version
+# EXAMPLE: grafana-piechart-panel, grafana-clock-panel, etc
+# See: https://grafana.com/grafana/plugins
+plugins: []
+  # - grafana-piechart-panel
+  # - grafana-clock-panel
+
+# Datasources (Static Configuration)
+# Define datasources via ConfigMap/Secret (alternative to UI configuration)
+# USES SIDECAR: With datasource sidecar enabled, use ConfigMaps labeled "grafana_datasource=1"
+# Example:
+#   kubectl create configmap grafana-datasource-prometheus --from-literal=prometheus.yaml='...' -n grafana
+datasources: {}
+
+# Alerting Configuration (Legacy)
+# Define alert notification channels via ConfigMap/Secret
+# USES SIDECAR: With alerts sidecar enabled, use ConfigMaps labeled "grafana_alert=1"
+alerting: {}
+
+# Dashboard Providers Configuration
+# Specifies how/where Grafana finds dashboards
+dashboardProviders:
+  dashboardproviders.yaml:
+    apiVersion: 1
+    providers:
+      - name: default # Provider name (arbitrary)
+        orgId: 1 # Organization ID
+        folder: "" # Folder where dashboards appear (empty=root)
+        type: file # File-based provider (vs. other types)
+        disableDeletion: false # Allow deleting dashboards
+        editable: true # Allow editing provisioned dashboards
+        options:
+          path: /var/lib/grafana/dashboards/default # Where sidecar mounts dashboards
+
+# Dashboard Sidecar Configuration
+# Mounted ConfigMaps with "grafana_dashboard=1" label auto-import as dashboards
+# BENEFIT: No need to use Grafana API; just create ConfigMaps
+# EXAMPLE: See sidecar section below for setup
+dashboards: {}
+
+# =====================================================================
+# SIDECAR CONFIGURATION - Dynamic Provisioning via ConfigMaps/Secrets
+# =====================================================================
+# WHAT IS A SIDECAR: Small container running alongside Grafana that watches
+# for ConfigMaps/Secrets with specific labels and auto-imports them as:
+# - Dashboards (label: grafana_dashboard=1)
+# - Datasources (label: grafana_datasource=1)
+# BENEFIT: GitOps-friendly; define dashboards as ConfigMaps in Git
+# EXAMPLE DEPLOYMENT:
+#   kubectl create configmap my-dashboard --from-file=dashboard.json -n grafana -l grafana_dashboard=1
+sidecar:
+  image:
+    registry: quay.io
+    repository: kiwigrid/k8s-sidecar # Sidecar image
+    tag: "1.27.0" # Update periodically
+    pullPolicy: IfNotPresent
+
+  resources:
+    limits:
+      cpu: 100m
+      memory: 128Mi
+    requests:
+      cpu: 50m
+      memory: 64Mi
+
+  securityContext:
+    allowPrivilegeEscalation: false
+    capabilities:
+      drop:
+        - ALL
+    seccompProfile:
+      type: RuntimeDefault
+
+  # Dashboard Sidecar Container
+  # Watches ConfigMaps/Secrets labeled "grafana_dashboard=1" and mounts them
+  dashboards:
+    enabled: true
+    label: grafana_dashboard # ConfigMap label key to watch
+    labelValue: "1" # ConfigMap label value (must be exactly "1")
+    folder: /tmp/dashboards # Where to mount the ConfigMap files
+    searchNamespace: null # null=only current ns, null="ALL"=search all
+    provider:
+      name: sidecarProvider # Provider name (must match dashboardProviders.yaml)
+      orgid: 1 # Organization ID
+      folder: "" # Folder for imported dashboards
+      type: file
+      disableDelete: false # Allow deleting imported dashboards
+      allowUiUpdates: false # Don't allow editing via Grafana UI
+
+  # Datasource Sidecar Container
+  # Watches ConfigMaps/Secrets labeled "grafana_datasource=1" and mounts them
+  datasources:
+    enabled: true
+    label: grafana_datasource # ConfigMap label key to watch
+    labelValue: "1" # ConfigMap label value
+    searchNamespace: null # null=current ns, "ALL"=all namespaces
+
+# =====================================================================
+# NETWORK POLICY - Restrict pod-to-pod traffic
+# =====================================================================
+# SECURITY: Limits which pods can talk to Grafana
+# REQUIREMENT: NetworkPolicy controller must be installed
+# (e.g., Cilium, Calico, Weave)
+# WARNING: If no network policy controller, this has no effect
+networkPolicy:
+  enabled: true # Create NetworkPolicy CR
+  ingress: true # Restrict incoming traffic
+  allowExternal: true # Allow traffic from outside K8s cluster
+  egress:
+    enabled: false # Don't restrict outgoing traffic (needs datasource access)
+
+# Pod Annotations
+# Metadata attached to pods (visible via kubectl describe)
+# Prometheus annotations enable auto-discovery of metrics endpoints
+podAnnotations:
+  prometheus.io/scrape: "true" # Tell Prometheus to scrape
+  prometheus.io/port: "3000" # On this port
+  prometheus.io/path: "/metrics" # At this path
+
+# Pod Labels
+# Labels for organizing and selecting pods
+# Example: kubectl get pods -l app.kubernetes.io/part-of=kubernetes-platform
+podLabels:
+  app.kubernetes.io/part-of: kubernetes-platform
+
+# Environment Variables
+# Pass environment variables to Grafana container
+# EXAMPLE: env: {"GF_SERVER_ROOT_URL": "https://grafana.example.com"}
+env: {}
+
+# Deployment Revision History
+# Number of old ReplicaSets to keep (for rollbacks)
+# TUNING: Higher=more storage for replicaset objects, easier rollback
+revisionHistoryLimit: 10
+
+# =====================================================================
+# IMAGE RENDERER (Optional - for dashboard rendering/PNG export)
+# =====================================================================
+# WHAT: Separate service that renders Grafana dashboards to PNG/PDF
+# USE CASE: Scheduled PDF reports, Slack alerts with dashboard snapshots
+# NOTE: Adds resource overhead; only enable if needed
+# RESOURCE ESTIMATE: ~200m CPU, 256Mi RAM per replica
+imageRenderer:
+  enabled: false # Set to true only if you need rendering
+  replicas: 1
+  image:
+    registry: docker.io
+    repository: grafana/grafana-image-renderer
+    tag: "3.10.0"
+    pullPolicy: IfNotPresent
+  resources:
+    limits:
+      cpu: 200m
+      memory: 256Mi
+    requests:
+      cpu: 100m
+      memory: 128Mi
+  networkPolicy:
+    limitIngress: true # Only Grafana can reach renderer
+    limitEgress: false # Renderer can reach external services
