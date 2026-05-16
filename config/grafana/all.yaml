@@ -321,10 +321,10 @@ grafana.ini:
     admin_user: admin # Default admin username
     disable_initial_admin_creation: false # Create default admin user
     disable_gravatar: true # Don't load avatars from gravatar.com
-    cookie_secure: true # Only send cookies over HTTPS
+    cookie_secure: false # Only send cookies over HTTPS
     cookie_samesite: Strict # Prevent CSRF attacks
     # HTTP Security Headers - Strict Content Security Policy
-    strict_transport_security: true # Enable HSTS header
+    strict_transport_security: false # Enable HSTS header
     strict_transport_security_max_age_seconds: 31536000 # Cache for 1 year
     x_content_type_options: nosniff # Prevent MIME type sniffing
     x_frame_options: DENY # Prevent clickjacking
