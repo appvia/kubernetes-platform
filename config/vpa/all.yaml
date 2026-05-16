@@ -4,57 +4,81 @@
 # Reference: https://github.com/FairwindsOps/charts/tree/master/stable/vpa
 
 # RBAC Configuration
+# Enables Kubernetes role-based access control for VPA components
+# Grants necessary permissions for recommender, updater, and admission controller
 rbac:
   create: true
+  # extraRules: Add additional RBAC rules for specific components if needed
   extraRules: {}
 
 # Service Account Configuration
+# Creates separate service accounts for each VPA component (recommender, updater, admission-controller)
 serviceAccount:
   create: true
+  # annotations: Can add annotations for cloud provider integrations (e.g., IAM roles on AWS)
   annotations: {}
+  # Mounts the service account token automatically for pod authentication
   automountServiceAccountToken: true
 
 # Recommender Component — core VPA logic
-# Monitors pod resource usage and recommends right-sized requests
+# Analyzes historical container metrics (via Metrics Server) and recommends optimal CPU/memory requests
+# Runs continuously to collect metrics from all eligible pods in the cluster
 recommender:
   enabled: true
+  # 2 replicas recommended for production: ensures availability during component updates
   replicaCount: 2
+  # Number of old ReplicaSets to retain for rollback capability
   revisionHistoryLimit: 10
 
-  # Resource recommendations are conservative by default
+  # Command-line arguments passed to the recommender binary
   extraArgs:
+    # v: Verbosity level (2 = info level logging). Increase for debugging
     v: "2"
-    # Minimum CPU recommendation floor (prevents under-sizing for small workloads)
+    # Absolute minimum CPU floor (in millicores) for recommendations
+    # Prevents recommender from suggesting extremely low CPU for small, bursty workloads
+    # Default in upstream: 15m (platform uses 25m for safety margin)
     pod-recommendation-min-cpu-millicores: "25"
-    # Minimum memory recommendation floor
+    # Absolute minimum memory floor (in MB) for recommendations
+    # Default in upstream: 100MB (platform uses 128MB)
     pod-recommendation-min-memory-mb: "128"
-    # How frequently update VPA resource recommendation
+    # Margin of safety: recommendations include 15% headroom above observed peak usage
+    # Prevents tight recommendations that could cause OOMKills or throttling
     recommendation-margin-fraction: "0.15"
 
-  # Pod disruption budget — prevent simultaneous evictions during updates
+  # Pod Disruption Budget: ensures at least 1 recommender pod remains available during cluster updates
+  # Prevents all VPA recommenders from being evicted simultaneously, which would halt recommendations
   podDisruptionBudget:
     minAvailable: 1
 
   image:
     repository: registry.k8s.io/autoscaling/vpa-recommender
+    # Pinned to 1.6.0 for stability; update carefully as this affects all resource recommendations
     tag: 1.6.0
+    # IfNotPresent: Use cached image if available, reduces image pull overhead
     pullPolicy: IfNotPresent
 
-  # Security hardening
+  # Security hardening: all VPA components run with strict security contexts
   podSecurityContext:
+    # UID 65534 is 'nobody' user - principle of least privilege
     runAsNonRoot: true
     runAsUser: 65534
+    # RuntimeDefault seccomp: blocks dangerous syscalls while maintaining compatibility
     seccompProfile:
       type: RuntimeDefault
 
   securityContext:
+    # Read-only filesystem prevents accidental or malicious modifications
     readOnlyRootFilesystem: true
+    # Prevents escalation to root even if pod is compromised
     allowPrivilegeEscalation: false
+    # Drop ALL Linux capabilities, add only if required by specific workload
     capabilities:
       drop:
         - ALL
 
-  # Resource requests/limits for the recommender itself (tightly constrained)
+  # Resource requests/limits for the recommender pod itself
+  # These are separate from the applications being analyzed; keep these conservative
+  # The recommender has modest CPU/memory needs as it processes metrics asynchronously
   resources:
     requests:
       cpu: 50m
@@ -63,31 +87,42 @@ recommender:
       cpu: 200m
       memory: 512Mi
 
+  # Liveness probe: restarts the pod if it becomes unresponsive
+  # Frequent restarts in this probe indicate the recommender cannot keep up with metric processing
   livenessProbe:
     failureThreshold: 6
     periodSeconds: 5
     timeoutSeconds: 3
 
+  # Readiness probe: removes pod from service if it cannot serve health checks
+  # More sensitive than liveness; indicates the pod is unable to process metrics temporarily
   readinessProbe:
     failureThreshold: 3
     periodSeconds: 5
     timeoutSeconds: 3
 
-# Updater Component — applies VPA recommendations
-# In production, use updateMode: "Off" (recommendations only)
-# and apply updates manually or through GitOps pipeline
+# Updater Component — applies VPA recommendations to pods
+# Mutates pod requests when updateMode is enabled (typically in 'Auto' or 'Recreate' mode)
+# In production, consider using updateMode 'Off' (recommendations only) for safety
+# and applying updates manually via gitops pipelines or scheduled maintenance windows
 updater:
-  enabled: true
+  # If true, the updater component will be deployed
+  enabled: false
+  # 2 replicas for production to avoid single point of failure during pod evictions
   replicaCount: 2
   revisionHistoryLimit: 10
 
+  # Pod Disruption Budget: maintains at least 1 updater pod during cluster maintenance
+  # If all updaters are evicted, no pods can be updated even if recommendations are ready
   podDisruptionBudget:
     minAvailable: 1
 
   image:
     repository: registry.k8s.io/autoscaling/vpa-updater
+    tag: 1.6.0
     pullPolicy: IfNotPresent
 
+  # Security: updater runs with same hardened context as recommender
   securityContext:
     readOnlyRootFilesystem: true
     allowPrivilegeEscalation: false
@@ -95,6 +130,8 @@ updater:
       drop:
         - ALL
 
+  # Resource allocation for updater is minimal
+  # Updater watches for VPA objects and triggers pod evictions; CPU usage is low
   resources:
     requests:
       cpu: 50m
@@ -113,18 +150,27 @@ updater:
     periodSeconds: 5
     timeoutSeconds: 3
 
-# Admission Controller — validates VPA resources and stores checkpoint history
+# Admission Controller Component
+# Serves as a MutatingWebhook for VPA objects: validates VPA resources and manages checkpoint history
+# Prevents invalid VPA configurations and enforces security constraints
+# Also stores historical resource usage snapshots ("checkpoints") for recommender algorithm
 admissionController:
   enabled: true
+  # 2 replicas ensures webhook availability (Kubernetes requires responsive admission webhooks)
+  # If webhook becomes unavailable, pod creation/updates can be blocked cluster-wide
   replicas: 2
 
+  # Pod Disruption Budget: guarantees at least 1 admission controller pod is always available
+  # This is critical because a failed webhook can stall the entire control plane
   podDisruptionBudget:
     minAvailable: 1
 
   image:
     repository: registry.k8s.io/autoscaling/vpa-admission-controller
+    # Tag omitted: defaults to chart appVersion; align with recommender/updater tags manually
     pullPolicy: IfNotPresent
 
+  # Security: runs with same hardened context as other components
   securityContext:
     readOnlyRootFilesystem: true
     allowPrivilegeEscalation: false
@@ -132,6 +178,8 @@ admissionController:
       drop:
         - ALL
 
+  # Resource allocation: admission controller has low CPU usage but may spike during
+  # mass pod creation events or cluster scaling
   resources:
     requests:
       cpu: 50m
@@ -150,20 +198,27 @@ admissionController:
     periodSeconds: 5
     timeoutSeconds: 3
 
-# Persistence for Admission Controller — stores checkpoint data
-# WARNING: Do not use for cost visibility — use kubecost for that
+# Persistence for Admission Controller
+# Stores checkpoint snapshots of pod resource history for the recommender algorithm
+# WARNING: Do NOT use for cost visibility or chargeback — use kubecost for that
+# Checkpoints are internal implementation details of VPA; this storage is NOT a cost accounting system
 persistence:
+  # Set to false in platform defaults because checkpoints can be rebuilt from live metrics
+  # If frequently evicting recommenders, enable persistence to preserve historical data
   enabled: false
   # storageClassName: standard
   # accessMode: ReadWriteOnce
   # size: 2Gi
 
-# Global pod annotations (applied to all VPA components)
+# Pod annotations applied to all VPA component pods
+# Useful for monitoring integrations (e.g., Prometheus scrape configs, Datadog tags)
 podAnnotations: {}
 
-# Pod affinity for spreading components across nodes (optional)
-# Example: spread recommender and updater across different nodes
+# Pod affinity/anti-affinity for spreading VPA components across nodes
+# By default, not set (allows Kubernetes scheduler to place pods naturally)
+# Recommended for HA: spread recommender/updater/admission-controller on different nodes
 affinity: {}
+  # Example: force pod-anti-affinity (spread across nodes)
   # podAntiAffinity:
   #   preferredDuringSchedulingIgnoredDuringExecution:
   #     - weight: 100
@@ -176,6 +231,7 @@ affinity: {}
   #                 - vpa
   #         topologyKey: kubernetes.io/hostname
 
-# Priority class — keep VPA control plane running during resource pressure
-# Requires an existing PriorityClass (e.g., system-cluster-critical)
-# priorityClassName: system-cluster-critical
+# Priority class for all VPA pods
+# System-level workloads should run even under resource pressure to maintain cluster health
+# Requires an existing PriorityClass resource; typically 'system-cluster-critical' on most distributions
+# Uncomment to enable: priorityClassName: system-cluster-critical
