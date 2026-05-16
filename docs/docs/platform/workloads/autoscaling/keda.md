@@ -375,6 +375,89 @@ KEDA installs four Custom Resource Definitions:
 
 ---
 
+## ArgoCD Integration — Required `ignoreDifferences`
+
+!!! warning "Critical: ArgoCD Sync and KEDA Scaling Conflicts"
+
+    When deploying KEDA-scaled workloads with ArgoCD, you **must** add `ignoreDifferences` configuration to your Application definition. Without this, ArgoCD will continuously revert the replica count set by KEDA's autoscaler, causing a reconciliation loop where ArgoCD overwrites KEDA's scaling decisions.
+
+### Why this is needed
+
+KEDA (and the HPA it manages internally) dynamically updates the `spec.replicas` field on your Deployment based on scaling triggers. ArgoCD, by default, treats any deviation from the source manifest as a difference and will sync the Application back to the desired state, resetting `spec.replicas` to the value in Git. This creates a conflict: KEDA scales up/down, ArgoCD reverts it back.
+
+### Solution: Add `ignoreDifferences` to your Application
+
+In your ArgoCD Application definition, add the following to `spec.ignoreDifferences`:
+
+```yaml
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: my-keda-app
+  namespace: argocd
+spec:
+  # ... other Application config ...
+  ignoreDifferences:
+    - group: apps
+      kind: Deployment
+      jsonPointers:
+        - /spec/replicas
+```
+
+This tells ArgoCD to ignore changes to the replica count on Deployment resources, allowing KEDA full control over scaling.
+
+### Example: Full Application with ignoreDifferences
+
+```yaml
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: my-keda-workload
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/my-org/my-repo
+    targetRevision: HEAD
+    path: workloads/my-app
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: my-namespace
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+  ignoreDifferences:
+    - group: apps
+      kind: Deployment
+      jsonPointers:
+        - /spec/replicas
+```
+
+### StatefulSet workloads
+
+If you are using a `StatefulSet` instead of a Deployment, add an additional entry:
+
+```yaml
+ignoreDifferences:
+  - group: apps
+    kind: Deployment
+    jsonPointers:
+      - /spec/replicas
+  - group: apps
+    kind: StatefulSet
+    jsonPointers:
+      - /spec/replicas
+```
+
+### Important notes
+
+- **Only the replica count is ignored** — all other Deployment fields (image, environment variables, resource requests, etc.) are still synced normally by ArgoCD.
+- **Scope is Application-level** — this `ignoreDifferences` applies to all Deployments/StatefulSets managed by that Application. If you have multiple Applications, each needs its own configuration.
+- **Not just KEDA** — this also applies if you are using plain HPA or any other scaling mechanism that modifies `spec.replicas` at runtime.
+
+---
+
 ## Scale-to-Zero Configuration
 
 KEDA uniquely allows `minReplicaCount: 0`. When no events are present, KEDA drains the deployment entirely. When an event arrives, KEDA scales from 0→1 (activation phase), then hands over to HPA for 1→N.
