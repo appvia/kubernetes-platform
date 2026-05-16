@@ -127,7 +127,7 @@
   link: https://grafana.com/docs/grafana/latest/
   chart: grafana
   repository: https://grafana.github.io/helm-charts
-  version: "10.5.15"
+  version: "12.3.3"
   namespace: grafana
 - feature: kubecost
   category: cost
