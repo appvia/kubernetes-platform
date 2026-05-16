@@ -47,7 +47,7 @@ replicas: 1
 # - Scale-down happens gradually (cooldown ~5 minutes by default)
 autoscaling:
   enabled: true
-  minReplicas: 3 # Never scale below 3 for HA (matches pod disruption budget)
+  minReplicas: 1 # Never scale below 3 for HA (matches pod disruption budget)
   maxReplicas: 10 # Adjust based on expected traffic and cluster capacity
   targetCPU: "70" # Scale up when avg CPU usage > 70% of request
   targetMemory: "80" # Scale up when avg memory usage > 80% of request
