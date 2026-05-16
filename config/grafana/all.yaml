@@ -37,7 +37,7 @@ serviceAccount:
 # Deployment replicas for high availability
 # IMPORTANT: Minimum 3 replicas recommended for production to handle node failures
 # Each replica requires ~512Mi memory minimum. Monitor cluster capacity before increasing.
-replicas: 3
+replicas: 1
 
 # Horizontal Pod Autoscaler (HPA)
 # Automatically scales Grafana pods based on CPU/memory utilization
@@ -146,7 +146,7 @@ containerSecurityContext:
 # - Increase size if usage >80% (add volume expansion support to storage class)
 persistence:
   type: pvc # Use PersistentVolumeClaim (vs emptyDir)
-  enabled: true # MUST be true for production
+  enabled: false # MUST be true for production
   storageClassName:
     "" # Leave empty to use cluster default, or set specific class
     # Examples: "ebs" (AWS), "pd-ssd" (GCP), "fast" (on-prem)
