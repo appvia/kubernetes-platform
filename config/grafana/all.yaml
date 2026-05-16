@@ -320,18 +320,18 @@ grafana.ini:
   security:
     admin_user: admin # Default admin username
     disable_initial_admin_creation: false # Create default admin user
-    disable_gravatar: true # Don't load avatars from gravatar.com
-    cookie_secure: false # Only send cookies over HTTPS
-    cookie_samesite: Strict # Prevent CSRF attacks
-    # HTTP Security Headers - Strict Content Security Policy
-    strict_transport_security: false # Enable HSTS header
-    strict_transport_security_max_age_seconds: 31536000 # Cache for 1 year
-    x_content_type_options: nosniff # Prevent MIME type sniffing
-    x_frame_options: DENY # Prevent clickjacking
-    x_xss_protection: "1; mode=block" # XSS filter header
-    content_security_policy: false
-    # CSP restricts where content can be loaded from (prevents XSS attacks)
-    #content_security_policy_template: "default-src 'self'; script-src 'self' 'unsafe-eval' 'unsafe-inline' $NONCE; style-src 'self' 'unsafe-inline'; img-src *; font-src 'self'; connect-src 'self' datasource; media-src 'none'; object-src 'none'; frame-ancestors 'none';"
+  #    disable_gravatar: true # Don't load avatars from gravatar.com
+  #    cookie_secure: false # Only send cookies over HTTPS
+  #    cookie_samesite: Strict # Prevent CSRF attacks
+  #    # HTTP Security Headers - Strict Content Security Policy
+  #    strict_transport_security: false # Enable HSTS header
+  #    strict_transport_security_max_age_seconds: 31536000 # Cache for 1 year
+  #    x_content_type_options: nosniff # Prevent MIME type sniffing
+  #    x_frame_options: DENY # Prevent clickjacking
+  #    x_xss_protection: "1; mode=block" # XSS filter header
+  #    content_security_policy: false
+  # CSP restricts where content can be loaded from (prevents XSS attacks)
+  #content_security_policy_template: "default-src 'self'; script-src 'self' 'unsafe-eval' 'unsafe-inline' $NONCE; style-src 'self' 'unsafe-inline'; img-src *; font-src 'self'; connect-src 'self' datasource; media-src 'none'; object-src 'none'; frame-ancestors 'none';"
 
   # =====================================================================
   # SERVER SETTINGS
