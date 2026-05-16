@@ -260,7 +260,7 @@ service:
 # If Prometheus Operator not installed, disable this or create a manual Prometheus scrape config
 # BENEFIT: Automatic metric collection from Grafana (for Grafana's own health monitoring)
 serviceMonitor:
-  enabled: true # Requires prometheus-operator installed
+  enabled: false # Requires prometheus-operator installed
   path: /metrics # Metrics endpoint
   labels:
     prometheus: kube-prometheus # Label for Prometheus to discover this monitor
