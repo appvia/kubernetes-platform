@@ -24,7 +24,7 @@
 
 ## What is VPA?
 
-The **Vertical Pod Autoscaler (VPA)** adjusts the CPU and memory **requests** (and optionally limits) on running pods based on observed resource usage. Unlike KEDA or HPA, which scale the *number* of replicas, VPA sizes the *resources per pod*.
+The **Vertical Pod Autoscaler (VPA)** adjusts the CPU and memory **requests** (and optionally limits) on running pods based on observed resource usage. Unlike KEDA or HPA, which scale the _number_ of replicas, VPA sizes the _resources per pod_.
 
 ### Why you need VPA
 
@@ -82,11 +82,11 @@ Pod Resource Usage (kubelet metrics)
   Pod is resized (auto, recreated, or manually updated)
 ```
 
-| Component | Replica Count | Role |
-|---|---|---|
-| **Recommender** | 2 (HA) | Monitors pod metrics; computes and stores recommendations |
-| **Updater** | 2 (HA) | In `Auto`/`Recreate` modes, evicts and replaces pods to apply new resource sizes |
-| **Admission Controller** | 2 (HA) | Validates `VerticalPodAutoscaler` resources; prevents simultaneous updates; stores checkpoint history |
+| Component                | Replica Count | Role                                                                                                  |
+| ------------------------ | ------------- | ----------------------------------------------------------------------------------------------------- |
+| **Recommender**          | 2 (HA)        | Monitors pod metrics; computes and stores recommendations                                             |
+| **Updater**              | 2 (HA)        | In `Auto`/`Recreate` modes, evicts and replaces pods to apply new resource sizes                      |
+| **Admission Controller** | 2 (HA)        | Validates `VerticalPodAutoscaler` resources; prevents simultaneous updates; stores checkpoint history |
 
 All three components are hardened by default (non-root, read-only filesystem, no capabilities). Memory usage is constrained to prevent the control plane from scaling out of control.
 
@@ -94,7 +94,7 @@ All three components are hardened by default (non-root, read-only filesystem, no
 
 ## Update Modes Explained
 
-The VPA CRD has an `updatePolicy.updateMode` field that controls *how* recommendations are applied:
+The VPA CRD has an `updatePolicy.updateMode` field that controls _how_ recommendations are applied:
 
 ### `Off` — Recommendations Only (Safe with KEDA)
 
@@ -105,7 +105,7 @@ updatePolicy:
 
 **Behaviour:** VPA analyzes usage and emits recommendations; **no automatic changes**. You must manually read the recommendations and update your Deployment manifest.
 
-**When to use:** 
+**When to use:**
 
 - Workloads scaled by KEDA or other autoscalers (avoids disruptive restarts during scaling events)
 - Production systems where pod restarts carry risk
@@ -136,7 +136,7 @@ spec:
     kind: Deployment
     name: my-service
   updatePolicy:
-    updateMode: "Off"          # ← Recommendations only
+    updateMode: "Off" # ← Recommendations only
   resourcePolicy:
     containerPolicies:
       - containerName: my-service
@@ -242,6 +242,41 @@ kubectl get deployment -n kube-system vpa-recommender -o yaml | grep image
 
 ## GitOps Integration — VPA with ArgoCD
 
+!!! info "Critical: Ignore Resource Requests to Allow VPA and ArgoCD to Co-exist"
+
+    When using VPA in `Auto` or `Recreate` modes alongside ArgoCD, you **MUST** add `ignoreDifferences` to your application definition to prevent ArgoCD from reverting VPA's resource adjustments. This tells ArgoCD to ignore drift in resource requests/limits fields, allowing VPA to manage them freely.
+
+    **Example:**
+    ```yaml
+    helm:
+      path: <PATH_TO_HELM_CHART>
+      repository: <REPO_URL>
+      version: main
+
+    sync:
+      ## The order in which to deploy the application
+      phase: primary
+      ## The duration to wait before retrying the application
+      duration: 60s
+      ## The maximum duration to wait before retrying the application
+      max_duration: 2m
+
+    ignoreDifferences:
+      - group: apps
+        kind: Deployment
+        jsonPointers:
+          # Allow KEDA to scale the deployment without ArgoCD
+          # considering it a drift
+          - /spec/replicas
+          # Allow VPA to adjust the resource requests without
+          # ArgoCD considering it a drift
+          - /spec/template/spec/containers/0/resources/requests
+    ```
+
+    **Without this**, ArgoCD will continuously revert VPA's changes, causing conflicts and preventing VPA from functioning correctly. See [Approach 2](#approach-2-pragmatic-argocds-ignoredifferences) below for more details.
+
+---
+
 This platform uses **ArgoCD as the GitOps source of truth**. When VPA runs in "Off" mode (recommendations only), the key question is: **how do recommendations get applied to your manifests?**
 
 VPA recommendations live **only in the cluster** (in the VPA resource's `.status.recommendation` field). Your Deployment manifests live in **git**. This is a clean separation of concerns — VPA advises, but developers decide when to apply.
@@ -285,6 +320,7 @@ Everything in git, cluster stays in sync
 **Setup:**
 
 1. **Always deploy workloads with baseline requests** (never omit them):
+
    ```yaml
    spec:
      template:
@@ -293,7 +329,7 @@ Everything in git, cluster stays in sync
            - name: my-service
              resources:
                requests:
-                 cpu: 100m          # Conservative baseline
+                 cpu: 100m # Conservative baseline
                  memory: 256Mi
                limits:
                  cpu: 1000m
@@ -301,6 +337,7 @@ Everything in git, cluster stays in sync
    ```
 
 2. **Create a VPA in Off mode:**
+
    ```yaml
    apiVersion: autoscaling.k8s.io/v1
    kind: VerticalPodAutoscaler
@@ -311,7 +348,7 @@ Everything in git, cluster stays in sync
        kind: Deployment
        name: my-service
      updatePolicy:
-       updateMode: "Off"    # ← Recommendations only
+       updateMode: "Off" # ← Recommendations only
      resourcePolicy:
        containerPolicies:
          - containerName: my-service
@@ -332,6 +369,7 @@ Everything in git, cluster stays in sync
    - Done — git stays accurate
 
 **Pros:**
+
 - ✅ Git is the true source of truth
 - ✅ Full audit trail (changes are in git history)
 - ✅ Developers review changes before applying (they own resource decisions)
@@ -340,6 +378,7 @@ Everything in git, cluster stays in sync
 - ✅ Works seamlessly with ArgoCD (no ignoring differences)
 
 **Cons:**
+
 - ⚠ Requires developer discipline (they must remember to check and update)
 - ⚠ Recommendations don't auto-apply
 - ⚠ Best effort — some teams may skip or delay updates
@@ -378,11 +417,13 @@ The ApplicationSet will automatically apply this to the generated ArgoCD Applica
 See [Allowing Controllers to Manage Fields](../../tenant/applications.md#allowing-controllers-to-manage-fields--ignoredifferences) in the applications documentation for more details.
 
 **Pros:**
+
 - ✅ Simple to implement (add `ignoreDifferences` block to your app definition)
 - ✅ VPA changes apply immediately (no waiting for developer action)
 - ✅ Useful for non-critical or experimental workloads
 
 **Cons:**
+
 - ❌ Git is no longer complete source of truth (resource requests drift)
 - ❌ Loss of audit trail (who changed what when?)
 - ❌ Harder to review changes before they're applied
@@ -395,11 +436,11 @@ See [Allowing Controllers to Manage Fields](../../tenant/applications.md#allowin
 
 ### Which Approach Should You Choose?
 
-| Scenario | Approach | Reasoning |
-|----------|----------|-----------|
-| Production, multi-team, strict GitOps | **Approach 1** | Developer ownership, full audit trail, git is source of truth |
-| Non-critical, experimental, dev/staging | **Approach 2** | Simpler, automatic updates, acceptable drift |
-| Mixed environment | **Approach 1 for prod, Approach 2 for non-prod** | Different policies per namespace/workload |
+| Scenario                                | Approach                                         | Reasoning                                                     |
+| --------------------------------------- | ------------------------------------------------ | ------------------------------------------------------------- |
+| Production, multi-team, strict GitOps   | **Approach 1**                                   | Developer ownership, full audit trail, git is source of truth |
+| Non-critical, experimental, dev/staging | **Approach 2**                                   | Simpler, automatic updates, acceptable drift                  |
+| Mixed environment                       | **Approach 1 for prod, Approach 2 for non-prod** | Different policies per namespace/workload                     |
 
 **Recommendation for this platform:** Start with **Approach 1**. It aligns with GitOps principles and keeps git accurate. Approach 2 is a fallback for teams that want VPA automation without manual intervention.
 
@@ -411,10 +452,10 @@ The platform ships default Helm values for VPA under `config/vpa/` in this repos
 
 ### Value file layout
 
-| File | Scope |
-|---|---|
-| `config/vpa/all.yaml` | Defaults applied to **every** cluster that consumes this path |
-| `config/vpa/<cloud_vendor>.yaml` | Per-cloud defaults (e.g., `aws.yaml`, `azure.yaml`) |
+| File                             | Scope                                                                           |
+| -------------------------------- | ------------------------------------------------------------------------------- |
+| `config/vpa/all.yaml`            | Defaults applied to **every** cluster that consumes this path                   |
+| `config/vpa/<cloud_vendor>.yaml` | Per-cloud defaults (e.g., `aws.yaml`, `azure.yaml`)                             |
 | `config/vpa/<cluster_name>.yaml` | Overrides for a **single** cluster (matches the cluster's `cluster_name` field) |
 
 ### Resolution order (precedence)
@@ -444,7 +485,8 @@ The platform `config/vpa/all.yaml` ships with:
 ```yaml
 # <tenant_path>/config/vpa/all.yaml
 updater:
-  enabled: true  # Explicitly enable if you want recommendations stored (default: true)
+  enabled: true # Explicitly enable if you want recommendations stored (default: true)
+
 
 # Note: Update mode is NOT a helm value — it's set per VerticalPodAutoscaler CRD
 ```
@@ -454,7 +496,7 @@ updater:
 ```yaml
 # <tenant_path>/config/vpa/all.yaml
 updater:
-  enabled: false  # Disable the updater component — no pod evictions will occur
+  enabled: false # Disable the updater component — no pod evictions will occur
 ```
 
 ### Example — adjust minimum recommendation bounds
@@ -463,8 +505,8 @@ updater:
 # <tenant_path>/config/vpa/all.yaml
 recommender:
   extraArgs:
-    pod-recommendation-min-cpu-millicores: "50"    # Prevent CPU recommendations below 50m
-    pod-recommendation-min-memory-mb: "256"        # Prevent memory recommendations below 256Mi
+    pod-recommendation-min-cpu-millicores: "50" # Prevent CPU recommendations below 50m
+    pod-recommendation-min-memory-mb: "256" # Prevent memory recommendations below 256Mi
 ```
 
 Refer to the [upstream `values.yaml`](https://github.com/FairwindsOps/charts/blob/master/stable/vpa/values.yaml) for all supported keys.
@@ -492,12 +534,12 @@ spec:
 
   # Update policy — how to apply recommendations
   updatePolicy:
-    updateMode: "Off"                    # Off, Initial, Recreate, or Auto
+    updateMode: "Off" # Off, Initial, Recreate, or Auto
 
   # Resource policy — bounds and per-container controls
   resourcePolicy:
     containerPolicies:
-      - containerName: "*"               # Match all containers
+      - containerName: "*" # Match all containers
         minAllowed:
           cpu: 100m
           memory: 128Mi
@@ -512,13 +554,13 @@ spec:
 
 ### Key fields
 
-| Field | Meaning |
-|---|---|
-| `targetRef` | The workload to monitor — must match a Deployment, StatefulSet, DaemonSet, or Job by name and namespace |
-| `updateMode` | `Off` (recommendations only), `Initial` (on pod creation), `Recreate` (evict and restart), or `Auto` (immediate) |
-| `minAllowed` / `maxAllowed` | CPU/memory bounds; recommendations are clipped to these ranges |
-| `controlledResources` | Which resources VPA controls — `cpu`, `memory`, or both (default: both) |
-| `controlledValues` | `RequestsAndLimits` (adjusts both requests and limits), `RequestsOnly` (requests only) |
+| Field                       | Meaning                                                                                                          |
+| --------------------------- | ---------------------------------------------------------------------------------------------------------------- |
+| `targetRef`                 | The workload to monitor — must match a Deployment, StatefulSet, DaemonSet, or Job by name and namespace          |
+| `updateMode`                | `Off` (recommendations only), `Initial` (on pod creation), `Recreate` (evict and restart), or `Auto` (immediate) |
+| `minAllowed` / `maxAllowed` | CPU/memory bounds; recommendations are clipped to these ranges                                                   |
+| `controlledResources`       | Which resources VPA controls — `cpu`, `memory`, or both (default: both)                                          |
+| `controlledValues`          | `RequestsAndLimits` (adjusts both requests and limits), `RequestsOnly` (requests only)                           |
 
 ### Matching multiple containers
 
@@ -527,18 +569,18 @@ resourcePolicy:
   containerPolicies:
     # Specific container
     - containerName: app
-      minAllowed: {cpu: 100m, memory: 128Mi}
-      maxAllowed: {cpu: 2, memory: 2Gi}
+      minAllowed: { cpu: 100m, memory: 128Mi }
+      maxAllowed: { cpu: 2, memory: 2Gi }
 
     # Sidecar — different bounds
     - containerName: sidecar
-      minAllowed: {cpu: 10m, memory: 32Mi}
-      maxAllowed: {cpu: 500m, memory: 512Mi}
+      minAllowed: { cpu: 10m, memory: 32Mi }
+      maxAllowed: { cpu: 500m, memory: 512Mi }
 
     # Init containers and others (wildcard)
     - containerName: "*"
-      minAllowed: {cpu: 50m, memory: 64Mi}
-      maxAllowed: {cpu: 1, memory: 1Gi}
+      minAllowed: { cpu: 50m, memory: 64Mi }
+      maxAllowed: { cpu: 1, memory: 1Gi }
 ```
 
 ---
@@ -711,7 +753,7 @@ spec:
 
       # Istio sidecar — fixed resource usage, exclude from VPA
       - containerName: istio-proxy
-        controlledResources: []        # Empty = exclude from scaling
+        controlledResources: [] # Empty = exclude from scaling
 
       # OpenTelemetry collector sidecar — tighter bounds
       - containerName: otel-collector
@@ -752,7 +794,7 @@ spec:
   template:
     metadata:
       labels:
-        vpa-exclude: "true"    # ← VPA will ignore this deployment
+        vpa-exclude: "true" # ← VPA will ignore this deployment
     spec:
       containers: ...
 ```
@@ -780,7 +822,7 @@ helm:
   repository: https://charts.example.com
   version: 1.0.0
   release_name: my-service
-  
+
   # Define baseline resource requests for the Helm chart to use
   values: |
     resources:
@@ -864,6 +906,7 @@ kubectl describe vpa my-service-vpa -n production
 ```
 
 Output:
+
 ```
 Status:
   Recommendation:
@@ -881,6 +924,7 @@ Status:
 ```
 
 **Check:**
+
 - Does `Target` make sense? (typically 10–30% different from your requests)
 - Have recommendations stabilized? (check `.status.lastUpdateTime`)
 - Are they within your `minAllowed` / `maxAllowed` bounds?
@@ -890,18 +934,20 @@ Status:
 **If your platform uses Approach 1 (Off mode + developer responsibility):**
 
 1. **Update your values file** with the Target values from VPA:
+
    ```yaml
    # workloads/applications/my-service/values/all.yaml
    resources:
      requests:
-       cpu: 150m        # ← From VPA Target
-       memory: 310Mi    # ← From VPA Target
+       cpu: 150m # ← From VPA Target
+       memory: 310Mi # ← From VPA Target
      limits:
        cpu: 1000m
        memory: 1Gi
    ```
 
 2. **Alternatively, update inline values** in your cluster-specific config:
+
    ```yaml
    # workloads/applications/my-service/dev.yaml
    helm:
@@ -915,6 +961,7 @@ Status:
    ```
 
 3. **Commit and push to git:**
+
    ```bash
    git add workloads/applications/my-service/
    git commit -m "chore: update resource requests based on VPA recommendations"
@@ -933,6 +980,7 @@ See [Helm Values Resolution](../../tenant/applications.md#helm-values-resolution
 **If your platform uses Approach 2 (ignoreDifferences):**
 
 1. **Add `ignoreDifferences` to your application definition:**
+
    ```yaml
    # workloads/applications/my-service/dev.yaml
    helm:
@@ -974,6 +1022,7 @@ kubectl top pods -n production -l app=my-service
 ```
 
 **Red flags:**
+
 - Usage consistently at 95%+ of requests → bounds are too tight
 - Usage consistently at 5% of requests → can be tightened further
 - Pods getting OOMKilled → memory recommendation was wrong
@@ -985,6 +1034,7 @@ If a workload should **not** be managed by VPA:
 **Option 1: Don't create a VPA resource** — VPA only affects workloads with an explicit VerticalPodAutoscaler CRD.
 
 **Option 2: Use exclusion label** (if configured by platform):
+
 ```yaml
 spec:
   template:
@@ -1010,33 +1060,35 @@ kubectl describe vpa my-service-vpa -n production
 ```
 
 **Common causes:**
+
 - Workload is brand new (< 2 days old) — VPA needs historical data
 - Metrics Server not running (`kubectl get deployment metrics-server -n kube-system`)
 - Pod has no CPU/memory usage (`kubectl top pods` shows "unknown")
 
 ### FAQ
 
-**Q: Will VPA restart my pods automatically?**  
+**Q: Will VPA restart my pods automatically?**
 A: Only if you use `updateMode: Auto` or `Recreate`. With `Off` mode (recommended), VPA only recommends; you apply changes when ready.
 
-**Q: Can I use VPA with KEDA?**  
+**Q: Can I use VPA with KEDA?**
 A: Yes! But see [VPA with KEDA](#vpa-with-keda--safe-integration-pattern) — use `Off` mode to avoid conflicts.
 
-**Q: What if I disagree with a VPA recommendation?**  
+**Q: What if I disagree with a VPA recommendation?**
 A: Adjust `minAllowed` and `maxAllowed` bounds to constrain recommendations:
+
 ```yaml
 resourcePolicy:
   containerPolicies:
     - containerName: my-service
       minAllowed:
-        cpu: 100m        # ← Raise this to force higher recommendations
+        cpu: 100m # ← Raise this to force higher recommendations
         memory: 256Mi
       maxAllowed:
-        cpu: 2           # ← Lower this to cap recommendations
+        cpu: 2 # ← Lower this to cap recommendations
         memory: 2Gi
 ```
 
-**Q: How often should I update requests based on VPA?**  
+**Q: How often should I update requests based on VPA?**
 A: With Approach 1 (Off mode), whenever a significant change appears (monthly or quarterly review is reasonable). Don't chase every small fluctuation.
 
 ---
@@ -1079,7 +1131,7 @@ spec:
     name: my-worker
 
   updatePolicy:
-    updateMode: "Off"                # ← CRITICAL: Recommendations only
+    updateMode: "Off" # ← CRITICAL: Recommendations only
 
   resourcePolicy:
     containerPolicies:
@@ -1120,7 +1172,7 @@ spec:
    watch kubectl describe vpa my-worker-vpa -n default
    ```
 
-2. **Apply during planned maintenance** — update the Deployment manifest *outside* of active scaling periods (e.g., scheduled maintenance windows, after-hours, weekends):
+2. **Apply during planned maintenance** — update the Deployment manifest _outside_ of active scaling periods (e.g., scheduled maintenance windows, after-hours, weekends):
 
    ```bash
    kubectl set resources deployment my-worker \
@@ -1129,6 +1181,7 @@ spec:
    ```
 
    Or via GitOps:
+
    ```yaml
    spec:
      template:
@@ -1137,7 +1190,7 @@ spec:
            - name: my-worker
              resources:
                requests:
-                 cpu: 350m        # From VPA Target
+                 cpu: 350m # From VPA Target
                  memory: 410Mi
    ```
 
@@ -1163,7 +1216,6 @@ kubectl get vpa -n default -o json | \
 Or integrate VPA status into your Prometheus/Grafana for visibility.
 
 ---
-
 
 ## Reading & Applying Recommendations
 
@@ -1241,7 +1293,7 @@ spec:
         - name: my-service
           resources:
             requests:
-              cpu: 250m         # From VPA Target
+              cpu: 250m # From VPA Target
               memory: 320Mi
             limits:
               cpu: 500m
@@ -1344,17 +1396,17 @@ kubectl get events -n <namespace> | grep -i evict
 
 ## Known Constraints & Gotchas
 
-| Constraint | Detail |
-|---|---|
-| **VPA needs historical data** | Recommendations improve over time; new workloads need 2–5 days of real traffic before recommendations stabilize. Early recommendations may be inaccurate. |
-| **Don't use `Auto` mode with KEDA** | VPA `Auto` can evict pods during KEDA scaling events, causing oscillation. Use `Off` (recommendations only) instead. |
-| **VPA and HPA cannot control CPU/memory on the same deployment** | If VPA is managing CPU/memory requests, do NOT use an HPA CPU/memory trigger on the same workload — they will conflict and fight over replica count. |
-| **Metrics Server is required** | VPA reads metrics from kubelet via the standard Kubernetes Metrics Server (`metrics.k8s.io`). If Metrics Server is unhealthy, VPA won't get data. |
-| **VPA needs PodDisruptionBudget for safe eviction** | In `Auto`/`Recreate` modes, ensure workloads have a PDB; otherwise VPA may evict all replicas simultaneously. |
-| **Recommendations reset on cluster upgrades** | VPA checkpoint history may be lost on cluster reboots or admission controller restarts. Recommendations will stabilize again over time. |
-| **Resource requests vs. limits** | By default, VPA controls both requests and limits (via `controlledValues: RequestsAndLimits`). If you want VPA to change requests only, set `controlledValues: RequestsOnly`. |
-| **Initial mode doesn't help long-lived pods** | If a Deployment's pods live for months without rolling out, `Initial` mode never gets a chance to apply recommendations. Schedule periodic rollouts or use `Off` mode instead. |
-| **Wildcard container policies are last resort** | Matching `containerName: "*"` applies to all containers, overriding per-container policies. Use sparingly. |
+| Constraint                                                       | Detail                                                                                                                                                                         |
+| ---------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| **VPA needs historical data**                                    | Recommendations improve over time; new workloads need 2–5 days of real traffic before recommendations stabilize. Early recommendations may be inaccurate.                      |
+| **Don't use `Auto` mode with KEDA**                              | VPA `Auto` can evict pods during KEDA scaling events, causing oscillation. Use `Off` (recommendations only) instead.                                                           |
+| **VPA and HPA cannot control CPU/memory on the same deployment** | If VPA is managing CPU/memory requests, do NOT use an HPA CPU/memory trigger on the same workload — they will conflict and fight over replica count.                           |
+| **Metrics Server is required**                                   | VPA reads metrics from kubelet via the standard Kubernetes Metrics Server (`metrics.k8s.io`). If Metrics Server is unhealthy, VPA won't get data.                              |
+| **VPA needs PodDisruptionBudget for safe eviction**              | In `Auto`/`Recreate` modes, ensure workloads have a PDB; otherwise VPA may evict all replicas simultaneously.                                                                  |
+| **Recommendations reset on cluster upgrades**                    | VPA checkpoint history may be lost on cluster reboots or admission controller restarts. Recommendations will stabilize again over time.                                        |
+| **Resource requests vs. limits**                                 | By default, VPA controls both requests and limits (via `controlledValues: RequestsAndLimits`). If you want VPA to change requests only, set `controlledValues: RequestsOnly`.  |
+| **Initial mode doesn't help long-lived pods**                    | If a Deployment's pods live for months without rolling out, `Initial` mode never gets a chance to apply recommendations. Schedule periodic rollouts or use `Off` mode instead. |
+| **Wildcard container policies are last resort**                  | Matching `containerName: "*"` applies to all containers, overriding per-container policies. Use sparingly.                                                                     |
 
 ---
 
@@ -1367,4 +1419,4 @@ kubectl get events -n <namespace> | grep -i evict
 
 ---
 
-*Based on VPA 4.11 (Fairwinds chart) — see the upstream [VPA repository](https://github.com/kubernetes/autoscaler/tree/master/vertical-pod-autoscaler) for the authoritative reference.*
+_Based on VPA 4.11 (Fairwinds chart) — see the upstream [VPA repository](https://github.com/kubernetes/autoscaler/tree/master/vertical-pod-autoscaler) for the authoritative reference._
