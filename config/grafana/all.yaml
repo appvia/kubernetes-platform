@@ -415,8 +415,8 @@ grafana.ini:
   # =====================================================================
   # Classic alerting (older) - recommend using unified_alerting instead
   alerting:
-    enabled: true # Enable classic alerts
-    execute_alerts: true # Actually send alerts (vs just evaluating)
+    enabled: false # Enable classic alerts
+    execute_alerts: false # Actually send alerts (vs just evaluating)
 
   # =====================================================================
   # UNIFIED ALERTING (Modern/Recommended)
