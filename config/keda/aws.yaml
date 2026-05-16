@@ -1,0 +1,5 @@
+---
+# Pod identity configuration for KEDA components. This is a convenience shape
+podIdentity:
+  # Enable pod identity for aws
+  provider: aws

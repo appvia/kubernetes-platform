@@ -71,3 +71,10 @@ securityContext:
   readOnlyRootFilesystem: true
   # Block privilege escalation (e.g. via setuid binaries).
   allowPrivilegeEscalation: false
+
+# Network policy configuration for KEDA components. This is a convenience shape
+networkPolicy:
+  # Enable network policies
+  enabled: true
+  # Flavor of the network policies (cilium, kubernetes)
+  flavor: "kubernetes"
