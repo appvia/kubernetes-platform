@@ -454,18 +454,18 @@ alerting: {}
 
 # Dashboard Providers Configuration
 # Specifies how/where Grafana finds dashboards
-dashboardProviders:
-  dashboardproviders.yaml:
-    apiVersion: 1
-    providers:
-      - name: default # Provider name (arbitrary)
-        orgId: 1 # Organization ID
-        folder: "" # Folder where dashboards appear (empty=root)
-        type: file # File-based provider (vs. other types)
-        disableDeletion: false # Allow deleting dashboards
-        editable: true # Allow editing provisioned dashboards
-        options:
-          path: /var/lib/grafana/dashboards/default # Where sidecar mounts dashboards
+#dashboardProviders:
+#  dashboardproviders.yaml:
+#    apiVersion: 1
+#    providers:
+#      - name: default # Provider name (arbitrary)
+#        orgId: 1 # Organization ID
+#        folder: "" # Folder where dashboards appear (empty=root)
+#        type: file # File-based provider (vs. other types)
+#        disableDeletion: false # Allow deleting dashboards
+#        editable: true # Allow editing provisioned dashboards
+#        options:
+#          path: /var/lib/grafana/dashboards/default # Where sidecar mounts dashboards
 
 # Dashboard Sidecar Configuration
 # Mounted ConfigMaps with "grafana_dashboard=1" label auto-import as dashboards
