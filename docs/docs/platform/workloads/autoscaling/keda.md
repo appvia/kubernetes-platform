@@ -38,7 +38,7 @@ Key capabilities:
 - **60+ built-in scalers** — Kafka, RabbitMQ, Redis, AWS SQS, Azure Service Bus, Prometheus, PostgreSQL, cron, and more
 - **HPA integration** — KEDA does not replace HPA; it generates and manages HPA objects under the hood, feeding them event-driven metrics
 - **Job scaling** — spawn and clean up Kubernetes Jobs in response to events via `ScaledJob`
-- **Proactive scaling** — acts on queue depth or stream lag *before* CPU spikes, unlike reactive HPA polling
+- **Proactive scaling** — acts on queue depth or stream lag _before_ CPU spikes, unlike reactive HPA polling
 
 !!! note
 
@@ -66,11 +66,11 @@ External Event Source (e.g. Kafka, RabbitMQ, SQS)
 
 When KEDA is installed by this platform, the following components run in the `keda-system` namespace:
 
-| Container | Role |
-|---|---|
-| `keda-operator` | Manages CRDs, controls 0↔1 scaling (activation), connects to event sources |
+| Container                         | Role                                                                        |
+| --------------------------------- | --------------------------------------------------------------------------- |
+| `keda-operator`                   | Manages CRDs, controls 0↔1 scaling (activation), connects to event sources  |
 | `keda-operator-metrics-apiserver` | Implements the External Metrics API; serves event-source metrics to the HPA |
-| `keda-admission-webhooks` | Validates `ScaledObject` / `ScaledJob` resources at admission time |
+| `keda-admission-webhooks`         | Validates `ScaledObject` / `ScaledJob` resources at admission time          |
 
 KEDA dynamically creates and manages an HPA object for each `ScaledObject`. You do not manage that HPA directly.
 
@@ -80,13 +80,13 @@ KEDA dynamically creates and manages an HPA object for each `ScaledObject`. You 
 
 These are two distinct components serving different API paths — they coexist without conflict.
 
-| | Standard Metrics Server | KEDA Metrics Server |
-|---|---|---|
-| **API group** | `metrics.k8s.io/v1beta1` | `external.metrics.k8s.io/v1beta1` |
-| **Data source** | Kubelet (node/pod CPU & memory) | External systems (queues, streams, APIs) |
-| **Used by** | `kubectl top`, HPA CPU/memory scaling | HPA event-driven scaling via KEDA |
-| **Looks** | Inward — inside the cluster | Outward — outside the cluster |
-| **Installed by** | Kubernetes cluster (or `metrics-server` chart) | KEDA Helm install |
+|                  | Standard Metrics Server                        | KEDA Metrics Server                      |
+| ---------------- | ---------------------------------------------- | ---------------------------------------- |
+| **API group**    | `metrics.k8s.io/v1beta1`                       | `external.metrics.k8s.io/v1beta1`        |
+| **Data source**  | Kubelet (node/pod CPU & memory)                | External systems (queues, streams, APIs) |
+| **Used by**      | `kubectl top`, HPA CPU/memory scaling          | HPA event-driven scaling via KEDA        |
+| **Looks**        | Inward — inside the cluster                    | Outward — outside the cluster            |
+| **Installed by** | Kubernetes cluster (or `metrics-server` chart) | KEDA Helm install                        |
 
 !!! important
 
@@ -113,18 +113,18 @@ kubectl get --raw "/apis/external.metrics.k8s.io/v1beta1/namespaces/<namespace>/
 
     The comparison is not "KEDA vs HPA" — KEDA uses HPA internally. The real question is: **KEDA vs manually wiring HPA to a custom metrics adapter**.
 
-| Capability | HPA + Custom Metrics Adapter | KEDA |
-|---|---|---|
-| Scale to zero | Minimum 1 replica | Minimum 0 replicas |
-| Proactive (queue-depth) scaling | Lags — reacts after CPU spikes | Scales on queue length before CPU spikes |
-| External event sources | Requires custom adapter per source | 60+ built-in scalers, zero adapter code |
-| Auth to external systems | Ad hoc per adapter implementation | First-class `TriggerAuthentication` CRD |
-| Multi-trigger logic | One HPA per metric, causes conflicts | Multiple triggers in a single ScaledObject |
-| Job / batch scaling | Not supported | `ScaledJob` CRD |
-| Config complexity | High — adapter config + HPA YAML | Low — single ScaledObject YAML |
-| Cluster overhead | Minimal (native) | Low — one operator + metrics server pod |
-| Config validation | Silent failures | Admission webhooks prevent conflicts |
-| Estimated cost saving (batch) | Baseline | ~30% reduction via scale-to-zero |
+| Capability                      | HPA + Custom Metrics Adapter         | KEDA                                       |
+| ------------------------------- | ------------------------------------ | ------------------------------------------ |
+| Scale to zero                   | Minimum 1 replica                    | Minimum 0 replicas                         |
+| Proactive (queue-depth) scaling | Lags — reacts after CPU spikes       | Scales on queue length before CPU spikes   |
+| External event sources          | Requires custom adapter per source   | 60+ built-in scalers, zero adapter code    |
+| Auth to external systems        | Ad hoc per adapter implementation    | First-class `TriggerAuthentication` CRD    |
+| Multi-trigger logic             | One HPA per metric, causes conflicts | Multiple triggers in a single ScaledObject |
+| Job / batch scaling             | Not supported                        | `ScaledJob` CRD                            |
+| Config complexity               | High — adapter config + HPA YAML     | Low — single ScaledObject YAML             |
+| Cluster overhead                | Minimal (native)                     | Low — one operator + metrics server pod    |
+| Config validation               | Silent failures                      | Admission webhooks prevent conflicts       |
+| Estimated cost saving (batch)   | Baseline                             | ~30% reduction via scale-to-zero           |
 
 **When plain HPA still wins:**
 
@@ -178,10 +178,10 @@ The platform ships default Helm values for KEDA under `config/keda/` in this rep
 
 ### Value file layout
 
-| File | Scope |
-|---|---|
-| `config/keda/all.yaml` | Defaults applied to **every** cluster that consumes this path |
-| `config/keda/<cloud_vendor>.yaml` | Per-cloud defaults (for example `aws.yaml`, `azure.yaml`) |
+| File                              | Scope                                                                           |
+| --------------------------------- | ------------------------------------------------------------------------------- |
+| `config/keda/all.yaml`            | Defaults applied to **every** cluster that consumes this path                   |
+| `config/keda/<cloud_vendor>.yaml` | Per-cloud defaults (for example `aws.yaml`, `azure.yaml`)                       |
 | `config/keda/<cluster_name>.yaml` | Overrides for a **single** cluster (matches the cluster's `cluster_name` field) |
 
 ### Resolution order (precedence)
@@ -234,11 +234,11 @@ KEDA exposes Prometheus metrics from each of its components (operator, metrics s
 
 Each component serves Prometheus metrics on its own port at `/metrics`:
 
-| Component | Port | What you get |
-|---|---|---|
-| `keda-operator` | `8080` | `keda_scaler_active`, `keda_scaler_metrics_value`, `keda_scaled_object_errors_total`, `keda_resource_registered_total`, `keda_trigger_registered_total`, build info, scaling-loop latency |
-| `keda-operator-metrics-apiserver` | `8080` | gRPC client metrics for the internal metrics service, plus the standard `apiserver_*` metrics |
-| `keda-admission-webhooks` | `8080` | `keda_webhook_scaled_object_validation_total`, `keda_webhook_scaled_object_validation_errors` |
+| Component                         | Port   | What you get                                                                                                                                                                              |
+| --------------------------------- | ------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `keda-operator`                   | `8080` | `keda_scaler_active`, `keda_scaler_metrics_value`, `keda_scaled_object_errors_total`, `keda_resource_registered_total`, `keda_trigger_registered_total`, build info, scaling-loop latency |
+| `keda-operator-metrics-apiserver` | `8080` | gRPC client metrics for the internal metrics service, plus the standard `apiserver_*` metrics                                                                                             |
+| `keda-admission-webhooks`         | `8080` | `keda_webhook_scaled_object_validation_total`, `keda_webhook_scaled_object_validation_errors`                                                                                             |
 
 See the [KEDA Prometheus integration docs](https://keda.sh/docs/latest/integrations/prometheus/) for the full list.
 
@@ -250,9 +250,9 @@ If the cluster runs `kube-prometheus-stack` (`enable_kube_prometheus_stack: "tru
 # <tenant_path>/config/keda/all.yaml
 prometheus:
   metricServer:
-    enabled: true                  # Expose Prometheus metrics on the metrics API server
+    enabled: true # Expose Prometheus metrics on the metrics API server
     serviceMonitor:
-      enabled: true                # Create a ServiceMonitor for it
+      enabled: true # Create a ServiceMonitor for it
       interval: 30s
       scrapeTimeout: 10s
       additionalLabels:
@@ -366,12 +366,12 @@ KEDA publishes a community Grafana dashboard alongside the project. Import [`ked
 
 KEDA installs four Custom Resource Definitions:
 
-| CRD | Scope | Purpose |
-|---|---|---|
-| `ScaledObject` | Namespace | Maps event sources to Deployments / StatefulSets |
-| `ScaledJob` | Namespace | Spawns and cleans up Kubernetes Jobs on events |
-| `TriggerAuthentication` | Namespace | Stores credentials for event sources |
-| `ClusterTriggerAuthentication` | Cluster | Same as above, but available cluster-wide |
+| CRD                            | Scope     | Purpose                                          |
+| ------------------------------ | --------- | ------------------------------------------------ |
+| `ScaledObject`                 | Namespace | Maps event sources to Deployments / StatefulSets |
+| `ScaledJob`                    | Namespace | Spawns and cleans up Kubernetes Jobs on events   |
+| `TriggerAuthentication`        | Namespace | Stores credentials for event sources             |
+| `ClusterTriggerAuthentication` | Cluster   | Same as above, but available cluster-wide        |
 
 ---
 
@@ -380,6 +380,28 @@ KEDA installs four Custom Resource Definitions:
 !!! warning "Critical: ArgoCD Sync and KEDA Scaling Conflicts"
 
     When deploying KEDA-scaled workloads with ArgoCD, you **must** add `ignoreDifferences` configuration to your Application definition. Without this, ArgoCD will continuously revert the replica count set by KEDA's autoscaler, causing a reconciliation loop where ArgoCD overwrites KEDA's scaling decisions.
+
+```yaml
+helm:
+  path: <PATH> | chart: <CHART_NAME>
+  repository: <REPO_URL>
+  version: main
+
+sync:
+  ## The order in which to deploy the application
+  phase: primary
+  ## The duration to wait before retrying the application
+  duration: 60s
+  ## The maximum duration to wait before retrying the application
+  max_duration: 2m
+
+# IGNORE THIS BLOCK — REQUIRED FOR KEDA SCALING TO WORK WITH ARGOCD
+ignoreDifferences:
+  - group: apps
+    kind: Deployment
+    jsonPointers:
+      - /spec/replicas
+```
 
 ### Why this is needed
 
@@ -464,12 +486,12 @@ KEDA uniquely allows `minReplicaCount: 0`. When no events are present, KEDA drai
 
 ### Key ScaledObject Fields
 
-| Field | Description |
-|---|---|
-| `minReplicaCount: 0` | Enables full scale-to-zero |
-| `cooldownPeriod` | Seconds to wait after last event before scaling to zero (default: 300) |
-| `pollingInterval` | How often KEDA checks the event source (default: 30s) |
-| `activationLagThreshold` | Minimum event count required to leave zero (activation phase) |
+| Field                    | Description                                                            |
+| ------------------------ | ---------------------------------------------------------------------- |
+| `minReplicaCount: 0`     | Enables full scale-to-zero                                             |
+| `cooldownPeriod`         | Seconds to wait after last event before scaling to zero (default: 300) |
+| `pollingInterval`        | How often KEDA checks the event source (default: 30s)                  |
+| `activationLagThreshold` | Minimum event count required to leave zero (activation phase)          |
 
 ### Example — Kafka consumer with scale-to-zero
 
@@ -483,9 +505,9 @@ spec:
   scaleTargetRef:
     name: kafka-consumer
     kind: Deployment
-  minReplicaCount: 0        # Scale fully to zero when idle
+  minReplicaCount: 0 # Scale fully to zero when idle
   maxReplicaCount: 20
-  cooldownPeriod: 300       # Wait 5 mins of silence before scaling to zero
+  cooldownPeriod: 300 # Wait 5 mins of silence before scaling to zero
   pollingInterval: 30
   triggers:
     - type: kafka
@@ -494,7 +516,7 @@ spec:
         consumerGroup: my-consumer-group
         topic: my-topic
         lagThreshold: "50"
-        activationLagThreshold: "5"  # Need >5 messages to leave zero
+        activationLagThreshold: "5" # Need >5 messages to leave zero
       authenticationRef:
         name: kafka-trigger-auth
 ```
@@ -514,16 +536,16 @@ spec:
     horizontalPodAutoscalerConfig:
       behavior:
         scaleUp:
-          stabilizationWindowSeconds: 0       # React immediately
+          stabilizationWindowSeconds: 0 # React immediately
           policies:
             - type: Percent
-              value: 100                      # Double replicas every 15s if needed
+              value: 100 # Double replicas every 15s if needed
               periodSeconds: 15
         scaleDown:
-          stabilizationWindowSeconds: 300     # Wait 5 mins before reducing
+          stabilizationWindowSeconds: 300 # Wait 5 mins before reducing
           policies:
             - type: Percent
-              value: 50                       # Remove at most 50% per minute
+              value: 50 # Remove at most 50% per minute
               periodSeconds: 60
 ```
 
@@ -534,10 +556,10 @@ triggers:
   - type: cron
     metadata:
       timezone: Europe/London
-      start: "0 8 * * 1-5"      # Scale up weekday mornings
+      start: "0 8 * * 1-5" # Scale up weekday mornings
       end: "0 20 * * 1-5"
       desiredReplicas: "10"
-  - type: kafka                  # Also respond to real queue depth
+  - type: kafka # Also respond to real queue depth
     metadata:
       bootstrapServers: kafka-bootstrap:9092
       consumerGroup: my-consumer-group
@@ -607,7 +629,7 @@ KEDA natively supports workload identity federation — no secrets required:
 ```yaml
 spec:
   podIdentity:
-    provider: aws        # or: azure, gcp, azure-workload
+    provider: aws # or: azure, gcp, azure-workload
 ```
 
 For cluster-wide shared credentials use `ClusterTriggerAuthentication` with `kind: ClusterTriggerAuthentication` in the `authenticationRef`.
@@ -729,20 +751,20 @@ spec:
   scaleTargetRef:
     name: my-api
     kind: Deployment
-  minReplicaCount: 2        # Cannot be 0 with CPU-only trigger
+  minReplicaCount: 2 # Cannot be 0 with CPU-only trigger
   maxReplicaCount: 20
-  pollingInterval: 15       # Check every 15 seconds
+  pollingInterval: 15 # Check every 15 seconds
   cooldownPeriod: 60
   triggers:
     - type: cpu
-      metricType: Utilization   # AverageValue or Utilization
+      metricType: Utilization # AverageValue or Utilization
       metadata:
-        value: "60"             # Target 60% average CPU utilisation
+        value: "60" # Target 60% average CPU utilisation
 ```
 
 ### Example — CPU trigger combined with queue depth (recommended pattern)
 
-Combining CPU with a queue trigger gives you reactive scale-up on CPU pressure *and* proactive scale-up on queue depth. The highest desired replica count from any trigger wins.
+Combining CPU with a queue trigger gives you reactive scale-up on CPU pressure _and_ proactive scale-up on queue depth. The highest desired replica count from any trigger wins.
 
 ```yaml
 apiVersion: keda.sh/v1alpha1
@@ -775,12 +797,12 @@ spec:
     - type: cpu
       metricType: Utilization
       metadata:
-        value: "70"             # Scale up if avg CPU exceeds 70%
+        value: "70" # Scale up if avg CPU exceeds 70%
     - type: rabbitmq
       metadata:
         queueName: work-queue
         mode: QueueLength
-        value: "20"             # Also scale up if queue exceeds 20 messages
+        value: "20" # Also scale up if queue exceeds 20 messages
       authenticationRef:
         name: rabbitmq-auth
 ```
@@ -789,10 +811,10 @@ If you combine **`cpu` with `cron`** (for example scale to zero on weekends whil
 
 ### `metricType` options
 
-| metricType | Behaviour |
-|---|---|
-| `Utilization` | Target average CPU as a percentage of the pod's CPU request (e.g. `"60"` = 60%) |
-| `AverageValue` | Target an absolute average CPU value in millicores (e.g. `"500m"`) |
+| metricType     | Behaviour                                                                       |
+| -------------- | ------------------------------------------------------------------------------- |
+| `Utilization`  | Target average CPU as a percentage of the pod's CPU request (e.g. `"60"` = 60%) |
+| `AverageValue` | Target an absolute average CPU value in millicores (e.g. `"500m"`)              |
 
 ### Memory scaling
 
@@ -803,7 +825,7 @@ triggers:
   - type: memory
     metricType: Utilization
     metadata:
-      value: "75"             # Scale if average memory utilisation exceeds 75%
+      value: "75" # Scale if average memory utilisation exceeds 75%
 ```
 
 ---
@@ -844,15 +866,15 @@ spec:
   scaleTargetRef:
     name: my-service
     kind: Deployment
-  minReplicaCount: 0        # Allow full scale-to-zero
+  minReplicaCount: 0 # Allow full scale-to-zero
   maxReplicaCount: 10
   triggers:
     # Window 1: business hours — scale UP to 3 replicas
     - type: cron
       metadata:
-        timezone: Europe/London   # Always specify — defaults to UTC otherwise
-        start: "0 8 * * *"        # 8:00 AM every day
-        end: "0 18 * * *"         # 6:00 PM every day
+        timezone: Europe/London # Always specify — defaults to UTC otherwise
+        start: "0 8 * * *" # 8:00 AM every day
+        end: "0 18 * * *" # 6:00 PM every day
         desiredReplicas: "3"
 
     # Window 2: outside business hours — scale to zero
@@ -870,8 +892,8 @@ triggers:
   - type: cron
     metadata:
       timezone: Europe/London
-      start: "0 8 * * 1-5"     # 8 AM Monday–Friday
-      end: "0 18 * * 1-5"      # 6 PM Monday–Friday
+      start: "0 8 * * 1-5" # 8 AM Monday–Friday
+      end: "0 18 * * 1-5" # 6 PM Monday–Friday
       desiredReplicas: "5"
 ```
 
@@ -912,7 +934,7 @@ triggers:
 
 ### Example — Cron + event trigger hybrid (production-safe pattern)
 
-For production services, you typically want a guaranteed minimum during business hours *and* the ability to scale beyond that on real traffic. Combining cron with a metric trigger achieves this:
+For production services, you typically want a guaranteed minimum during business hours _and_ the ability to scale beyond that on real traffic. Combining cron with a metric trigger achieves this:
 
 ```yaml
 apiVersion: keda.sh/v1alpha1
@@ -924,7 +946,7 @@ spec:
   scaleTargetRef:
     name: api-service
     kind: Deployment
-  minReplicaCount: 0          # Allow zero outside business hours
+  minReplicaCount: 0 # Allow zero outside business hours
   maxReplicaCount: 50
   triggers:
     # Guarantee a baseline during business hours
@@ -933,14 +955,14 @@ spec:
         timezone: Europe/London
         start: "0 8 * * 1-5"
         end: "0 18 * * 1-5"
-        desiredReplicas: "5"   # Minimum 5 replicas during the day
+        desiredReplicas: "5" # Minimum 5 replicas during the day
 
     # Scale further based on actual queue depth
     - type: rabbitmq
       metadata:
         queueName: api-requests
         mode: QueueLength
-        value: "10"            # 1 replica per 10 queued requests
+        value: "10" # 1 replica per 10 queued requests
       authenticationRef:
         name: rabbitmq-auth
 
@@ -957,16 +979,16 @@ spec:
 
 A common question is whether a **weekend / overnight “off” schedule** (`cron` + `minReplicaCount: 0`) will **fight** **CPU-based** scaling.
 
-**They do not run as two separate autoscalers.** Cron and CPU are **triggers on the same `ScaledObject`**, and KEDA still creates **one** managed HPA for that object. Each trigger contributes a metric; the HPA evaluates the replica count implied by **each** metric and adopts the **maximum** — the same “highest desired replica count wins” rule described for other multi-trigger setups ([HPA-backed scale-up](#hpa-backed-scale-up-configuration), [CPU + queue example](#cpu-based-scaling-with-keda)). That is coordination, not two controllers overwriting each other. The case that *does* cause fights is a **second, manually created HPA** on the same workload ([Known constraints](#known-constraints-gotchas)).
+**They do not run as two separate autoscalers.** Cron and CPU are **triggers on the same `ScaledObject`**, and KEDA still creates **one** managed HPA for that object. Each trigger contributes a metric; the HPA evaluates the replica count implied by **each** metric and adopts the **maximum** — the same “highest desired replica count wins” rule described for other multi-trigger setups ([HPA-backed scale-up](#hpa-backed-scale-up-configuration), [CPU + queue example](#cpu-based-scaling-with-keda)). That is coordination, not two controllers overwriting each other. The case that _does_ cause fights is a **second, manually created HPA** on the same workload ([Known constraints](#known-constraints-gotchas)).
 
 **How to read it operationally**
 
-| Situation | What usually happens |
-|---|---|
-| Cron window **active** (`desiredReplicas` set), traffic is low | Cron sets a **floor** at least that high; CPU is satisfied or also drives replicas — you get `max(cron, cpu)` capped by `maxReplicaCount`. |
-| Cron window **active**, traffic is high | CPU can push replicas **above** the cron baseline up to `maxReplicaCount`. |
-| Cron window **inactive**, `minReplicaCount: 0`, **no pods** | There is no CPU utilisation to measure; the workload can stay at **zero** unless another trigger can activate scale-from-zero (for example queue depth). |
-| Cron window **inactive**, but **pods are running** | CPU (and any other triggers) can still recommend replicas. Autoscaling alone cannot enforce a “hard” blackout if something keeps pods alive—use pausing (`autoscaling.keda.sh/paused`), ingress or policy controls, or remove other scale-from-zero triggers if you need a strict off window. |
+| Situation                                                      | What usually happens                                                                                                                                                                                                                                                                          |
+| -------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Cron window **active** (`desiredReplicas` set), traffic is low | Cron sets a **floor** at least that high; CPU is satisfied or also drives replicas — you get `max(cron, cpu)` capped by `maxReplicaCount`.                                                                                                                                                    |
+| Cron window **active**, traffic is high                        | CPU can push replicas **above** the cron baseline up to `maxReplicaCount`.                                                                                                                                                                                                                    |
+| Cron window **inactive**, `minReplicaCount: 0`, **no pods**    | There is no CPU utilisation to measure; the workload can stay at **zero** unless another trigger can activate scale-from-zero (for example queue depth).                                                                                                                                      |
+| Cron window **inactive**, but **pods are running**             | CPU (and any other triggers) can still recommend replicas. Autoscaling alone cannot enforce a “hard” blackout if something keeps pods alive—use pausing (`autoscaling.keda.sh/paused`), ingress or policy controls, or remove other scale-from-zero triggers if you need a strict off window. |
 
 **Practical pattern:** Use `cron` for a **time-based baseline** during known hours (for example weekdays 08:00–18:00) and `cpu` for **burst scaling on top**. Use `minReplicaCount` and any non-CPU triggers to define behaviour outside those windows (for example full scale-to-zero on nights and weekends).
 
@@ -974,14 +996,14 @@ A common question is whether a **weekend / overnight “off” schedule** (`cron
 
 Always specify `timezone` explicitly. KEDA defaults to UTC if omitted, which will misfire in any non-UTC environment.
 
-| Region | Timezone string |
-|---|---|
-| UK / Ireland | `Europe/London` |
-| Central Europe | `Europe/Berlin` / `Europe/Paris` |
-| US Eastern | `America/New_York` |
-| US Pacific | `America/Los_Angeles` |
-| India | `Asia/Kolkata` |
-| Singapore / HKT | `Asia/Singapore` |
+| Region          | Timezone string                  |
+| --------------- | -------------------------------- |
+| UK / Ireland    | `Europe/London`                  |
+| Central Europe  | `Europe/Berlin` / `Europe/Paris` |
+| US Eastern      | `America/New_York`               |
+| US Pacific      | `America/Los_Angeles`            |
+| India           | `Asia/Kolkata`                   |
+| Singapore / HKT | `Asia/Singapore`                 |
 
 Valid timezone strings follow the IANA tz database format. Full list: [List of tz database time zones](https://en.wikipedia.org/wiki/List_of_tz_database_time_zones).
 
@@ -993,10 +1015,10 @@ Valid timezone strings follow the IANA tz database format. Full list: [List of t
 
     KEDA is a *horizontal* scaler — it controls the *number* of pods, not their size. Changing pod CPU/memory requests is *vertical* scaling, which is the domain of the **Vertical Pod Autoscaler (VPA)**. These are complementary tools, not alternatives.
 
-| Tool | What it changes |
-|---|---|
-| KEDA / HPA | Number of replicas |
-| VPA | CPU and memory requests per pod |
+| Tool          | What it changes                             |
+| ------------- | ------------------------------------------- |
+| KEDA / HPA    | Number of replicas                          |
+| VPA           | CPU and memory requests per pod             |
 | Both together | Right-sized pods at the right replica count |
 
 ### Why you might want both
@@ -1034,9 +1056,9 @@ spec:
   targetRef:
     apiVersion: apps/v1
     kind: Deployment
-    name: my-service          # Must match the deployment KEDA is scaling
+    name: my-service # Must match the deployment KEDA is scaling
   updatePolicy:
-    updateMode: "Off"         # Recommendations only — no automatic restarts
+    updateMode: "Off" # Recommendations only — no automatic restarts
   resourcePolicy:
     containerPolicies:
       - containerName: my-service
@@ -1092,7 +1114,7 @@ spec:
           image: my-service:latest
           resources:
             requests:
-              cpu: 350m       # From VPA Target recommendation
+              cpu: 350m # From VPA Target recommendation
               memory: 410Mi
             limits:
               cpu: 1000m
@@ -1136,17 +1158,17 @@ spec:
     kind: Deployment
     name: my-service
   updatePolicy:
-    updateMode: "Off"         # Safe — recommendations only, no restarts
+    updateMode: "Off" # Safe — recommendations only, no restarts
 ```
 
 ### VPA + KEDA constraints
 
-| Constraint | Detail |
-|---|---|
-| **Don't use VPA `Auto` mode with KEDA** | VPA `Auto` restarts pods to resize them, which disrupts KEDA-managed scaling and can cause replica count oscillation |
-| **VPA and HPA cannot both control CPU/memory on the same deployment** | If VPA manages CPU requests, do not use a KEDA CPU trigger on the same deployment — they will conflict |
-| **VPA needs history to be accurate** | VPA recommendations improve over time; give it at least a few days of traffic data before applying changes |
-| **`Off` mode requires manual application** | You must read the VPA recommendation and update the Deployment manifest yourself (or via pipeline) |
+| Constraint                                                            | Detail                                                                                                               |
+| --------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------- |
+| **Don't use VPA `Auto` mode with KEDA**                               | VPA `Auto` restarts pods to resize them, which disrupts KEDA-managed scaling and can cause replica count oscillation |
+| **VPA and HPA cannot both control CPU/memory on the same deployment** | If VPA manages CPU requests, do not use a KEDA CPU trigger on the same deployment — they will conflict               |
+| **VPA needs history to be accurate**                                  | VPA recommendations improve over time; give it at least a few days of traffic data before applying changes           |
+| **`Off` mode requires manual application**                            | You must read the VPA recommendation and update the Deployment manifest yourself (or via pipeline)                   |
 
 ---
 
@@ -1218,15 +1240,15 @@ PAUSED   — autoscaling is suspended
 
 ## Known Constraints & Gotchas
 
-| Constraint | Detail |
-|---|---|
-| **One external metrics adapter only** | KEDA must be the sole implementor of `external.metrics.k8s.io`. Running another adapter alongside it will break metric resolution. |
-| **Don't mix KEDA + manual HPA** | Never create a separate HPA targeting the same Deployment as a ScaledObject. KEDA manages the HPA internally — a second HPA will conflict and cause erratic scaling. |
-| **CPU/memory scalers still need standard Metrics Server** | KEDA's CPU and memory triggers proxy to `metrics.k8s.io`, not `external.metrics.k8s.io`. Ensure standard Metrics Server is installed. |
-| **Cold-start latency** | Scaling from 0→1 incurs pod scheduling and startup time. For latency-sensitive workloads consider `minReplicaCount: 1`. |
-| **`cooldownPeriod` only applies to 0-scale** | The cooldown period only governs the transition to zero replicas. Scale-down between `n` and `m` (where both ≥ 1) is controlled by the HPA stabilisation window. |
-| **Resource quotas** | KEDA can scale rapidly. Ensure namespace resource quotas are defined to prevent unexpected overconsumption. |
-| **`ScaledJob` has no HPA** | Unlike `ScaledObject`, `ScaledJob` does not create an HPA. KEDA's controller manages job parallelism directly. |
+| Constraint                                                | Detail                                                                                                                                                               |
+| --------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **One external metrics adapter only**                     | KEDA must be the sole implementor of `external.metrics.k8s.io`. Running another adapter alongside it will break metric resolution.                                   |
+| **Don't mix KEDA + manual HPA**                           | Never create a separate HPA targeting the same Deployment as a ScaledObject. KEDA manages the HPA internally — a second HPA will conflict and cause erratic scaling. |
+| **CPU/memory scalers still need standard Metrics Server** | KEDA's CPU and memory triggers proxy to `metrics.k8s.io`, not `external.metrics.k8s.io`. Ensure standard Metrics Server is installed.                                |
+| **Cold-start latency**                                    | Scaling from 0→1 incurs pod scheduling and startup time. For latency-sensitive workloads consider `minReplicaCount: 1`.                                              |
+| **`cooldownPeriod` only applies to 0-scale**              | The cooldown period only governs the transition to zero replicas. Scale-down between `n` and `m` (where both ≥ 1) is controlled by the HPA stabilisation window.     |
+| **Resource quotas**                                       | KEDA can scale rapidly. Ensure namespace resource quotas are defined to prevent unexpected overconsumption.                                                          |
+| **`ScaledJob` has no HPA**                                | Unlike `ScaledObject`, `ScaledJob` does not create an HPA. KEDA's controller manages job parallelism directly.                                                       |
 
 ---
 
@@ -1271,4 +1293,4 @@ Is your scaling signal external to the cluster?
 
 ---
 
-*Based on KEDA 2.19 — see the upstream [KEDA documentation](https://keda.sh/docs/) for the authoritative reference.*
+_Based on KEDA 2.19 — see the upstream [KEDA documentation](https://keda.sh/docs/) for the authoritative reference._
