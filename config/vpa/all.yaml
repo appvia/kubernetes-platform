@@ -28,8 +28,6 @@ recommender:
     pod-recommendation-min-cpu-millicores: "25"
     # Minimum memory recommendation floor
     pod-recommendation-min-memory-mb: "128"
-    # History length for deciding whether metrics are sufficient for recommendation
-    recommendationMarginFraction: "0.15"
     # How frequently update VPA resource recommendation
     recommendation-margin-fraction: "0.15"
 
