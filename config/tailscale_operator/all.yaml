@@ -1,0 +1,127 @@
+---
+# Operator oauth credentials. If unset a Secret named operator-oauth must be
+# precreated or oauthSecretVolume needs to be adjusted. This block will be
+# overridden by oauthSecretVolume, if set.
+oauth:
+  clientId: ""
+  clientSecret: ""
+  # For workload identity federation (e.g. EKS IRSA / GKE Workload Identity).
+  # Mutually exclusive with oauth.clientSecret.
+  # See https://tailscale.com/kb/1581/workload-identity-federation.
+  audience: ""
+
+# URL of the control plane to be used by all resources managed by the operator.
+loginServer: ""
+
+# Recommended for production: mount oauth credentials from an external secret
+# store via the Secrets Store CSI driver rather than storing them as plain
+# Kubernetes Secrets.  Uncomment and configure to activate.
+oauthSecretVolume: {}
+  # csi:
+  #   driver: secrets-store.csi.k8s.io
+  #   readOnly: true
+  #   volumeAttributes:
+  #     secretProviderClass: tailscale-oauth
+
+# installCRDs determines whether tailscale.com CRDs should be installed as part
+# of chart installation. We do not use Helm's CRD installation mechanism as that
+# does not allow for upgrading CRDs.
+# https://helm.sh/docs/chart_best_practices/custom_resource_definitions/
+installCRDs: true
+
+operatorConfig:
+  # ACL tag that operator will be tagged with. Operator must be made owner of
+  # these tags.
+  # https://tailscale.com/kb/1236/kubernetes-operator/?q=operator#setting-up-the-kubernetes-operator
+  defaultTags:
+    - "tag:k8s-operator"
+
+  image:
+    # Images are also available at ghcr.io/tailscale/k8s-operator.
+    repository: tailscale/k8s-operator
+    # Pin to the same version as the chart to ensure reproducible deployments.
+    tag: "v1.96.5"
+    digest: ""
+    pullPolicy: IfNotPresent
+
+  logging: "info"
+  hostname: "tailscale"
+
+  nodeSelector:
+    kubernetes.io/os: linux
+
+  resources:
+    requests:
+      cpu: 50m
+      memory: 64Mi
+    limits:
+      cpu: 250m
+      memory: 256Mi
+
+  podAnnotations: {}
+  podLabels: {}
+
+  serviceAccountAnnotations: {}
+  # For EKS IRSA uncomment and set the role ARN:
+  # eks.amazonaws.com/role-arn: arn:aws:iam::123456789012:role/tailscale-operator-role
+
+  tolerations: []
+
+  affinity:
+    podAntiAffinity:
+      preferredDuringSchedulingIgnoredDuringExecution:
+        - weight: 100
+          podAffinityTerm:
+            labelSelector:
+              matchLabels:
+                app.kubernetes.io/name: tailscale-operator
+            topologyKey: kubernetes.io/hostname
+
+  podSecurityContext:
+    runAsNonRoot: true
+    seccompProfile:
+      type: RuntimeDefault
+
+  securityContext:
+    allowPrivilegeEscalation: false
+    capabilities:
+      drop:
+        - ALL
+    readOnlyRootFilesystem: true
+    runAsNonRoot: true
+    runAsUser: 65532
+    seccompProfile:
+      type: RuntimeDefault
+
+  extraEnv: []
+
+# In the case that you already have a tailscale ingressclass in your cluster (or vcluster), you can disable the creation here.
+ingressClass:
+  name: "tailscale"
+  enabled: true
+
+# proxyConfig applies to all ingress/egress proxies created by the operator.
+# https://tailscale.com/kb/1439/kubernetes-operator-cluster-ingress
+# https://tailscale.com/kb/1438/kubernetes-operator-cluster-egress
+# For advanced per-proxy customisation use ProxyClass resources:
+# https://tailscale.com/kb/1445/kubernetes-operator-customization#cluster-resource-customization-using-proxyclass-custom-resource
+proxyConfig:
+  image:
+    # Images are also available at ghcr.io/tailscale/tailscale.
+    repository: tailscale/tailscale
+    # Pin proxy image to a known-good release; update alongside chart upgrades.
+    tag: "v1.96.5"
+    digest: ""
+  # ACL tags applied to every proxy. Operator must be made owner of these tags.
+  # https://tailscale.com/kb/1236/kubernetes-operator/?q=operator#setting-up-the-kubernetes-operator
+  defaultTags: "tag:k8s"
+  firewallMode: auto
+  defaultProxyClass: ""
+
+# apiServerProxyConfig controls optional Kubernetes API server exposure over Tailscale.
+# https://tailscale.com/kb/1437/kubernetes-operator-api-server-proxy
+apiServerProxyConfig:
+  allowImpersonation: "false"
+  mode: "false"
+
+imagePullSecrets: []
