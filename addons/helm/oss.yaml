@@ -235,5 +235,5 @@
   chart: tailscale-operator
   repository: https://pkgs.tailscale.com/helmcharts
   link: https://tailscale.com/docs/features/kubernetes-operator
-  namespace: tailscale-system
+  namespace: tailscale
   version: "1.96.5"
