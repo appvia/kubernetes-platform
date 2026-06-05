@@ -2,6 +2,21 @@
 
 The following describes the different formats that can be used to deploy the platform.
 
+## Categories
+
+The following categories are currently supported 
+
+- aws
+- compute
+- cost
+- gitops
+- networking
+- observability
+- platform
+- security
+- storage
+- workloads
+
 ## Deployment Order (Phases)
 
 Addons can specify a deployment phase to control ordering:

@@ -232,6 +232,8 @@
   version: "v1.7.2"
   namespace: ingress-system
 - feature: tailscale_operator
+  category: networking
+  description: Provides the tailscale operator
   chart: tailscale-operator
   repository: https://pkgs.tailscale.com/helmcharts
   link: https://tailscale.com/docs/features/kubernetes-operator
