@@ -36,6 +36,7 @@ Each addon is enabled from the cluster definition using the feature flag label `
 | Path | Namespace | Feature flag | Description | Link | Source |
 |------|-----------|--------------|-------------|------|--------|
 | base | cert-manager | `enable_cert_manager` | Patched cert-manager overlay including self-signed ClusterIssuer. | [docs](https://cert-manager.io/) | `addons/kustomize/oss/cert-manager/kustomize.yaml` |
+| base | kube-system | `enable_core` | Default cluster roles for downstream SSO EKS access bindings | [docs](https://github.com/appvia/kubernetes-platform/blob/main/docs/docs/platform/security/cluster-roles.md) | `addons/kustomize/oss/cluster-roles/kustomize.yaml` |
 | base | external-secrets | `enable_external_secrets` | AWS ClusterSecretStore and related wiring for External Secrets. | [docs](https://external-secrets.io/) | `addons/kustomize/aws/external_secrets/kustomize.yaml` |
 
 ## Networking
@@ -67,6 +68,7 @@ Each addon is enabled from the cluster definition using the feature flag label `
 | aws-cloudwatch-metrics | kube-system | `enable_aws_cloudwatch_metrics` | CloudWatch agent for cluster and node metrics on EKS. | [docs](https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/ContainerInsights.html) | `addons/helm/cloud/aws.yaml` |
 | aws-fargate-fluentbit | kube-system | `enable_aws_fargate_fluentbit` | Fluent Bit configuration for Fargate log routing to CloudWatch. | [docs](https://github.com/gitops-bridge-dev/gitops-bridge) | `addons/helm/cloud/aws.yaml` |
 | aws-for-fluent-bit | kube-system | `enable_aws_for_fluentbit` | Fluent Bit log router shipping container logs to CloudWatch Logs. | [docs](https://github.com/aws/aws-for-fluent-bit) | `addons/helm/cloud/aws.yaml` |
+| grafana | grafana | `enable_grafana` | Visualization and alerting platform for metrics and logs from Kubernetes. | [docs](https://grafana.com/docs/grafana/latest/) | `addons/helm/oss.yaml` |
 | kube-prometheus-stack | prometheus | `enable_kube_prometheus_stack` | Prometheus, Grafana, Alertmanager, and kube-state-metrics bundle. | [docs](https://github.com/prometheus-community/helm-charts) | `addons/helm/oss.yaml` |
 | metrics-server | kube-system | `enable_metrics_server` | Cluster-wide aggregator of resource usage metrics for HPA and kubectl top. | [docs](https://github.com/kubernetes-sigs/metrics-server) | `addons/helm/oss.yaml` |
 | prometheus-adapter | prometheus | `enable_prometheus_adapter` | Exposes Prometheus metrics as custom metrics for the Kubernetes HPA. | [docs](https://github.com/kubernetes-sigs/prometheus-adapter) | `addons/helm/oss.yaml` |

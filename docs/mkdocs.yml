@@ -37,6 +37,7 @@ nav:
               - Kyverno: platform/security/kyverno.md
               - Policies: platform/security/kyverno-policies.md
               - Pod Security: platform/security/pod-security.md
+          - Cluster Roles: platform/security/cluster-roles.md
           - External Secrets: platform/security/external-secrets.md
       - Workloads:
           - Tenant Applications: platform/tenant/applications.md

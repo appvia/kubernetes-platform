@@ -1,0 +1,180 @@
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: platform-viewer
+  labels:
+    app.kubernetes.io/name: platform-viewer
+    app.kubernetes.io/part-of: platform
+    app.kubernetes.io/managed-by: argocd
+    app.kubernetes.io/type: kustomize
+    platform.local/type: platform
+  annotations:
+    platform.local/description: >-
+      Read-only cluster access for SSO principals across all resources except
+      Secrets. Bind via EKS access entry kubernetes_groups containing
+      platform-viewer.
+rules:
+  # Core API (v1) — all resources except secrets (secrets only exist in this group)
+  - apiGroups:
+      - ""
+    resources:
+      - bindings
+      - componentstatuses
+      - configmaps
+      - endpoints
+      - events
+      - limitranges
+      - namespaces
+      - namespaces/status
+      - nodes
+      - nodes/proxy
+      - nodes/status
+      - persistentvolumeclaims
+      - persistentvolumeclaims/status
+      - persistentvolumes
+      - persistentvolumes/status
+      - pods
+      - pods/log
+      - pods/status
+      - podtemplates
+      - replicationcontrollers
+      - replicationcontrollers/scale
+      - replicationcontrollers/status
+      - resourcequotas
+      - resourcequotas/status
+      - serviceaccounts
+      - services
+      - services/status
+    verbs:
+      - get
+      - list
+      - watch
+  # Built-in Kubernetes extension API groups
+  - apiGroups:
+      - admissionregistration.k8s.io
+      - apiextensions.k8s.io
+      - apiregistration.k8s.io
+      - apps
+      - authentication.k8s.io
+      - authorization.k8s.io
+      - autoscaling
+      - autoscaling.k8s.io
+      - batch
+      - certificates.k8s.io
+      - coordination.k8s.io
+      - discovery.k8s.io
+      - events.k8s.io
+      - extensions
+      - flowcontrol.apiserver.k8s.io
+      - metrics.k8s.io
+      - networking.k8s.io
+      - node.k8s.io
+      - policy
+      - rbac.authorization.k8s.io
+      - scheduling.k8s.io
+      - snapshot.storage.k8s.io
+      - storage.k8s.io
+    resources:
+      - "*"
+    verbs:
+      - get
+      - list
+      - watch
+  # Platform and cloud extension API groups
+  - apiGroups:
+      - acme.cert-manager.io
+      - argoproj.io
+      - cert-manager.io
+      - cilium.io
+      - dynamodb.services.k8s.aws
+      - eks.amazonaws.com
+      - eks.services.k8s.aws
+      - external-secrets.io
+      - gateway.networking.k8s.io
+      - generators.external-secrets.io
+      - helm.cattle.io
+      - iam.services.k8s.aws
+      - karpenter.k8s.aws
+      - karpenter.sh
+      - keda.sh
+      - kyverno.io
+      - monitoring.coreos.com
+      - policies.kyverno.io
+      - prometheusservice.services.k8s.aws
+      - reports.kyverno.io
+      - s3.services.k8s.aws
+      - terraform.appvia.io
+      - wgpolicyk8s.io
+    resources:
+      - "*"
+    verbs:
+      - get
+      - list
+      - watch
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: platform-add-nodes
+  labels:
+    app.kubernetes.io/name: platform-add-nodes
+    app.kubernetes.io/part-of: platform
+    app.kubernetes.io/managed-by: argocd
+    app.kubernetes.io/type: kustomize
+    platform.local/type: platform
+  annotations:
+    platform.local/description: >-
+      Permissions to manage worker nodes and Karpenter node pools. Bind via EKS
+      access entry kubernetes_groups containing platform-add-nodes.
+rules:
+  - apiGroups:
+      - ""
+    resources:
+      - nodes
+      - pods
+      - pods/eviction
+      - events
+    verbs:
+      - get
+      - list
+      - watch
+      - create
+      - update
+      - patch
+      - delete
+  - apiGroups:
+      - ""
+    resources:
+      - nodes/status
+      - pods/status
+    verbs:
+      - get
+      - patch
+      - update
+  - apiGroups:
+      - karpenter.sh
+    resources:
+      - nodepools
+      - nodeclaims
+      - nodeoverlays
+    verbs:
+      - get
+      - list
+      - watch
+      - create
+      - update
+      - patch
+      - delete
+  - apiGroups:
+      - karpenter.k8s.aws
+    resources:
+      - ec2nodeclasses
+    verbs:
+      - get
+      - list
+      - watch
+      - create
+      - update
+      - patch
+      - delete

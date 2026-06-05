@@ -1,0 +1,20 @@
+---
+kustomize:
+  ## Human friendly description
+  description: "Default cluster roles for downstream SSO EKS access bindings"
+  category: security
+  link: https://github.com/appvia/kubernetes-platform/blob/main/docs/docs/platform/security/cluster-roles.md
+  ## The feature flag used to enable the feature
+  feature: core
+  ## The path to the kustomize overlay
+  path: base
+
+## The namespace options
+namespace:
+  ## ClusterRoles are cluster-scoped; kube-system is used for ApplicationSet destination
+  name: kube-system
+
+## Synchronization options
+sync:
+  ## Deploy early so RBAC primitives exist before access bindings
+  phase: primary

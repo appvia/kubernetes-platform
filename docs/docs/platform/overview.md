@@ -8,7 +8,7 @@
 
 This section provides an overview of the core features and capabilities of the Kubernetes platform. The platform includes:
 
-- **Security Controls**: Built-in security policies and controls via Kyverno to enforce best practices
+- **Security Controls**: Built-in security policies and controls via Kyverno to enforce best practices, plus default [cluster roles](security/cluster-roles.md) for SSO / EKS access entry bindings
 - **Multi-Tenancy**: Namespace isolation and resource management for multiple teams/workloads
 - **GitOps Workflows**: Declarative application delivery and configuration management
 - **Observability**: Integrated monitoring, logging and tracing capabilities
