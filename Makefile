@@ -59,7 +59,7 @@ destroy-spoke-aws:
 
 serve-docs:
 	@echo "--> Serving the documentation..."
-	@cd docs && mkdocs serve
+	@cd docs && npm start
 
 clean:
 	@echo "Deleting development clusters..."
