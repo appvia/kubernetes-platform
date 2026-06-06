@@ -1,4 +1,4 @@
-# Cluster roles for SSO access
+# Access Roles (SSO)
 
 The platform ships default Kubernetes `ClusterRole` objects for mapping **IAM Identity Center (SSO) permission sets** to predictable, least-privilege cluster access on EKS. The roles are installed by the `cluster-roles` Kustomize addon (`addons/kustomize/oss/cluster-roles/`) and are enabled automatically on every cluster via `enable_core: "true"`.
 
@@ -15,7 +15,6 @@ Use them together with [EKS access entries](https://docs.aws.amazon.com/eks/late
 Source: `addons/kustomize/oss/cluster-roles/base/cluster-roles.yaml`.
 
 :::tip[Group names]
-
 
 :::
 The Kubernetes group on the EKS access entry **must match** the `subjects[].name` on the `ClusterRoleBinding`. Using the same name as the `ClusterRole` (for example `platform-viewer`) is the simplest convention, but you can use a custom group name as long as the binding references it.

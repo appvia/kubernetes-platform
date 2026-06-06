@@ -90,8 +90,12 @@ const sidebars = {
                 'platform/security/pod-security',
               ],
             },
-            'platform/security/cluster-roles',
-            'platform/security/external-secrets',
+            {
+              type: "category",
+              label: "Permissions",
+              items: ["platform/security/cluster-roles"],
+            },
+            "platform/security/external-secrets",
           ],
         },
         {
