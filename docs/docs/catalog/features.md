@@ -52,6 +52,7 @@ Each addon is enabled from the cluster definition using the feature flag label `
 | external-dns | kube-system | `enable_external_dns` | Synchronizes Kubernetes Services and Ingresses with DNS providers. | [docs](https://github.com/kubernetes-sigs/external-dns) | `addons/helm/oss.yaml` |
 | kgateway | ingress-system | `enable_kgateway` | Kubernetes Gateway API controller for advanced Ingress and service mesh capabilities. | [docs](https://kgateway.dev/) | `addons/helm/oss.yaml` |
 | — | ingress-system | `enable_kgateway_crds` | The CRDs for Kubernetes Gateway API, a next-generation Ingress API for Kubernetes. | [docs](https://kgateway.dev/) | `addons/helm/oss.yaml` |
+| tailscale-operator | tailscale | `enable_tailscale_operator` | Provides the tailscale operator | [docs](https://tailscale.com/docs/features/kubernetes-operator) | `addons/helm/oss.yaml` |
 
 ### Kustomize
 
