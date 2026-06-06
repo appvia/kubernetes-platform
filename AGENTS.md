@@ -383,6 +383,80 @@ Validation scripts worth knowing:
 
 CI in `.github/workflows/ci.yml` runs the same categories of checks on pull requests.
 
+## Bootstrap Flow and Revision Override Mechanism
+
+Understanding how ArgoCD is bootstrapped and how branch overrides propagate is essential when reading or modifying the platform.
+
+### Bootstrap Entry Point
+
+Terraform provisions a single ArgoCD `Application` named `bootstrap` in the `argocd` namespace. It sources one of the kustomize overlays:
+
+- `kustomize/overlays/standalone/` — self-managed cluster (ArgoCD on same cluster it manages)
+- `kustomize/overlays/hub/` — hub cluster (ArgoCD manages itself plus spoke clusters)
+
+The overlay renders the top-level `system-platform` `ApplicationSet`.
+
+### Revision Override
+
+The Terraform module accepts a `revision_overrides` variable (in `terraform/variables/*.tfvars`). This is how developers validate feature branches without modifying cluster definition YAML:
+
+```hcl
+revision_overrides = {
+  platform_revision = "feat/my-change"
+  tenant_revision   = "feat/my-change"
+}
+```
+
+The override is injected as `values.override_platform` and `values.override_tenant` into the `system-platform` ApplicationSet generator. A `templatePatch` ternary in both `kustomize/overlays/standalone/platform.yaml` and `kustomize/overlays/hub/platform.yaml` selects either the cluster-definition revision or the override:
+
+```yaml
+{{- $platform_revision := ternary .platform_revision .values.override_platform (eq "ignore" .values.override_platform) }}
+```
+
+`"ignore"` is the sentinel meaning "no override; use the cluster definition value." Any other string is treated as an explicit revision. This override flows through to every downstream source (`apps/registration/`, `apps/system/`, `apps/tenant/`), so all platform resources are sourced from the branch.
+
+### Full Bootstrap Chain
+
+```
+bootstrap Application
+  └─ kustomize/overlays/<topology>/
+       └─ system-platform ApplicationSet
+            └─ reads cluster definitions from tenant repo (clusters/*.yaml)
+                 └─ platform Application (one per cluster)
+                       ├─ apps/registration/<topology>/   ← registers cluster, writes Secret
+                       ├─ apps/system/                    ← deploys platform add-ons
+                       └─ apps/tenant/                    ← deploys tenant workloads
+```
+
+### Cluster Secret as Feature Toggle
+
+`apps/registration/<topology>/` runs the `charts/cluster-registration` Helm chart, which reads the cluster definition YAML and writes an ArgoCD cluster `Secret` in the `argocd` namespace. Every `metadata.labels` entry in the cluster definition is copied onto that secret, including all `enable_*` feature flags.
+
+`apps/system/system-helm.yaml` and `apps/system/system-kustomize.yaml` use a matrix generator that:
+
+1. Discovers add-on definition files from `addons/`.
+2. Filters using `clusterSelector` against the cluster secret labels.
+3. Creates an Argo CD `Application` only when the matching `enable_<feature>: "true"` label is present.
+
+Updating a cluster definition label → `system-registration` reconciles the secret → `system-helm`/`system-kustomize` ApplicationSets react and create or delete Applications.
+
+### ArgoCD Poll Cycle
+
+ArgoCD polls Git repositories approximately every 3 minutes. Any commit pushed to the branch is picked up and applied automatically. There is no need to manually trigger syncs during development. Force a hard refresh when you need immediate feedback:
+
+```shell
+argocd app refresh platform --hard
+```
+
+### Hub vs Standalone Differences
+
+| Aspect | Standalone | Hub |
+|--------|-----------|-----|
+| Registration path | `apps/registration/standalone` | `apps/registration/hub` |
+| Cluster secret destination | Local `argocd` namespace | Hub `argocd` namespace |
+| Spoke connectivity | N/A | Requires `cluster_authentication.server` + IAM/RBAC |
+| `system-registration` scope | Single cluster definition | All cluster definitions under `tenant_path/clusters/` |
+
 ## Guidance For Future Agents
 
 - Treat the tenant cluster definition as the primary contract for platform behavior.
@@ -392,6 +466,8 @@ CI in `.github/workflows/ci.yml` runs the same categories of checks on pull requ
   not hard-coded application lists.
 - Prefer extending existing `ApplicationSet` patterns over introducing new bootstrap paths.
 - Use `release/` as a concrete, repo-local example of how a tenant repository is expected to look.
+- The `revision_overrides` Terraform variable is the mechanism for branch-based cloud validation; never ask a user to commit a revision change to a cluster definition YAML for development purposes.
+- The cluster `Secret` in `argocd` namespace is the live state of the cluster definition; if a feature is unexpectedly absent, check the secret labels first (`kubectl -n argocd get secret cluster-<name> -o jsonpath='{.metadata.labels}'`).
 
 ## Practical Summary
 
