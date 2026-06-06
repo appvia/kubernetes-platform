@@ -35,8 +35,11 @@ Thumbs.db
 # Bats
 .skip
 
-# mkdocs
+# docs tooling
 docs/site/
+docs/build/
+docs/.docusaurus/
+docs/node_modules/
 
 # Worktrees
 .worktrees/
