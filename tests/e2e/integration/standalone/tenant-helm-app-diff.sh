@@ -31,15 +31,15 @@ teardown() {
 }
 
 @test "We should have the helm-app-ignore namespace" {
-  kubectl "get namespace tenant-helm-app-ignore"
-  kubectl "get namespace tenant-helm-app-ignore -o yaml | yq .metadata.labels | grep -i 'platform.local/namespace: tenant'"
+  kubectl "get namespace helm-app-ignore"
+  kubectl "get namespace helm-app-ignore -o yaml | yq .metadata.labels | grep -i 'platform.local/namespace: tenant'"
 }
 
 @test "We should have a label indicating a tenant application type" {
-  kubectl "get namespace tenant-helm-app-ignore -o yaml | yq .metadata.labels | grep -i 'platform.local/namespace-type: tenant-application'"
+  kubectl "get namespace helm-app-ignore -o yaml | yq .metadata.labels | grep -i 'platform.local/namespace-type: tenant-application'"
 }
 
 @test "We should have a hello-world deployment" {
-  kubectl "get deployment helm-app-ignore-hello-world -n tenant-ignore-difference-app"
-  kubectl "get pod -l app.kubernetes.io/name=hello-world --no-headers -n tenant-helm-app-ignore | grep hello"
+  kubectl "get deployment helm-app-ignore-hello-world -n helm-app-ignore"
+  kubectl "get pod -l app.kubernetes.io/name=hello-world --no-headers -n helm-app-ignore | grep hello"
 }
