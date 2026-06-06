@@ -15,6 +15,7 @@ nav:
       - Hub & Spoke: getting-started/central.md
   - Development:
       - Local: development/local.md
+      - Validation: development/validation.md
       - Remote:
           - Overview: development/overview.md
           - Standalone: development/standalone.md

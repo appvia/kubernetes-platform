@@ -48,6 +48,53 @@ release/hub-aws/
 1. We have two cluster definitions [hub.yaml](https://github.com/appvia/kubernetes-platform/blob/main/release/hub-aws/clusters/hub.yaml) and [spoke.yaml](https://github.com/appvia/kubernetes-platform/blob/main/release/hub-aws/clusters/spoke.yaml)
 2. Note, similar to local development with [local](https://appvia.github.io/kubernetes-platform/development/local/) and the [standalone](https://appvia.github.io/kubernetes-platform/development/standalone/) development, the revision found in the cluster definitions are overridden, allowing you to use your current branch to validate changes.
 
+## :octicons-project-roadmap-24: How Branch-Based Validation Works
+
+The `revision_overrides` variable in the Terraform `.tfvars` file is the key to validating a feature branch without touching cluster definition YAML. Setting it causes every source in the ArgoCD bootstrap chain to target your branch:
+
+```
+┌─────────────────────────────────────────────────────────────────────┐
+│  terraform apply (hub.tfvars)                                        │
+│    └─ revision_overrides.platform_revision = "feat/my-change"       │
+│                                                                      │
+│  ArgoCD bootstrapped on hub cluster                                  │
+│    └─ bootstrap Application                                          │
+│         └─ kustomize/overlays/hub/  (your branch)                   │
+│              └─ system-platform ApplicationSet                       │
+│                   └─ reads hub.yaml cluster definition               │
+│                        └─ platform Application                       │
+│                              ├─ apps/registration/hub  (branch)     │
+│                              ├─ apps/system/           (branch)     │
+│                              └─ apps/tenant/           (branch)     │
+│                                                                      │
+│  system-registration watches ALL cluster definitions (hub + spokes) │
+│    └─ creates/updates ArgoCD cluster secret per cluster             │
+│         └─ secrets carry enable_* labels → drive addon selection    │
+│                                                                      │
+│  Every push to the branch → hub ArgoCD picks up within ~3 minutes  │
+│    └─ changes applied to both hub and registered spoke clusters     │
+└─────────────────────────────────────────────────────────────────────┘
+```
+
+In the hub model, `system-registration` (`apps/registration/hub/registration.yaml`) watches **all** cluster definition files matching `clusters/*.yaml`. For each definition it creates an ArgoCD cluster `Secret`. Spoke clusters only become reachable once their `cluster_authentication.server` endpoint is supplied (see [Cluster Authentication](#cluster-authentication) below).
+
+## :octicons-sync-24: Iterating on Changes
+
+Once the hub is running, the iteration loop is:
+
+1. Make a change locally.
+2. Commit and push to your branch.
+3. ArgoCD on the hub polls the branch approximately every 3 minutes.
+4. Changes propagate to spoke clusters via the hub ArgoCD instance automatically.
+
+You can force an immediate refresh:
+
+```shell
+# On the hub cluster
+kubectl -n argocd get applications
+argocd app refresh platform --hard
+```
+
 ### :octicons-rocket-24: Provision the Hub cluster
 
 1. Take a look at the terraform code in the `terraform` directory, and update any `terraform/variables/hub.tfvars` you feel need changing.
