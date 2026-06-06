@@ -152,6 +152,7 @@ jobs:
       - validate-docs-spelling
       - validate-helm-addons
       - validate-kustomize
+      - validate-kustomize-addons
       - validate-kyverno
       - validate-schemas
       - validate-scripts
