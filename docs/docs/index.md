@@ -1,3 +1,7 @@
+---
+slug: /
+---
+
 # Kubernetes Platform
 
 <div style={{textAlign: 'center'}}>
