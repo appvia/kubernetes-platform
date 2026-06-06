@@ -11,9 +11,9 @@ This repository includes a terraform pipeline / codebase to validate locally a s
 
 ## Prerequisites
 
-- AWS CLI (<https://docs.aws.amazon.com/cli/latest/userguide/install-cliv2.html>)
-- Kubectl (<https://kubernetes.io/docs/tasks/tools/#kubectl>)
-- Terraform (<https://developer.hashicorp.com/terraform/downloads>)
+- AWS CLI [https://docs.aws.amazon.com/cli/latest/userguide/install-cliv2.html](https://docs.aws.amazon.com/cli/latest/userguide/install-cliv2.html)
+- Kubectl [https://kubernetes.io/docs/tasks/tools/#kubectl](https://kubernetes.io/docs/tasks/tools/#kubectl)
+- Terraform [https://developer.hashicorp.com/terraform/downloads](https://developer.hashicorp.com/terraform/downloads)
 
 ## Terraform
 

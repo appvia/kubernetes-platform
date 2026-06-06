@@ -28,9 +28,9 @@ The [Kubernetes Platform Template](https://github.com/appvia/kubernetes-platform
 
 ## Required binaries
 
-- Kind (<https://kind.sigs.k8s.io/docs/user/quick-start/#installation>)
-- kubectl (<https://kubernetes.io/docs/tasks/tools/#kubectl>)
-- Terraform (<https://developer.hashicorp.com/terraform/downloads>)
+- Kind [https://kind.sigs.k8s.io/docs/user/quick-start/#installation](https://kind.sigs.k8s.io/docs/user/quick-start/#installation)
+- kubectl [https://kubernetes.io/docs/tasks/tools/#kubectl](https://kubernetes.io/docs/tasks/tools/#kubectl)
+- Terraform [https://developer.hashicorp.com/terraform/downloads](https://developer.hashicorp.com/terraform/downloads)
 
 ## Set up your tenant repository
 
