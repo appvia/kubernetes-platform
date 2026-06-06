@@ -168,6 +168,8 @@ jobs:
       - name: Configure GitHub Pages
         id: pages
         uses: actions/configure-pages@v5
+      - name: Install dependencies
+        run: npm ci
       - name: Build site
         env:
           DOCS_SITE_URL: https://appvia.github.io/kubernetes-platform
@@ -175,7 +177,7 @@ jobs:
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          path: site
+          path: docs/build
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
