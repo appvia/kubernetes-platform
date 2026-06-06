@@ -307,4 +307,3 @@ See [ArgoCD Notifications Services Documentation](https://argo-cd.readthedocs.io
 - [ArgoCD Notifications Documentation](https://argo-cd.readthedocs.io/en/stable/operator-manual/notifications/)
 - [Slack Incoming Webhooks](https://api.slack.com/messaging/webhooks)
 - [External Secrets Operator](https://external-secrets.io/)
-- [Platform Secrets Policy](../platform/secrets.md)

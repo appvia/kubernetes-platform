@@ -130,7 +130,7 @@ cluster definition YAML
                  └─ Application: system-kust-kyverno-dev  ✓ created
 ```
 
-Add-on configuration is layered: platform defaults from `config/<feature>/all.yaml` are merged with cloud-specific overrides and then tenant-specific overrides, as described in [Addon Configuration](../../addons/README.md).
+Add-on configuration is layered: platform defaults from `config/<feature>/all.yaml` are merged with cloud-specific overrides and then tenant-specific overrides.
 
 ## :octicons-sync-24: Iterating on Changes
 
@@ -255,4 +255,3 @@ Always run cleanup when finished to avoid ongoing infrastructure costs.
 - [Local Development](local.md) — Kind-based development for fast iteration
 - [Hub & Spoke](hub.md) — Cloud validation for multi-cluster hub/spoke topology
 - [Validation](validation.md) — Full validation checklist and test suite
-- [Addon Configuration](../../addons/README.md) — How add-on definitions and configuration layers work
