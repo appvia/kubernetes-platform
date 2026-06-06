@@ -10,12 +10,12 @@ Kyverno is a policy engine designed for Kubernetes that validates, mutates, and 
 - Audit logging and reporting
 - Admission control webhooks
 
-The following policies are shipped by default in this platform to enforce security best practices, resource management, and operational standards. Note these can be selectively enabled or disabled by [customizing the Helm values](kyverno.md#customizing-kyverno-policies).
+The following policies are shipped by default in this platform to enforce security best practices, resource management, and operational standards. Note these can be selectively enabled or disabled by [customizing the Helm values](/platform/security/kyverno/#customizing-kyverno-policies).
 
 For detailed information about Kyverno's capabilities, refer to the [official documentation](https://kyverno.io/docs/) or [policy library](https://kyverno.io/policies/).
 
 ---
-## Rule: deny-default-namespace
+## :material-shield-lock: Rule: deny-default-namespace
 
 **Category:** Multi-Tenancy | **Severity:** medium | **Scope:** Cluster-wide
 
@@ -29,7 +29,7 @@ Kubernetes Namespaces are an optional feature that provide a way to segment and 
 
 ---
 
-## Rule: deny-eks-resources
+## :material-shield-lock: Rule: deny-eks-resources
 
 **Category:** Security | **Severity:** medium | **Scope:** Cluster-wide
 
@@ -41,19 +41,7 @@ Used to deny the use of EKS resources that are not allowed in the cluster. These
 
 ---
 
-## Rule: restrict-image-registries
-
-**Category:** Security | **Severity:** high | **Scope:** Cluster-wide
-
-This policy restricts container images to allowed registries only. Images not matching the allowed registry list will be rejected.
-
-**Rules**
-
-- **validate-registries** (Validation)
-
----
-
-## Rule: deny-empty-ingress-host
+## :material-shield-lock: Rule: deny-empty-ingress-host
 
 **Category:** Best Practices | **Severity:** medium | **Scope:** Cluster-wide
 
@@ -65,20 +53,19 @@ An ingress resource needs to define an actual host name in order to be valid. Th
 
 ---
 
-## Rule: deny-external-secrets
+## :material-shield-lock: Rule: deny-external-secrets
 
 **Category:** Security | **Severity:** medium | **Scope:** Cluster-wide
 
-When provisioning ExternalSecrete, the key must be prefixed with the namespace name to ensure proper isolation and prevent unauthorized access.
+For External Secrets using the platform AWS ClusterSecretStore, Secrets Manager names must live under a cluster-scoped hierarchy: shared secrets under CLUSTER/global/SECRETS* and namespace-owned secrets under CLUSTER/NAMESPACE/SECRETS*. Legacy mode (namespace/key) applies when AWS path mode is off.
 
 **Rules**
 
-- **namespace-prefix** (Validation)
-  - Applies to: ExternalSecret,
+- **namespace-prefix-keys** (Validation)
 
 ---
 
-## Rule: deny-latest-image
+## :material-shield-lock: Rule: deny-latest-image
 
 **Category:** Best Practices | **Severity:** medium | **Scope:** Cluster-wide
 
@@ -92,7 +79,7 @@ The ':latest' tag is mutable and can lead to unexpected errors if the image chan
 
 ---
 
-## Rule: require-labels
+## :material-shield-lock: Rule: require-labels
 
 **Category:** Best Practices | **Severity:** medium | **Scope:** Cluster-wide
 
@@ -106,7 +93,7 @@ Define and use labels that identify semantic attributes of your application or D
 
 ---
 
-## Rule: deny-no-limits
+## :material-shield-lock: Rule: deny-no-limits
 
 **Category:** Best Practices, EKS Best Practices | **Severity:** medium | **Scope:** Cluster-wide
 
@@ -118,7 +105,7 @@ As application workloads share cluster resources, it is important to limit resou
 
 ---
 
-## Rule: deny-no-pod-probes
+## :material-shield-lock: Rule: deny-no-pod-probes
 
 **Category:** Best Practices, EKS Best Practices | **Severity:** medium | **Scope:** Cluster-wide
 
@@ -130,19 +117,7 @@ Liveness and readiness probes need to be configured to correctly manage a Pod's 
 
 ---
 
-## Rule: deny-nodeport-service
-
-**Category:** Best Practices | **Severity:** medium | **Scope:** Cluster-wide
-
-A Kubernetes Service of type NodePort uses a host port to receive traffic from any source. A NetworkPolicy cannot be used to control traffic to host ports. Although NodePort Services can be useful, their use must be limited to Services with additional upstream security checks. This policy validates that any new Services do not use the `NodePort` type.
-
-**Rules**
-
-- **deny-nodeport-service** (Validation)
-
----
-
-## Rule: mutate-psa-labels
+## :material-shield-lock: Rule: mutate-psa-labels
 
 **Category:** Pod Security Admission, EKS Best Practices | **Severity:** medium | **Scope:** Cluster-wide
 
@@ -154,4 +129,16 @@ Pod Security Admission (PSA) can be controlled via the assignment of labels at t
 
 ---
 
-**Total Policies: 11**
+## :material-shield-lock: Rule: restrict-image-registries
+
+**Category:** Security | **Severity:** high | **Scope:** Cluster-wide
+
+This policy restricts container images to allowed registries only. Images not matching the allowed registry list will be rejected.
+
+**Rules**
+
+- **validate-registries** (Validation)
+
+---
+
+**Total Policies: 10**
