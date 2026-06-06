@@ -13,6 +13,7 @@ const config = {
   organizationName: "appvia",
   projectName: "kubernetes-platform",
   trailingSlash: false,
+
   themes: ["@docusaurus/theme-mermaid"],
 
   markdown: {
