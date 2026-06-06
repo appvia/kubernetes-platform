@@ -20,6 +20,18 @@ const config = {
     mermaid: true,
   },
 
+  plugins: [
+    [
+      '@cmfcmf/docusaurus-search-local',
+      {
+        indexDocs: true,
+        indexPages: false,
+        indexBlog: false,
+        language: ['en'],
+      },
+    ],
+  ],
+
   presets: [
     [
       "classic",
