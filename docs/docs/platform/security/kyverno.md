@@ -1,4 +1,4 @@
-# Kyverno Policies
+# Kyverno
 
 ## Overview
 
@@ -327,4 +327,3 @@ bash scripts/generate-policies.sh > docs/policies.md
 ```
 ---
 ```
-
