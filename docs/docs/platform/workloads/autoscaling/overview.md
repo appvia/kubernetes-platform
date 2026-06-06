@@ -28,15 +28,18 @@ Running all three together means **the right number of right-sized pods on the r
 
 VPA and KEDA are complementary but must be coordinated to avoid pod churn:
 
-!!! warning "VPA + KEDA — Prevent Conflicts"
+:::warning[VPA + KEDA — Prevent Conflicts]
 
-    When using VPA on workloads scaled by KEDA:
-    
-    - **Use VPA in `Off` mode** (recommendations only, no automatic pod evictions)
-    - **Apply recommendations manually** during planned maintenance windows
-    - This prevents VPA evictions from disrupting KEDA's scaling decisions
-    
-    See [VPA with KEDA](vpa.md#vpa-with-keda--safe-integration-pattern) for the full pattern.
+
+When using VPA on workloads scaled by KEDA:
+
+- **Use VPA in `Off` mode** (recommendations only, no automatic pod evictions)
+- **Apply recommendations manually** during planned maintenance windows
+- This prevents VPA evictions from disrupting KEDA's scaling decisions
+
+See [VPA with KEDA](vpa.md#vpa-with-keda--safe-integration-pattern) for the full pattern.
+
+:::
 
 ## Enabling autoscaling
 

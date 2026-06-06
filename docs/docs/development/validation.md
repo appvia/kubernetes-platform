@@ -1,12 +1,12 @@
-# :octicons-beaker-24: Validating Your Build
+# Validating Your Build
 
-## :octicons-stack-24: Overview
+## Overview
 
 Before creating a pull request, you should validate that your changes don't break the platform configuration or the cluster deployment. The platform provides several validation tools to help you catch issues early.
 
 This guide walks through the validation steps, from quick configuration checks to full end-to-end cluster testing.
 
-## :octicons-rocket-24: Quick Validation
+## Quick Validation
 
 The fastest way to validate your changes is to run the configuration validation checks:
 
@@ -37,7 +37,7 @@ These checks catch most common configuration errors and run in under a minute.
 
 If any validation fails, fix the errors and run `make test` again.
 
-## :octicons-beaker-24: Full End-to-End Validation
+## Full End-to-End Validation
 
 For changes that affect cluster behavior, add-ons, workloads, or ArgoCD applications, run the full end-to-end test suite. This validates that the platform provisions correctly and all components function as expected.
 
@@ -84,7 +84,7 @@ To clean up:
 make destroy-standalone-aws
 ```
 
-## :octicons-organization-24: Understanding the E2E Test Structure
+## Understanding the E2E Test Structure
 
 The e2e test suite uses [BATS](https://github.com/bats-core/bats-core) (Bash Automated Testing System) to validate cluster deployment and behavior.
 
@@ -140,7 +140,7 @@ Tests use helper functions from `tests/e2e/lib/helper.bash`:
 
 The retry mechanism handles temporary timing issues during cluster startup.
 
-## :octicons-tools-16: Debugging Test Failures
+## Debugging Test Failures
 
 When tests fail, the output shows the failing command and the error message. Here's how to debug:
 
@@ -223,7 +223,7 @@ To clean up when done:
 make clean
 ```
 
-## :octicons-checklist-24: Pre-Pull Request Validation Checklist
+## Pre-Pull Request Validation Checklist
 
 Before creating a pull request, ensure:
 
@@ -240,7 +240,7 @@ Before creating a pull request, ensure:
 - [ ] **Documentation is updated**: If you changed behavior, update relevant docs
 - [ ] **Commit message is clear**: Use conventional commit format (feat:, fix:, docs:, etc.)
 
-## :octicons-info-24: When to Run Which Validation
+## When to Run Which Validation
 
 | Scenario | Validation | Why |
 |----------|-----------|-----|
@@ -252,7 +252,7 @@ Before creating a pull request, ensure:
 | Documentation-only changes | `make test` | Quick validation sufficient |
 | New feature with cluster impact | `make standalone` + `make standalone-aws` | Validate on both platforms |
 
-## :octicons-link-external-24: Related Documentation
+## Related Documentation
 
 - [Local Development](local.md) — Set up your local development environment
 - [Provision a Standalone Cluster](standalone.md) — Deploy to AWS for testing

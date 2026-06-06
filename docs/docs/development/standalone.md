@@ -1,10 +1,10 @@
 # Provision a Standalone Cluster
 
-## :octicons-stack-24: Overview
+## Overview
 
 The following walks through the steps required to provision a standalone cluster in AWS and use it to validate platform changes before raising a pull request. Here we use the Terraform code in the `terraform/` directory to provision the infrastructure and bootstrap ArgoCD.
 
-## :octicons-beaker-24: When to Use This Workflow
+## When to Use This Workflow
 
 Use a cloud cluster to validate changes that cannot be fully tested with a local Kind cluster:
 
@@ -16,7 +16,7 @@ Use a cloud cluster to validate changes that cannot be fully tested with a local
 
 For changes that only affect YAML structure, ApplicationSet logic, or Kustomize overlays, the [local development workflow](local.md) is faster.
 
-## :octicons-project-roadmap-24: How Branch-Based Validation Works
+## How Branch-Based Validation Works
 
 The platform's Terraform module accepts a `revision_overrides` variable that overrides the `platform_revision` and `tenant_revision` values normally sourced from the cluster definition YAML. This means ArgoCD is pointed at your feature branch from the moment the cluster is bootstrapped.
 
@@ -41,7 +41,7 @@ The platform's Terraform module accepts a `revision_overrides` variable that ove
 
 Because `revision_overrides` is set in the Terraform `.tfvars` file rather than the cluster definition, you do not need to commit a revision change to the cluster YAML — the override is injected at bootstrap time and flows through every ApplicationSet the platform creates.
 
-## :octicons-rocket-24: Provision the Cluster
+## Provision the Cluster
 
 ### 1. Create a feature branch
 
@@ -88,7 +88,7 @@ CLUSTER_NAME=dev make eks-login
 aws eks update-kubeconfig --name dev --region eu-west-2
 ```
 
-## :octicons-browser-24: Understanding the Bootstrap Flow
+## Understanding the Bootstrap Flow
 
 Once the cluster is provisioned, ArgoCD drives everything. The bootstrap sequence is:
 
@@ -132,7 +132,7 @@ cluster definition YAML
 
 Add-on configuration is layered: platform defaults from `config/<feature>/all.yaml` are merged with cloud-specific overrides and then tenant-specific overrides.
 
-## :octicons-sync-24: Iterating on Changes
+## Iterating on Changes
 
 Once the cluster is running, your iteration loop is:
 
@@ -153,10 +153,13 @@ kubectl -n argocd patch application platform \
   --type merge -p '{"metadata":{"annotations":{"argocd.argoproj.io/refresh":"hard"}}}'
 ```
 
-!!! tip "Tip"
-    Push your commits before starting Terraform provisioning — the cluster bootstraps against the branch HEAD, so any commits already there are applied on first sync.
+:::tip
 
-## :octicons-eye-24: Monitoring the Cluster
+Push your commits before starting Terraform provisioning — the cluster bootstraps against the branch HEAD, so any commits already there are applied on first sync.
+
+:::
+
+## Monitoring the Cluster
 
 ### Check all applications
 
@@ -205,7 +208,7 @@ kubectl -n argocd logs deployment/argocd-application-controller -f
 kubectl -n argocd logs deployment/argocd-repo-server -f
 ```
 
-## :octicons-tools-16: Enabling or Disabling Features
+## Enabling or Disabling Features
 
 Feature flags live in the cluster definition YAML. For the standalone development environment this is `release/standalone-aws/clusters/dev.yaml`.
 
@@ -224,10 +227,13 @@ To toggle a feature:
 3. ArgoCD runs `system-registration`, which updates the cluster secret.
 4. `system-kustomize` / `system-helm` reconcile and create or delete the Application.
 
-!!! note
-    Removing a label causes the ApplicationSet to delete the corresponding Application, which triggers Argo CD to prune all resources the Application owned.
+:::note
 
-## :octicons-verified-24: Pre-PR Checklist (Cloud Validation)
+Removing a label causes the ApplicationSet to delete the corresponding Application, which triggers Argo CD to prune all resources the Application owned.
+
+:::
+
+## Pre-PR Checklist (Cloud Validation)
 
 Before raising a pull request after cloud validation:
 
@@ -238,7 +244,7 @@ Before raising a pull request after cloud validation:
 - [ ] The `revision_overrides` in your `.tfvars` file are **not** committed — they are a local testing aid
 - [ ] Cluster definition changes (if any) reflect the intended production values, not the branch name
 
-## :octicons-trash-24: Cleanup
+## Cleanup
 
 ```shell
 # Using the Makefile
@@ -250,7 +256,7 @@ terraform -chdir=terraform destroy -var-file=variables/dev.tfvars
 
 Always run cleanup when finished to avoid ongoing infrastructure costs.
 
-## :octicons-link-external-24: Related Documentation
+## Related Documentation
 
 - [Local Development](local.md) — Kind-based development for fast iteration
 - [Hub & Spoke](hub.md) — Cloud validation for multi-cluster hub/spoke topology

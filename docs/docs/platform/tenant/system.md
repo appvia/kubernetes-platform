@@ -1,8 +1,11 @@
-# :material-application-cog: Tenant System Applications
+# Tenant System Applications
 
-!!! note "Note"
+:::note
 
-    Please refer to the [architectural overview](../../architecture/overview.md) for an understanding on tenant and platform repositories
+
+Please refer to the [architectural overview](../../architecture/overview.md) for an understanding on tenant and platform repositories
+
+:::
 
 System applications deployed under `workloads/system/` have elevated privileges compared to regular applications. These system-level applications:
 
@@ -18,11 +21,14 @@ This higher privilege level allows system applications to:
 - Set up monitoring and logging infrastructure
 - Deploy shared services used by multiple applications
 
-## :material-hazard-lights: Usage Guidelines
+## Usage Guidelines
 
-!!! note "Note"
+:::note
 
-    System applications have elevated permissions and can affect the entire cluster. Use caution when deploying system applications to avoid unintended consequences.
+
+System applications have elevated permissions and can affect the entire cluster. Use caution when deploying system applications to avoid unintended consequences.
+
+:::
 
 When deploying system applications:
 
@@ -33,7 +39,7 @@ When deploying system applications:
 
 The separation between system and regular applications helps maintain proper security boundaries while enabling necessary cluster-wide functionality.
 
-## :material-cog-outline: Namespace Configuration
+## Namespace Configuration
 
 System applications deployed under `workloads/system/` require explicit namespace specification using the `namespace.name` field. Unlike regular tenant applications which derive the namespace from their folder structure, system applications must explicitly define their deployment namespace.
 

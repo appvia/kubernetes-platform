@@ -40,9 +40,12 @@ Key capabilities:
 - **Job scaling** — spawn and clean up Kubernetes Jobs in response to events via `ScaledJob`
 - **Proactive scaling** — acts on queue depth or stream lag _before_ CPU spikes, unlike reactive HPA polling
 
-!!! note
+:::note
 
-    KEDA is a CNCF graduated project and is production-grade. It must be the **only** installed external metrics adapter in the cluster.
+
+KEDA is a CNCF graduated project and is production-grade. It must be the **only** installed external metrics adapter in the cluster.
+
+:::
 
 ---
 
@@ -88,13 +91,19 @@ These are two distinct components serving different API paths — they coexist w
 | **Looks**        | Inward — inside the cluster                    | Outward — outside the cluster            |
 | **Installed by** | Kubernetes cluster (or `metrics-server` chart) | KEDA Helm install                        |
 
-!!! important
+:::caution
 
-    For CPU and memory KEDA scalers, KEDA falls back to the standard Metrics Server (`metrics.k8s.io`). You still need the standard Metrics Server installed if you use resource-based triggers in KEDA.
 
-!!! important
+For CPU and memory KEDA scalers, KEDA falls back to the standard Metrics Server (`metrics.k8s.io`). You still need the standard Metrics Server installed if you use resource-based triggers in KEDA.
 
-    Only one implementor of `external.metrics.k8s.io` is permitted per cluster. Running another custom adapter alongside KEDA will break metric resolution.
+:::
+
+:::caution
+
+
+Only one implementor of `external.metrics.k8s.io` is permitted per cluster. Running another custom adapter alongside KEDA will break metric resolution.
+
+:::
 
 Query KEDA's external metrics directly:
 
@@ -109,9 +118,12 @@ kubectl get --raw "/apis/external.metrics.k8s.io/v1beta1/namespaces/<namespace>/
 
 ## KEDA vs HPA with Custom Metrics
 
-!!! note
+:::note
 
-    The comparison is not "KEDA vs HPA" — KEDA uses HPA internally. The real question is: **KEDA vs manually wiring HPA to a custom metrics adapter**.
+
+The comparison is not "KEDA vs HPA" — KEDA uses HPA internally. The real question is: **KEDA vs manually wiring HPA to a custom metrics adapter**.
+
+:::
 
 | Capability                      | HPA + Custom Metrics Adapter         | KEDA                                       |
 | ------------------------------- | ------------------------------------ | ------------------------------------------ |
@@ -277,15 +289,18 @@ prometheus:
         release: kube-prometheus-stack
 ```
 
-!!! note "Match the Prometheus selector"
+:::note[Match the Prometheus selector]
 
-    The `additionalLabels` value must match the `serviceMonitorSelector` configured on your Prometheus instance. Inspect it with:
 
-    ```bash
-    kubectl get prometheus -A -o yaml | yq '.items[].spec.serviceMonitorSelector'
-    ```
+The `additionalLabels` value must match the `serviceMonitorSelector` configured on your Prometheus instance. Inspect it with:
 
-    If you do not see your KEDA `ServiceMonitor` showing up as a target in Prometheus, the selector labels almost certainly do not match.
+```bash
+kubectl get prometheus -A -o yaml | yq '.items[].spec.serviceMonitorSelector'
+```
+
+If you do not see your KEDA `ServiceMonitor` showing up as a target in Prometheus, the selector labels almost certainly do not match.
+
+:::
 
 ### Alternative: PodMonitors
 
@@ -377,9 +392,12 @@ KEDA installs four Custom Resource Definitions:
 
 ## ArgoCD Integration — Required `ignoreDifferences`
 
-!!! warning "Critical: ArgoCD Sync and KEDA Scaling Conflicts"
+:::warning[Critical: ArgoCD Sync and KEDA Scaling Conflicts]
 
-    When deploying KEDA-scaled workloads with ArgoCD, you **must** add `ignoreDifferences` configuration to your Application definition. Without this, ArgoCD will continuously revert the replica count set by KEDA's autoscaler, causing a reconciliation loop where ArgoCD overwrites KEDA's scaling decisions.
+
+When deploying KEDA-scaled workloads with ArgoCD, you **must** add `ignoreDifferences` configuration to your Application definition. Without this, ArgoCD will continuously revert the replica count set by KEDA's autoscaler, causing a reconciliation loop where ArgoCD overwrites KEDA's scaling decisions.
+
+:::
 
 ```yaml
 helm:
@@ -727,13 +745,19 @@ spec:
 
 KEDA supports CPU-based scaling through its built-in `cpu` scaler, which proxies to the standard Kubernetes Metrics Server (not the KEDA external metrics adapter). This behaves similarly to plain HPA CPU scaling, but with the added benefit of being expressed as a `ScaledObject` — meaning you can combine it with other KEDA triggers in a single resource.
 
-!!! note "Prerequisite"
+:::note[Prerequisite]
 
-    The standard Kubernetes Metrics Server must be installed. KEDA's CPU scaler reads from `metrics.k8s.io`, not from KEDA's own external metrics endpoint.
 
-!!! warning "Note on scale-to-zero"
+The standard Kubernetes Metrics Server must be installed. KEDA's CPU scaler reads from `metrics.k8s.io`, not from KEDA's own external metrics endpoint.
 
-    CPU-based triggers cannot scale a workload to zero because if there are no pods, there is no CPU metric to read. If you need scale-to-zero, combine the CPU trigger with a second trigger (e.g. cron or queue-depth) that can drive replicas to zero.
+:::
+
+:::warning[Note on scale-to-zero]
+
+
+CPU-based triggers cannot scale a workload to zero because if there are no pods, there is no CPU metric to read. If you need scale-to-zero, combine the CPU trigger with a second trigger (e.g. cron or queue-depth) that can drive replicas to zero.
+
+:::
 
 ### How it works
 
@@ -881,9 +905,12 @@ spec:
     # (implicit — minReplicaCount: 0 applies when no cron window is active)
 ```
 
-!!! note "How the off-window works"
+:::note[How the off-window works]
 
-    You only need to define the *active* window. When no cron trigger is firing and there are no other active triggers, KEDA scales down to `minReplicaCount`. Setting `minReplicaCount: 0` means the workload reaches zero automatically outside the defined window. You do not need a second cron entry for the off period.
+
+You only need to define the *active* window. When no cron trigger is firing and there are no other active triggers, KEDA scales down to `minReplicaCount`. Setting `minReplicaCount: 0` means the workload reaches zero automatically outside the defined window. You do not need a second cron entry for the off period.
+
+:::
 
 ### Example — Weekdays only, with weekend scale-to-zero
 
@@ -1011,9 +1038,12 @@ Valid timezone strings follow the IANA tz database format. Full list: [List of t
 
 ## Vertical Scaling — Pod Resource Requests (VPA + KEDA)
 
-!!! important "Important distinction"
+:::caution[Important distinction]
 
-    KEDA is a *horizontal* scaler — it controls the *number* of pods, not their size. Changing pod CPU/memory requests is *vertical* scaling, which is the domain of the **Vertical Pod Autoscaler (VPA)**. These are complementary tools, not alternatives.
+
+KEDA is a *horizontal* scaler — it controls the *number* of pods, not their size. Changing pod CPU/memory requests is *vertical* scaling, which is the domain of the **Vertical Pod Autoscaler (VPA)**. These are complementary tools, not alternatives.
+
+:::
 
 | Tool          | What it changes                             |
 | ------------- | ------------------------------------------- |

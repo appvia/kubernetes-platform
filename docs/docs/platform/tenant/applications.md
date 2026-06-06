@@ -1,8 +1,11 @@
-# :material-application-cog: Tenant Applications
+# Tenant Applications
 
-!!! note "Note"
+:::note
 
-    Please refer to the [architectural overview](../../architecture/overview.md) for an understanding on tenant and platform repositories
+
+Please refer to the [architectural overview](../../architecture/overview.md) for an understanding on tenant and platform repositories
+
+:::
 
 Applications for tenants can be deployed using a GitOps approach directly from the tenant repository. The workloads folder contains two main directories:
 
@@ -17,7 +20,7 @@ By simply adding Helm charts or Kustomize configurations into the appropriate di
 
 This separation of applications and system components allows for proper access control while maintaining a simple deployment model.
 
-## :material-application-array-outline: Helm Applications
+## Helm Applications
 
 You can deploy using a helm chart, by adding a `CLUSTER_NAME.yaml`.
 
@@ -144,7 +147,7 @@ To use helm values:
 1. Create a folder called `values` inside the folder created in step 1.
 2. Add value files for different scopes (`all.yaml`, environment-specific like `dev.yaml`, tenant-specific, or cluster-specific values).
 
-## :material-application-array-outline: Helm with Multiple Charts
+## Helm with Multiple Charts
 
 Similar to the helm deployment, create a folder for your deployments. Taking the example of two charts, frontend and backend, you would create a folder called `frontend` and `backend`.
 
@@ -172,7 +175,7 @@ workloads/applications/
 
 Each `CLUSTER_NAME.yaml` file follows the helm format shown in the Helm Applications section. The namespace for each deployment is derived from its immediate folder name (e.g., `frontend` and `backend` in this example).
 
-## :material-application-array-outline: Kustomize
+## Kustomize
 
 You can deploy using kustomize, by adding a `CLUSTER_NAME.yaml`.
 
@@ -240,7 +243,7 @@ To provide better control and safety, the `revision` field is used to pin Kustom
 3. Promote to staging/prod by updating their revisions after validation
 4. Roll back if needed by reverting to previous commit SHA
 
-## :material-application-array-outline: Kustomize with External Source
+## Kustomize with External Source
 
 By default, Kustomize manifests are sourced from the tenant repository at the path you specify. However, you can also reference Kustomize configurations from external repositories for greater flexibility in managing deployment configurations and enabling independent versioning strategies.
 
@@ -264,7 +267,7 @@ When `repository` is specified, Kustomize manifests are pulled from that externa
 
 The namespace is derived from the folder structure: the folder name under `workloads/applications/` becomes the namespace where the application will be deployed.
 
-## :material-application-array-outline: Combinational Deployment
+## Combinational Deployment
 
 You can combine both helm and kustomize deployments in a single file. This allows you to deploy applications that require both deployment methods.
 

@@ -1,12 +1,14 @@
-# :material-tools: Architecture
+# Architecture
 
 The platform currently support both a standalone and hub and spoke architecture.
 
-<figure markdown="span">
-  ![Image title](../assets/images/architecture.png){ align=center }
-</figure>
+<div style={{textAlign: 'center'}}>
 
-## :material-git: Repository Structure
+![Image title](/img/architecture.png)
+
+</div>
+
+## Repository Structure
 
 The platform is composed of two main repositories that work together, This two-repository approach enables:
 

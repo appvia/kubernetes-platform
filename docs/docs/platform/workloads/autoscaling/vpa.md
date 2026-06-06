@@ -242,38 +242,41 @@ kubectl get deployment -n kube-system vpa-recommender -o yaml | grep image
 
 ## GitOps Integration — VPA with ArgoCD
 
-!!! info "Critical: Ignore Resource Requests to Allow VPA and ArgoCD to Co-exist"
+:::info[Critical: Ignore Resource Requests to Allow VPA and ArgoCD to Co-exist]
 
-    When using VPA in `Auto` or `Recreate` modes alongside ArgoCD, you **MUST** add `ignoreDifferences` to your application definition to prevent ArgoCD from reverting VPA's resource adjustments. This tells ArgoCD to ignore drift in resource requests/limits fields, allowing VPA to manage them freely.
 
-    **Example:**
-    ```yaml
-    helm:
-      path: <PATH_TO_HELM_CHART>
-      repository: <REPO_URL>
-      version: main
+When using VPA in `Auto` or `Recreate` modes alongside ArgoCD, you **MUST** add `ignoreDifferences` to your application definition to prevent ArgoCD from reverting VPA's resource adjustments. This tells ArgoCD to ignore drift in resource requests/limits fields, allowing VPA to manage them freely.
 
-    sync:
-      ## The order in which to deploy the application
-      phase: primary
-      ## The duration to wait before retrying the application
-      duration: 60s
-      ## The maximum duration to wait before retrying the application
-      max_duration: 2m
+**Example:**
+```yaml
+helm:
+  path: <PATH_TO_HELM_CHART>
+  repository: <REPO_URL>
+  version: main
 
-    ignoreDifferences:
-      - group: apps
-        kind: Deployment
-        jsonPointers:
-          # Allow KEDA to scale the deployment without ArgoCD
-          # considering it a drift
-          - /spec/replicas
-          # Allow VPA to adjust the resource requests without
-          # ArgoCD considering it a drift
-          - /spec/template/spec/containers/0/resources/requests
-    ```
+sync:
+  ## The order in which to deploy the application
+  phase: primary
+  ## The duration to wait before retrying the application
+  duration: 60s
+  ## The maximum duration to wait before retrying the application
+  max_duration: 2m
 
-    **Without this**, ArgoCD will continuously revert VPA's changes, causing conflicts and preventing VPA from functioning correctly. See [Approach 2](#approach-2-pragmatic-argocds-ignoredifferences) below for more details.
+ignoreDifferences:
+  - group: apps
+    kind: Deployment
+    jsonPointers:
+      # Allow KEDA to scale the deployment without ArgoCD
+      # considering it a drift
+      - /spec/replicas
+      # Allow VPA to adjust the resource requests without
+      # ArgoCD considering it a drift
+      - /spec/template/spec/containers/0/resources/requests
+```
+
+**Without this**, ArgoCD will continuously revert VPA's changes, causing conflicts and preventing VPA from functioning correctly. See [Approach 2](#approach-2-pragmatic-argocds-ignoredifferences) below for more details.
+
+:::
 
 ---
 
@@ -630,17 +633,17 @@ kubectl describe vpa api-server-vpa -n default
 
 # Output:
 # Recommendation:
-#   Container Recommendations:
-#     Container Name: api-server
-#     Lower Bound:
-#       cpu:    120m
-#       memory: 256Mi
-#     Target:                         ← Use these values
-#       cpu:    250m
-#       memory: 320Mi
-#     Upper Bound:
-#       cpu:    500m
-#       memory: 1Gi
+# Container Recommendations:
+# Container Name: api-server
+# Lower Bound:
+# cpu:    120m
+# memory: 256Mi
+# Target:                         ← Use these values
+# cpu:    250m
+# memory: 320Mi
+# Upper Bound:
+# cpu:    500m
+# memory: 1Gi
 
 # 2. Update your Deployment manifest
 kubectl set resources deployment api-server \
@@ -835,11 +838,11 @@ helm:
 
 # Optional: If using Approach 2 (ignoreDifferences), let VPA manage requests
 # ignoreDifferences:
-#   - kind: Deployment
-#     group: apps
-#     jsonPointers:
-#       - /spec/template/spec/containers/0/resources/requests
-#       - /spec/template/spec/containers/0/resources/limits
+# - kind: Deployment
+# group: apps
+# jsonPointers:
+# - /spec/template/spec/containers/0/resources/requests
+# - /spec/template/spec/containers/0/resources/limits
 ```
 
 Then create a `values/all.yaml` file with the same resource structure for re-usability:
@@ -1095,9 +1098,12 @@ A: With Approach 1 (Off mode), whenever a significant change appears (monthly or
 
 ## VPA with KEDA — Safe Integration Pattern
 
-!!! warning "Potential conflict"
+:::warning[Potential conflict]
 
-    VPA and KEDA are **complementary but can interfere** if misconfigured. VPA changes pod resource requests; KEDA changes the number of pods. Without care, you risk pod churn.
+
+VPA and KEDA are **complementary but can interfere** if misconfigured. VPA changes pod resource requests; KEDA changes the number of pods. Without care, you risk pod churn.
+
+:::
 
 ### The Risk — Why They Can Conflict
 
@@ -1227,21 +1233,21 @@ kubectl describe vpa <name> -n <namespace>
 
 # Example output:
 # Status:
-#   Recommendation:
-#     Container Recommendations:
-#       Container Name: app
-#       Lower Bound:
-#         Cpu:     120m
-#         Memory:  256Mi
-#       Target:                 ← What to apply
-#         Cpu:     250m
-#         Memory:  320Mi
-#       Upper Bound:
-#         Cpu:     500m
-#         Memory:  1Gi
-#       Uncapped Target:        ← If no bounds were set
-#         Cpu:     290m
-#         Memory:  350Mi
+# Recommendation:
+# Container Recommendations:
+# Container Name: app
+# Lower Bound:
+# Cpu:     120m
+# Memory:  256Mi
+# Target:                 ← What to apply
+# Cpu:     250m
+# Memory:  320Mi
+# Upper Bound:
+# Cpu:     500m
+# Memory:  1Gi
+# Uncapped Target:        ← If no bounds were set
+# Cpu:     290m
+# Memory:  350Mi
 ```
 
 ### Export recommendations to a file
@@ -1272,9 +1278,9 @@ kubectl edit deployment my-service
 
 # Update the resources section:
 # spec.template.spec.containers[0].resources:
-#   requests:
-#     cpu: 250m
-#     memory: 320Mi
+# requests:
+# cpu: 250m
+# memory: 320Mi
 ```
 
 **Option 3: GitOps pipeline**

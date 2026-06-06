@@ -1,4 +1,4 @@
-# :material-application-cog: System ArgoCD Application Sets
+# System ArgoCD Application Sets
 
 All the application set which compose the platform can be found in
 
@@ -6,15 +6,15 @@ All the application set which compose the platform can be found in
 - The [kustomize/overlays/standalone](https://github.com/appvia/kubernetes-platform/tree/main/kustomize/overlays/standalone) entrypoint.
 - The [kustomize/overlays/hub](https://github.com/appvia/kubernetes-platform/tree/main/kustomize/overlays/hub) entrypoint.
 
-### :material-application-array-outline: Platform Application Set
+### Platform Application Set
 
 The platform application sets are the entrypoint application sets for the standalone and hub cluster types. These can be found under the [kustomize/overlays](https://github.com/appvia/kubernetes-platform/tree/main/kustomize/overlays) directory. They are solely responsible for sourcing the following application sets details below, applying kustomize patches where required.
 
-### :material-application-array-outline: Cluster Registration Application Set
+### Cluster Registration Application Set
 
 The [system-registration](https://github.com/appvia/kubernetes-platform/tree/main/apps/registration/standalone) and the [hub version](https://github.com/appvia/kubernetes-platform/tree/main/apps/registration/hub) are responsible for sourcing the cluster definitions from the tenant repository and producing a cluster secret, using the [charts/cluster-registration](https://github.com/appvia/kubernetes-platform/tree/main/charts/cluster-registration) helm chart.
 
-### :material-application-array-outline: System Helm Application Set
+### System Helm Application Set
 
 The [system-helm](https://github.com/appvia/kubernetes-platform/tree/main/apps/system/system-helm.yaml) application set is responsible for installing the core platform components.
 
@@ -97,13 +97,16 @@ sources:
     ref: tenant
 ```
 
-!!! note "Tenant overrides"
+:::note[Tenant overrides]
 
-    Tenant value files live under `<tenant_path>/config/<feature>/` in the tenant repository, using the addon **`feature`** name (the same identifier as in `enable_<feature>`), not necessarily the Helm chart name—for example `config/cert_manager/all.yaml`.
+
+Tenant value files live under `<tenant_path>/config/<feature>/` in the tenant repository, using the addon **`feature`** name (the same identifier as in `enable_<feature>`), not necessarily the Helm chart name—for example `config/cert_manager/all.yaml`.
+
+:::
 
 ---
 
-#### :material-cog: Helm Values and Configuration
+#### Helm Values and Configuration
 
 Default Helm values for addons shipped with the platform live in this repository under [config/](https://github.com/appvia/kubernetes-platform/tree/main/config), in directories named after the addon **`feature`** (for example `config/cert_manager/all.yaml`). Tenant repositories mirror that layout under their `tenant_path` to override or extend defaults.
 
@@ -141,7 +144,7 @@ Another way to pass values to the Helm applications is via `parameters` i.e
 - Value file paths use **`feature`**, not the chart name, unless they happen to be the same in a given addon definition.
 - After value files are merged, the addon definition may also supply inline Helm `values` and `parameters` (including values pulled from cluster metadata); those are applied as part of the same Helm source.
 
-## :material-application-array-outline: System Kustomize Application Set
+## System Kustomize Application Set
 
 The [system-kustomize](https://github.com/appvia/kubernetes-platform/blob/main/apps/system/system-kustomize.yaml) is responsible for provisioning any kustomize related functionality from the system. The application set use's a [git generator](https://argo-cd.readthedocs.io/en/stable/operator-manual/applicationset/Generators-Git/) to source all the `kustomize.yaml` files from the [addons/kustomize](https://github.com/appvia/kubernetes-platform/tree/main/addons/kustomize) directory.
 

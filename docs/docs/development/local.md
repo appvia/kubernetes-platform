@@ -1,10 +1,10 @@
-# :material-developer-board: Local Development
+# Local Development
 
-## :octicons-stack-24: Overview
+## Overview
 
 For the purposes of local development, provisioning Kubernetes clusters in the cloud can be expensive and time consuming. And while not all the features can be fully tested locally, i.e. those relying on cloud resources, pod identity and applications (load balancers for example) and so forth, much of the development of the platform team can be done locally on their machine.
 
-## :octicons-tools-16: Prerequisites
+## Prerequisites
 
 The following tools need to be installed on your local machine:
 
@@ -21,7 +21,7 @@ helm repo add argo https://argoproj.github.io/argo-helm
 helm repo update
 ```
 
-## :octicons-rocket-24: Provisioning a Local Cluster (Standalone)
+## Provisioning a Local Cluster (Standalone)
 
 Within the [platform repository](https://github.com/appvia/kubernetes-platform) we have a `release` folder, which can be used to simulate a tenant repository, keeping all the development within the same repository.
 
@@ -37,7 +37,7 @@ release
     └── workloads
 ```
 
-## :octicons-project-roadmap-24: Expected Development Workflow
+## Expected Development Workflow
 
 As a platform engineer you need to validate a new feature on a standalone deployment model.
 
@@ -56,6 +56,6 @@ Additional clusters can be added, simply by adding a new cluster to the `release
 scripts/make-dev.sh --cluster-name <NAME>
 ```
 
-## :octicons-trash-24: Cleanup the Cluster
+## Cleanup the Cluster
 
 To cleanup the cluster, run `make clean`

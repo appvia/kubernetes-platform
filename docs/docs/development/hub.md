@@ -1,6 +1,6 @@
-# :material-developer-board: Hub & Spoke
+# Hub & Spoke
 
-## :octicons-grabber-24: Overview
+## Overview
 
 When developing features that involve hub and spoke cluster configurations, you'll need at least two Kubernetes clusters:
 
@@ -19,11 +19,13 @@ This setup allows you to test:
 
 In the Hub-Spoke model, a centralized hub cluster is designated to host the Argo CD instance. This hub cluster serves as the control center and is responsible for managing resources across multiple spoke clusters. The spoke clusters, which could be numerous (e.g., 5 or 10), rely on the hub cluster for coordination and deployment. The Argo CD instance in the hub cluster is configured to oversee and make changes to the other clusters, offering a centralized and streamlined approach to cluster management.
 
-<figure markdown="span">
-  ![Image title](/assets/images/argocd-hub-and-spoke.png){ align=center }
-</figure>
+<div style={{textAlign: 'center'}}>
 
-## :octicons-tools-16: Prerequisites
+![Image title](/img/argocd-hub-and-spoke.png)
+
+</div>
+
+## Prerequisites
 
 The following tools need to be installed on your local machine:
 
@@ -33,7 +35,7 @@ The following tools need to be installed on your local machine:
 | helm      | The package manager for Kubernetes              | [Install Guide](https://helm.sh/docs/intro/install/)                 |
 | terraform | Infrastructure as Code tool for cloud resources | [Install Guide](https://developer.hashicorp.com/terraform/downloads) |
 
-## :octicons-project-roadmap-24: Setup the Environments
+## Setup the Environments
 
 The `release` folder is used to mimic a tenant repository locally. Under `release/hub-aws` you will find the necessary files required to manage, test and develop with the hub and spoke setup.
 
@@ -48,7 +50,7 @@ release/hub-aws/
 1. We have two cluster definitions [hub.yaml](https://github.com/appvia/kubernetes-platform/blob/main/release/hub-aws/clusters/hub.yaml) and [spoke.yaml](https://github.com/appvia/kubernetes-platform/blob/main/release/hub-aws/clusters/spoke.yaml)
 2. Note, similar to local development with [local](https://appvia.github.io/kubernetes-platform/development/local/) and the [standalone](https://appvia.github.io/kubernetes-platform/development/standalone/) development, the revision found in the cluster definitions are overridden, allowing you to use your current branch to validate changes.
 
-## :octicons-project-roadmap-24: How Branch-Based Validation Works
+## How Branch-Based Validation Works
 
 The `revision_overrides` variable in the Terraform `.tfvars` file is the key to validating a feature branch without touching cluster definition YAML. Setting it causes every source in the ArgoCD bootstrap chain to target your branch:
 
@@ -78,7 +80,7 @@ The `revision_overrides` variable in the Terraform `.tfvars` file is the key to 
 
 In the hub model, `system-registration` (`apps/registration/hub/registration.yaml`) watches **all** cluster definition files matching `clusters/*.yaml`. For each definition it creates an ArgoCD cluster `Secret`. Spoke clusters only become reachable once their `cluster_authentication.server` endpoint is supplied (see [Cluster Authentication](#cluster-authentication) below).
 
-## :octicons-sync-24: Iterating on Changes
+## Iterating on Changes
 
 Once the hub is running, the iteration loop is:
 
@@ -95,15 +97,18 @@ kubectl -n argocd get applications
 argocd app refresh platform --hard
 ```
 
-### :octicons-rocket-24: Provision the Hub cluster
+### Provision the Hub cluster
 
 1. Take a look at the terraform code in the `terraform` directory, and update any `terraform/variables/hub.tfvars` you feel need changing.
 2. Run the Makefile `make hub-aws`; this will run `terraform init`, `terraform workspace select hub` and provision the cluster.
 3. Once the Hub has been provision `aws eks update-kubeconfig --name hub` and verify everything is working, we should see a collection of applications similar to below
 
-!!! note "Note"
+:::note
 
-    You can view what the Makefile target is doing by opening the `terraform/Makefile`
+
+You can view what the Makefile target is doing by opening the `terraform/Makefile`
+
+:::
 
 ```shell
 kubectl -n argocd get applications
@@ -134,7 +139,7 @@ system-registration-spoke            Synced        Healthy
 
 The `Unknown` is expected, as the cluster is enabled in the cluster definition, but no server endpoint or authentication has been supplied to ArgoCD yet.
 
-### :octicons-rocket-24: Provision the Spoke
+### Provision the Spoke
 
 With the Hub cluster provisioned we can now move forward and provision our first spoke cluster (we can consider this one dev).
 
@@ -179,9 +184,12 @@ resource "aws_iam_role" "argocd_cross_account_role" {
 
 ```
 
-!!! note "Note"
+:::note
 
-    You could bypass the updating of the cluster configuration by simply added an known endpoint i.e create route53 domain and use the EKS endpoint as a CNAME
+
+You could bypass the updating of the cluster configuration by simply added an known endpoint i.e create route53 domain and use the EKS endpoint as a CNAME
+
+:::
 
 On the Hub cluster [pod identity](https://github.com/appvia/terraform-aws-eks/blob/main/pod_identity.tf#L1-L29) allows the ArgoCD service account to assume the roles in the spoke accounts. The only manually change currently is adding in the Kubernetes endpoints URL post the creation.
 

@@ -1,8 +1,11 @@
 # Platform Overview
 
-!!! note "Note"
+:::note
 
-    This documentation is a work in progress and is subject to change. Please check back regularly for updates.
+
+This documentation is a work in progress and is subject to change. Please check back regularly for updates.
+
+:::
 
 ---
 

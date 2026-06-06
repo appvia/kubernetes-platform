@@ -14,7 +14,10 @@ Use them together with [EKS access entries](https://docs.aws.amazon.com/eks/late
 
 Source: `addons/kustomize/oss/cluster-roles/base/cluster-roles.yaml`.
 
-!!! tip "Group names"
+:::tip[Group names]
+
+
+:::
 The Kubernetes group on the EKS access entry **must match** the `subjects[].name` on the `ClusterRoleBinding`. Using the same name as the `ClusterRole` (for example `platform-viewer`) is the simplest convention, but you can use a custom group name as long as the binding references it.
 
 ---

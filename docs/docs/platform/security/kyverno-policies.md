@@ -15,7 +15,7 @@ The following policies are shipped by default in this platform to enforce securi
 For detailed information about Kyverno's capabilities, refer to the [official documentation](https://kyverno.io/docs/) or [policy library](https://kyverno.io/policies/).
 
 ---
-## :material-shield-lock: Rule: deny-default-namespace
+## Rule: deny-default-namespace
 
 **Category:** Multi-Tenancy | **Severity:** medium | **Scope:** Cluster-wide
 
@@ -29,7 +29,7 @@ Kubernetes Namespaces are an optional feature that provide a way to segment and 
 
 ---
 
-## :material-shield-lock: Rule: deny-eks-resources
+## Rule: deny-eks-resources
 
 **Category:** Security | **Severity:** medium | **Scope:** Cluster-wide
 
@@ -41,7 +41,7 @@ Used to deny the use of EKS resources that are not allowed in the cluster. These
 
 ---
 
-## :material-shield-lock: Rule: restrict-image-registries
+## Rule: restrict-image-registries
 
 **Category:** Security | **Severity:** high | **Scope:** Cluster-wide
 
@@ -53,7 +53,7 @@ This policy restricts container images to allowed registries only. Images not ma
 
 ---
 
-## :material-shield-lock: Rule: deny-empty-ingress-host
+## Rule: deny-empty-ingress-host
 
 **Category:** Best Practices | **Severity:** medium | **Scope:** Cluster-wide
 
@@ -65,7 +65,7 @@ An ingress resource needs to define an actual host name in order to be valid. Th
 
 ---
 
-## :material-shield-lock: Rule: deny-external-secrets
+## Rule: deny-external-secrets
 
 **Category:** Security | **Severity:** medium | **Scope:** Cluster-wide
 
@@ -78,7 +78,7 @@ When provisioning ExternalSecrete, the key must be prefixed with the namespace n
 
 ---
 
-## :material-shield-lock: Rule: deny-latest-image
+## Rule: deny-latest-image
 
 **Category:** Best Practices | **Severity:** medium | **Scope:** Cluster-wide
 
@@ -92,7 +92,7 @@ The ':latest' tag is mutable and can lead to unexpected errors if the image chan
 
 ---
 
-## :material-shield-lock: Rule: require-labels
+## Rule: require-labels
 
 **Category:** Best Practices | **Severity:** medium | **Scope:** Cluster-wide
 
@@ -106,7 +106,7 @@ Define and use labels that identify semantic attributes of your application or D
 
 ---
 
-## :material-shield-lock: Rule: deny-no-limits
+## Rule: deny-no-limits
 
 **Category:** Best Practices, EKS Best Practices | **Severity:** medium | **Scope:** Cluster-wide
 
@@ -118,7 +118,7 @@ As application workloads share cluster resources, it is important to limit resou
 
 ---
 
-## :material-shield-lock: Rule: deny-no-pod-probes
+## Rule: deny-no-pod-probes
 
 **Category:** Best Practices, EKS Best Practices | **Severity:** medium | **Scope:** Cluster-wide
 
@@ -130,7 +130,7 @@ Liveness and readiness probes need to be configured to correctly manage a Pod's 
 
 ---
 
-## :material-shield-lock: Rule: deny-nodeport-service
+## Rule: deny-nodeport-service
 
 **Category:** Best Practices | **Severity:** medium | **Scope:** Cluster-wide
 
@@ -142,7 +142,7 @@ A Kubernetes Service of type NodePort uses a host port to receive traffic from a
 
 ---
 
-## :material-shield-lock: Rule: mutate-psa-labels
+## Rule: mutate-psa-labels
 
 **Category:** Pod Security Admission, EKS Best Practices | **Severity:** medium | **Scope:** Cluster-wide
 

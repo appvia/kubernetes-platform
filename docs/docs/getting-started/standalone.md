@@ -1,12 +1,15 @@
 # Standalone Deployment
 
-!!! note "Note"
+:::note
 
-    This documentation is a work in progress and is subject to change. Please check back regularly for updates.
+
+This documentation is a work in progress and is subject to change. Please check back regularly for updates.
+
+:::
 
 The following describes a typical standalone deployment. For a complete walk-through and a repository you can fork or clone, use the **[Kubernetes Platform Template](https://github.com/appvia/kubernetes-platform-template)**. Its [README](https://github.com/appvia/kubernetes-platform-template/blob/main/README.md) (same content as the [raw README](https://raw.githubusercontent.com/appvia/kubernetes-platform-template/refs/heads/main/README.md)) explains how to consume this platform, provision clusters, and wire GitOps—including **promotion-style workflows** across environments.
 
-## :octicons-cross-reference-24: Example scenario
+## Example scenario
 
 Using the following scenario, we have:
 
@@ -23,13 +26,13 @@ Using the following scenario, we have:
 
 The [Kubernetes Platform Template](https://github.com/appvia/kubernetes-platform-template) is a **baseline tenant repository**: it shows how to point clusters at this platform, lay out `clusters/`, `workloads/`, and `config/`, and optionally drive AWS EKS with Terraform. It also ships **GitHub Actions** that validate changes and enforce **Helm chart version ordering** between environment files so promotions stay auditable. You do not have to use every environment; the checks walk a configurable promotion chain and only validate Helm workloads that declare `helm.version`.
 
-## :octicons-cpu-24: Required binaries
+## Required binaries
 
 - Kind (<https://kind.sigs.k8s.io/docs/user/quick-start/#installation>)
 - kubectl (<https://kubernetes.io/docs/tasks/tools/#kubectl>)
 - Terraform (<https://developer.hashicorp.com/terraform/downloads>)
 
-## :octicons-project-roadmap-24: Set up your tenant repository
+## Set up your tenant repository
 
 ### 1. Create a copy in your organization
 

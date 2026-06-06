@@ -1,16 +1,21 @@
 # Kubernetes Platform
 
-<figure markdown="span">
-  ![Image title](assets/images/platform-banner.webp){ align=center }
-</figure>
+<div style={{textAlign: 'center'}}>
 
-!!! note "Note"
+![Image title](/img/platform-banner.webp)
 
-    This documentation is a work in progress and is subject to change. Please check back regularly for updates.
+</div>
+
+:::note
+
+
+This documentation is a work in progress and is subject to change. Please check back regularly for updates.
+
+:::
 
 ---
 
-## :octicons-stack-24: Platform Overview
+## Platform Overview
 
 Built for DevOps, Platform Engineers, and SREs, this solution streamlines cluster management by eliminating operational overhead, automating deployments at scale, and enforcing consistency across environments—whether using a distributed or hub-and-spoke architecture.
 
@@ -18,7 +23,7 @@ Reduce complexity, embrace automation, and accelerate delivery with a scalable, 
 
 ---
 
-## :octicons-workflow-24: Why This Pattern?
+## Why This Pattern?
 
 Managing multiple Kubernetes clusters across different environments presents challenges in consistency, scalability, and automation. This solution provides:
 
@@ -30,7 +35,7 @@ Managing multiple Kubernetes clusters across different environments presents cha
 
 ---
 
-## :octicons-log-24: Platform Tenets
+## Platform Tenets
 
 Too often, platforms are designed from a purely technical standpoint, packed with cutting-edge tools and complex abstractions—yet they fail to deliver a great developer experience. They become rigid, overwhelming, and unintuitive, forcing teams to navigate layers of complexity just to deploy and operate their workloads.
 
