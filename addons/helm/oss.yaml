@@ -5,7 +5,7 @@
   link: https://argo-cd.readthedocs.io/
   chart: argo-cd
   repository: https://argoproj.github.io/argo-helm
-  version: "9.5.14"
+  version: "9.5.20"
   namespace: argocd
 - feature: argo_events
   category: gitops
@@ -21,7 +21,7 @@
   link: https://argoproj.github.io/argo-rollouts/
   chart: argo-rollouts
   repository: https://argoproj.github.io/argo-helm
-  version: "2.40.9"
+  version: "2.41.0"
   namespace: argocd-rollouts
 - feature: argo_workflows
   category: gitops
@@ -78,7 +78,7 @@
   link: https://external-secrets.io/
   chart: external-secrets
   repository: https://charts.external-secrets.io
-  version: "2.5.0"
+  version: "2.6.0"
   namespace: external-secrets
 - feature: keda
   category: workloads
@@ -86,7 +86,7 @@
   link: https://keda.sh/
   chart: keda
   repository: https://kedacore.github.io/charts
-  version: "2.19.0"
+  version: "2.20.0"
   namespace: keda-system
 - feature: kgateway_crds
   category: networking
@@ -135,7 +135,7 @@
   link: https://www.kubecost.com/
   chart: kubecost
   repository: https://kubecost.github.io/kubecost
-  version: "3.1.7"
+  version: "3.2.0"
   namespace: kubecost
   parameters:
     - name: global.clusterName
@@ -146,7 +146,7 @@
   link: https://kyverno.io/
   chart: kyverno
   repository: https://kyverno.github.io/kyverno
-  version: "3.8.0"
+  version: "3.8.1"
   namespace: kyverno-system
 - feature: kyverno_policies
   category: security
@@ -194,7 +194,7 @@
   link: https://www.opencost.io/
   chart: opencost
   repository: https://opencost.github.io/opencost-helm-chart
-  version: "2.5.14"
+  version: "2.5.22"
   namespace: opencost
   parameters:
     - name: opencost.exporter.defaultClusterId
@@ -213,7 +213,7 @@
   link: https://volcano.sh/
   chart: volcano
   repository: https://volcano-sh.github.io/helm-charts
-  version: "1.14.2"
+  version: "1.15.0"
   namespace: volcano-system
 - feature: vpa
   category: compute
@@ -238,4 +238,4 @@
   repository: https://pkgs.tailscale.com/helmcharts
   link: https://tailscale.com/docs/features/kubernetes-operator
   namespace: tailscale
-  version: "1.96.5"
+  version: "1.98.4"
