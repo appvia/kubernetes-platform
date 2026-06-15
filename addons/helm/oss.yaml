@@ -5,7 +5,7 @@
   link: https://argo-cd.readthedocs.io/
   chart: argo-cd
   repository: https://argoproj.github.io/argo-helm
-  version: "9.5.20"
+  version: "9.5.21"
   namespace: argocd
 - feature: argo_events
   category: gitops
@@ -29,7 +29,7 @@
   link: https://argoproj.github.io/argo-workflows/
   chart: argo-workflows
   repository: https://argoproj.github.io/argo-helm
-  version: "1.0.14"
+  version: "1.0.15"
   namespace: argo-workflows
 - feature: argocd_notifications
   category: gitops
@@ -86,7 +86,7 @@
   link: https://keda.sh/
   chart: keda
   repository: https://kedacore.github.io/charts
-  version: "2.20.0"
+  version: "2.20.1"
   namespace: keda-system
 - feature: kgateway_crds
   category: networking
@@ -135,7 +135,7 @@
   link: https://www.kubecost.com/
   chart: kubecost
   repository: https://kubecost.github.io/kubecost
-  version: "3.2.0"
+  version: "3.2.1"
   namespace: kubecost
   parameters:
     - name: global.clusterName
@@ -170,7 +170,7 @@
   link: https://github.com/kubernetes-sigs/metrics-server
   chart: metrics-server
   repository: https://kubernetes-sigs.github.io/metrics-server
-  version: "3.13.0"
+  version: "3.13.1"
   namespace: kube-system
 - feature: prometheus_adapter
   category: observability
@@ -194,7 +194,7 @@
   link: https://www.opencost.io/
   chart: opencost
   repository: https://opencost.github.io/opencost-helm-chart
-  version: "2.5.22"
+  version: "2.5.23"
   namespace: opencost
   parameters:
     - name: opencost.exporter.defaultClusterId
@@ -221,7 +221,7 @@
   link: https://github.com/kubernetes/autoscaler/tree/master/vertical-pod-autoscaler
   chart: vpa
   repository: https://charts.fairwinds.com/stable
-  version: "4.11.0"
+  version: "4.12.0"
   namespace: kube-system
 - feature: envoy_gateway
   category: networking
