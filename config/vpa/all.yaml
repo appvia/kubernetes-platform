@@ -34,6 +34,8 @@ recommender:
   extraArgs:
     # v: Verbosity level (2 = info level logging). Increase for debugging
     v: "2"
+    # Humanize the memory recommendation
+    humanize-memory: true
     # Absolute minimum CPU floor (in millicores) for recommendations
     # Prevents recommender from suggesting extremely low CPU for small, bursty workloads
     # Default in upstream: 15m (platform uses 25m for safety margin)
