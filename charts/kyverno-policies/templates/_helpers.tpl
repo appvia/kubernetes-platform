@@ -101,7 +101,11 @@ spec:
         pattern:
           spec:
             containers:
-              - image: "{{ join "|" .Values.policies.restrictImageRegistries.allowedRegistries }}/*"
+              {{- $patterns := list }}
+              {{- range .Values.policies.restrictImageRegistries.allowedRegistries }}
+              {{- $patterns = append $patterns (printf "%s/*" .) }}
+              {{- end }}
+              - image: "{{ join "|" $patterns }}"
 {{- end }}
 
 {{/*
