@@ -19,3 +19,15 @@ results:
     resources:
       - good-legacy
     result: pass
+  - kind: ExternalSecret
+    policy: deny-external-secrets
+    rule: namespace-prefix-keys
+    resources:
+      - good-legacy-datafrom
+    result: pass
+  - kind: ExternalSecret
+    policy: deny-external-secrets
+    rule: namespace-prefix-keys
+    resources:
+      - bad-legacy-datafrom
+    result: fail

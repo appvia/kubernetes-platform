@@ -68,3 +68,62 @@ spec:
     - secretKey: x
       remoteRef:
         key: arbitrary/path
+---
+# Docs example: frontend trying dev/backend/SECRETS/db — well-formed path for wrong namespace
+apiVersion: external-secrets.io/v1
+kind: ExternalSecret
+metadata:
+  name: bad-well-formed-cross-ns
+  namespace: frontend
+spec:
+  secretStoreRef:
+    name: secrets-store
+    kind: ClusterSecretStore
+  data:
+    - secretKey: stolen
+      remoteRef:
+        key: dev/backend/SECRETS/db
+---
+# A different-named ClusterSecretStore (not the platform store) must be ignored
+apiVersion: external-secrets.io/v1
+kind: ExternalSecret
+metadata:
+  name: good-other-cluster-store
+  namespace: frontend
+spec:
+  secretStoreRef:
+    name: custom-cluster-store
+    kind: ClusterSecretStore
+  data:
+    - secretKey: x
+      remoteRef:
+        key: arbitrary/path
+---
+# Well-formed path for a *different* namespace — tests pure namespace isolation
+apiVersion: external-secrets.io/v1
+kind: ExternalSecret
+metadata:
+  name: bad-cross-namespace-secrets-prefix
+  namespace: backend
+spec:
+  secretStoreRef:
+    name: secrets-store
+    kind: ClusterSecretStore
+  data:
+    - secretKey: stolen
+      remoteRef:
+        key: dev/frontend/SECRETS/database
+---
+# dataFrom cross-namespace — same isolation rule must apply to extract.key
+apiVersion: external-secrets.io/v1
+kind: ExternalSecret
+metadata:
+  name: bad-datafrom-cross-namespace
+  namespace: backend
+spec:
+  secretStoreRef:
+    name: secrets-store
+    kind: ClusterSecretStore
+  dataFrom:
+    - extract:
+        key: dev/frontend/SECRETS/bundle

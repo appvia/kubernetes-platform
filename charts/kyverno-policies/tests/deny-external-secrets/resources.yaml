@@ -26,3 +26,29 @@ spec:
     - secretKey: password
       remoteRef:
         key: my-namespace/not-allowed
+---
+apiVersion: external-secrets.io/v1
+kind: ExternalSecret
+metadata:
+  name: good-legacy-datafrom
+  namespace: my-namespace
+spec:
+  secretStoreRef:
+    name: tenant-store
+    kind: SecretStore
+  dataFrom:
+    - extract:
+        key: my-namespace/bundle
+---
+apiVersion: external-secrets.io/v1
+kind: ExternalSecret
+metadata:
+  name: bad-legacy-datafrom
+  namespace: my-namespace
+spec:
+  secretStoreRef:
+    name: tenant-store
+    kind: SecretStore
+  dataFrom:
+    - extract:
+        key: other-namespace/bundle

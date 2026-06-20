@@ -37,3 +37,27 @@ results:
     resources:
       - ignored-non-cluster-store
     result: pass
+  - kind: ExternalSecret
+    policy: deny-external-secrets
+    rule: aws-secrets-manager-paths
+    resources:
+      - bad-well-formed-cross-ns
+    result: fail
+  - kind: ExternalSecret
+    policy: deny-external-secrets
+    rule: aws-secrets-manager-paths
+    resources:
+      - good-other-cluster-store
+    result: pass
+  - kind: ExternalSecret
+    policy: deny-external-secrets
+    rule: aws-secrets-manager-paths
+    resources:
+      - bad-cross-namespace-secrets-prefix
+    result: fail
+  - kind: ExternalSecret
+    policy: deny-external-secrets
+    rule: aws-secrets-manager-paths
+    resources:
+      - bad-datafrom-cross-namespace
+    result: fail
