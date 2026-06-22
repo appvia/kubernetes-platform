@@ -121,7 +121,7 @@
   link: https://cert-manager.github.io/aws-privateca-issuer/
   chart: aws-privateca-issuer
   repository: https://cert-manager.github.io/aws-privateca-issuer
-  version: "v1.8.1"
+  version: "v1.9.0"
   namespace: cert-manager
 - feature: aws_velero
   category: storage
