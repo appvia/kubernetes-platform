@@ -5,7 +5,7 @@
   link: https://argo-cd.readthedocs.io/
   chart: argo-cd
   repository: https://argoproj.github.io/argo-helm
-  version: "9.5.21"
+  version: "9.7.1"
   namespace: argocd
 - feature: argo_events
   category: gitops
@@ -13,7 +13,7 @@
   link: https://argoproj.github.io/argo-events/
   chart: argo-events
   repository: https://argoproj.github.io/argo-helm
-  version: "2.4.21"
+  version: "2.4.22"
   namespace: argocd
 - feature: argo_rollouts
   category: gitops
@@ -29,7 +29,7 @@
   link: https://argoproj.github.io/argo-workflows/
   chart: argo-workflows
   repository: https://argoproj.github.io/argo-helm
-  version: "1.0.15"
+  version: "1.0.18"
   namespace: argo-workflows
 - feature: argocd_notifications
   category: gitops
@@ -46,7 +46,7 @@
   link: https://cert-manager.io/
   chart: cert-manager
   repository: https://charts.jetstack.io
-  version: "v1.20.2"
+  version: "v1.20.3"
   namespace: cert-manager
 - feature: cilium
   category: networking
@@ -54,7 +54,7 @@
   link: https://cilium.io/
   chart: cilium
   repository: https://helm.cilium.io/
-  version: "1.19.4"
+  version: "1.19.5"
   namespace: cilium-system
 - feature: cluster_autoscaler
   category: compute
@@ -62,7 +62,7 @@
   link: https://github.com/kubernetes/autoscaler
   chart: cluster-autoscaler
   repository: https://kubernetes.github.io/autoscaler
-  version: "9.57.0"
+  version: "9.58.0"
   namespace: kube-system
 - feature: external_dns
   category: networking
@@ -78,7 +78,7 @@
   link: https://external-secrets.io/
   chart: external-secrets
   repository: https://charts.external-secrets.io
-  version: "2.6.0"
+  version: "2.7.0"
   namespace: external-secrets
 - feature: keda
   category: workloads
@@ -194,7 +194,7 @@
   link: https://www.opencost.io/
   chart: opencost
   repository: https://opencost.github.io/opencost-helm-chart
-  version: "2.5.23"
+  version: "2.5.25"
   namespace: opencost
   parameters:
     - name: opencost.exporter.defaultClusterId
@@ -221,7 +221,7 @@
   link: https://github.com/kubernetes/autoscaler/tree/master/vertical-pod-autoscaler
   chart: vpa
   repository: https://charts.fairwinds.com/stable
-  version: "4.12.0"
+  version: "4.12.2"
   namespace: kube-system
 - feature: envoy_gateway
   category: networking
