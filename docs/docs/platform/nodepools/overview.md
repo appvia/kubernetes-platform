@@ -10,4 +10,4 @@ In this platform, optional **Karpenter node pool** manifests are delivered as a 
 
 ## Next steps
 
-For feature flags, value file layout (`config/karpenter_nodepools/…`), merge order, and examples (Spot-only, ARM64, and so on), see **[Karpenter node pool configuration](karpenter.md)**.
+For feature flags, value file layout (`config/karpenter_nodepools/…`), merge order, and examples (Spot-only, ARM64, custom EC2 tags, and so on), see **[Karpenter node pool configuration](karpenter.md)**.
