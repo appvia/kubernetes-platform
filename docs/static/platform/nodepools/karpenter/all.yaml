@@ -1,0 +1,43 @@
+---
+# Example tenant configuration for custom EC2 tags on Karpenter-provisioned nodes.
+# Copy into your workload repository under config/karpenter_nodepools/all.yaml
+# (or aws.yaml / <cluster_name>.yaml — see merge order in the Karpenter docs).
+#
+# Do not modify the EKS Auto Mode "default" NodeClass. Define a separate NodeClass
+# here and point your NodePools at it via nodeClassRef.name.
+
+nodeClasses:
+  platform-tagged:
+    spec:
+      # Reuse the node IAM role from the built-in default class:
+      #   kubectl get nodeclass default -o jsonpath='{.spec.role}'
+      role: KarpenterNodeRole
+      subnetSelectorTerms:
+        - tags:
+            karpenter.sh/discovery: "<cluster_name>"
+            kubernetes.io/role/internal-elb: "1"
+      securityGroupSelectorTerms:
+        - tags:
+            aws:eks:cluster-name: "<cluster_name>"
+      tags:
+        Environment: production
+        CostCenter: "123456"
+        ManagedBy: karpenter
+
+nodePools:
+  amd64:
+    spec:
+      template:
+        spec:
+          nodeClassRef:
+            group: eks.amazonaws.com
+            kind: NodeClass
+            name: platform-tagged
+  arm64:
+    spec:
+      template:
+        spec:
+          nodeClassRef:
+            group: eks.amazonaws.com
+            kind: NodeClass
+            name: platform-tagged
