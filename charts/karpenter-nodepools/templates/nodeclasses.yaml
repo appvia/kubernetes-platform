@@ -1,0 +1,21 @@
+{{- $classes := .Values.nodeClasses | default dict }}
+{{- range $name := keys $classes | sortAlpha }}
+{{- $class := index $classes $name }}
+---
+apiVersion: eks.amazonaws.com/v1
+kind: NodeClass
+metadata:
+  name: {{ $name }}
+  {{- if $class.metadata }}
+  {{- with $class.metadata.labels }}
+  labels:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+  {{- with $class.metadata.annotations }}
+  annotations:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+  {{- end }}
+spec:
+  {{- toYaml $class.spec | nindent 2 }}
+{{- end }}

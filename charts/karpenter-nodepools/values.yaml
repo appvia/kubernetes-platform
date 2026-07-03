@@ -2,3 +2,7 @@
 # apps/system/system-helm.yaml). Empty here so CI `helm template` is valid; platform
 # defaults live in config/karpenter_nodepools/*.yaml.
 nodePools: {}
+
+# NodeClasses keyed by metadata.name. Rendered as eks.amazonaws.com/v1 NodeClass resources.
+# Platform defaults live in config/karpenter_nodepools/aws.yaml.
+nodeClasses: {}

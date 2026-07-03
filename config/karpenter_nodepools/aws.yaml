@@ -1,6 +1,26 @@
 ---
 # Merged after config/karpenter_nodepools/all.yaml (and before tenant value files).
-# Override only the pools or fields you need; Helm deep-merges maps under nodePools.<poolName>.
+# Override only the pools or fields you need; Helm deep-merges maps under nodePools.<poolName>
+# and nodeClasses.<className>.
+
+# nodeClasses: EKS NodeClass resources (eks.amazonaws.com/v1) keyed by metadata.name.
+# The "default" class is referenced by both nodePools above via nodeClassRef.name: default.
+# Subnet and security-group selectors use tags written by the EKS cluster provisioner.
+# amiFamily is omitted; EKS Auto Mode selects the AMI automatically.
+nodeClasses:
+#  default:
+#    spec:
+#      # subnetSelectorTerms: selects subnets by tag. Adjust the cluster tag value to match
+#      # your EKS cluster name (typically injected via a tenant cluster-specific override).
+#      subnetSelectorTerms:
+#        - tags:
+#            karpenter.sh/discovery: "default"
+#      # securityGroupSelectorTerms: selects security groups by tag.
+#      securityGroupSelectorTerms:
+#        - tags:
+#            karpenter.sh/discovery: "default"
+#      # role: the IAM role name assumed by nodes launched into this class.
+#      role: "KarpenterNodeRole"
 
 # Top-level map: Kubernetes NodePool metadata.name is the key (here: amd64, arm64).
 nodePools:
