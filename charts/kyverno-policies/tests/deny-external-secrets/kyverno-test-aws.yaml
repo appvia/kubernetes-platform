@@ -11,12 +11,6 @@ results:
     policy: deny-external-secrets
     rule: aws-secrets-manager-paths
     resources:
-      - bad-cross-namespace-path
-    result: fail
-  - kind: ExternalSecret
-    policy: deny-external-secrets
-    rule: aws-secrets-manager-paths
-    resources:
       - good-global
     result: pass
   - kind: ExternalSecret
@@ -41,23 +35,41 @@ results:
     policy: deny-external-secrets
     rule: aws-secrets-manager-paths
     resources:
-      - bad-well-formed-cross-ns
-    result: fail
-  - kind: ExternalSecret
-    policy: deny-external-secrets
-    rule: aws-secrets-manager-paths
-    resources:
       - good-other-cluster-store
     result: pass
   - kind: ExternalSecret
     policy: deny-external-secrets
     rule: aws-secrets-manager-paths
     resources:
-      - bad-cross-namespace-secrets-prefix
+      - bad-missing-root-prefix
+    result: fail
+  - kind: ExternalSecret
+    policy: deny-external-secrets
+    rule: aws-secrets-manager-paths
+    resources:
+      - bad-cross-namespace-path
+    result: fail
+  - kind: ExternalSecret
+    policy: deny-external-secrets
+    rule: aws-secrets-manager-paths
+    resources:
+      - bad-cross-namespace-well-formed
     result: fail
   - kind: ExternalSecret
     policy: deny-external-secrets
     rule: aws-secrets-manager-paths
     resources:
       - bad-datafrom-cross-namespace
+    result: fail
+  - kind: ExternalSecret
+    policy: deny-external-secrets
+    rule: aws-secrets-manager-paths
+    resources:
+      - bad-namespace-prefix-collision
+    result: fail
+  - kind: ExternalSecret
+    policy: deny-external-secrets
+    rule: aws-secrets-manager-paths
+    resources:
+      - bad-cluster-prefix-collision
     result: fail

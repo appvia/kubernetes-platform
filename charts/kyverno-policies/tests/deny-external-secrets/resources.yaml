@@ -52,3 +52,33 @@ spec:
   dataFrom:
     - extract:
         key: other-namespace/bundle
+---
+# The eks/<cluster>/<namespace>/<secret> layout is only valid when
+# useAwsSecretsManagerPaths is on. Under the legacy rule it must be rejected,
+# otherwise a non-AWS cluster would silently accept cross-namespace keys.
+apiVersion: external-secrets.io/v1
+kind: ExternalSecret
+metadata:
+  name: bad-legacy-aws-layout
+  namespace: my-namespace
+spec:
+  secretStoreRef:
+    name: tenant-store
+    kind: SecretStore
+  data:
+    - secretKey: password
+      remoteRef:
+        key: eks/dev/my-namespace/database
+---
+apiVersion: external-secrets.io/v1
+kind: ExternalSecret
+metadata:
+  name: bad-legacy-aws-layout-datafrom
+  namespace: my-namespace
+spec:
+  secretStoreRef:
+    name: tenant-store
+    kind: SecretStore
+  dataFrom:
+    - extract:
+        key: eks/dev/my-namespace/bundle

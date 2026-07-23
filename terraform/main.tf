@@ -63,11 +63,13 @@ module "eks" {
   cert_manager = {
     enable = true
   }
-  ## External Secrets configuration
+  ## External Secrets configuration - the ARNs are scoped to the
+  ## eks/<cluster>/<namespace>/<secret> hierarchy enforced by the
+  ## deny-external-secrets Kyverno policy (charts/kyverno-policies)
   external_secrets = {
     enable               = true
-    ssm_parameter_arns   = ["arn:aws:ssm:${local.region}:${local.account_id}:parameter/eks/*"]
-    secrets_manager_arns = ["arn:aws:secretsmanager:${local.region}:${local.account_id}:secret:*"]
+    ssm_parameter_arns   = ["arn:aws:ssm:${local.region}:${local.account_id}:parameter/eks/${local.cluster_name}/*"]
+    secrets_manager_arns = ["arn:aws:secretsmanager:${local.region}:${local.account_id}:secret:eks/${local.cluster_name}/*"]
   }
   ## External DNS configuration
   external_dns = {
