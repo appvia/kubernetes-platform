@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
-set -e
+# pipefail matters here: the kyverno test run is piped into tee, so without it the
+# pipeline reports tee's exit status and failing policy tests are silently ignored.
+set -e -o pipefail
 
 CHART_DIR="charts/kyverno-policies"
 TEST_VALUES="${1:-scripts/test-kyverno-values.yaml}"
