@@ -8,16 +8,24 @@ Use this hierarchy in **AWS Secrets Manager secret names** (the `remoteRef.key` 
 
 | Scope | Prefix pattern | Who may reference it |
 | ----- | -------------- | -------------------- |
-| Cluster shared | `<clusterName>/global/SECRETS` + suffix | Any namespace |
-| Namespace-owned | `<clusterName>/<namespace>/SECRETS` + suffix | Only that same Kubernetes namespace |
+| Cluster shared | `eks/<clusterName>/global/` + secret name | Any namespace |
+| Namespace-owned | `eks/<clusterName>/<namespace>/` + secret name | Only that same Kubernetes namespace |
 
 Examples for cluster `dev`:
 
-- Allowed from any namespace: `dev/global/SECRETS/platform-ca-bundle`
-- Allowed only from namespace `frontend`: `dev/frontend/SECRETS/api-token`
-- Denied from namespace `frontend`: `dev/backend/test` or `dev/backend/SECRETS/db` (not under `dev/global/SECRETS…` and not under `dev/frontend/SECRETS…`)
+- Allowed from any namespace: `eks/dev/global/platform-ca-bundle`
+- Allowed only from namespace `frontend`: `eks/dev/frontend/api-token`
+- Denied from namespace `frontend`: `eks/dev/backend/db` (another namespace’s subtree) or `dev/frontend/api-token` (missing the `eks` root)
 
-The fixed segments `global` and `SECRETS` default names can be changed in Helm values (`policies.denyExternalSecrets.aws.globalSegment` and `secretsPrefix`).
+Every segment must be whole — the trailing `/` is the boundary, so namespace `front` cannot reach `eks/dev/frontend/…` and cluster `dev` cannot reach `eks/dev-staging/…`.
+
+The segment names are configurable in Helm values under `policies.denyExternalSecrets.aws`:
+
+| Value | Default | Effect |
+| ----- | ------- | ------ |
+| `rootPrefix` | `eks` | Leading segment before the cluster name. Set to `""` to start the path at `<clusterName>`. |
+| `globalSegment` | `global` | Name of the cluster-shared namespace segment. |
+| `secretsPrefix` | `""` | Optional marker segment after the namespace. Set to e.g. `SECRETS` to require `eks/<cluster>/<namespace>/SECRETS/…` and reserve the rest of the namespace subtree for non-secret data. |
 
 ## What enforces this
 
@@ -46,13 +54,24 @@ policies:
     aws:
       clusterName: "" # Usually injected from cluster metadata by the platform
       clusterSecretStoreName: secrets-store
+      rootPrefix: eks
       globalSegment: global
-      secretsPrefix: SECRETS
+      secretsPrefix: ""
 ```
 
 ## IAM (defence in depth)
 
-Kyverno only controls what users **declare** in Kubernetes. Mirror the same boundaries in **IAM** for the role used by External Secrets (IRSA): allow `secretsmanager:GetSecretValue` (and any other required actions) on ARNs whose name matches `cluster/global/SECRETS*` and `cluster/*/SECRETS*` for the appropriate namespaces, or scope with a permission boundary your org prefers. Exact IAM wiring depends on how you attach the controller role; keep policy and IAM aligned.
+Kyverno only controls what users **declare** in Kubernetes. Mirror the same boundaries in **IAM** for the role used by External Secrets. `terraform/main.tf` scopes the platform grants to the same hierarchy:
+
+```hcl
+external_secrets = {
+  enable               = true
+  ssm_parameter_arns   = ["arn:aws:ssm:${local.region}:${local.account_id}:parameter/eks/${local.cluster_name}/*"]
+  secrets_manager_arns = ["arn:aws:secretsmanager:${local.region}:${local.account_id}:secret:eks/${local.cluster_name}/*"]
+}
+```
+
+That bounds the controller to one cluster’s subtree; Kyverno provides the per-namespace split inside it, since the controller role itself cannot distinguish which namespace an `ExternalSecret` came from. Secrets Manager appends a random six-character suffix to every ARN, so the trailing `*` is required. Keep the two in sync — if you change `rootPrefix`, change these ARNs too.
 
 ## Limitations
 

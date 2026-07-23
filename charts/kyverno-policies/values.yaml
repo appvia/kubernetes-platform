@@ -37,15 +37,22 @@ policies:
     # Additional namespaces to exclude (merged with globalExclusions)
     excludeNamespaces: []
     # When true and aws.clusterName is non-empty, require AWS SM names:
-    #   <clusterName>/global/<secretsPrefix>*  OR  <clusterName>/<namespace>/<secretsPrefix>*
+    #   <rootPrefix>/<clusterName>/global/<secretsPrefix>*
+    #   <rootPrefix>/<clusterName>/<namespace>/<secretsPrefix>*
+    # With the defaults below that is eks/<clusterName>/<namespace>/<secret-name>.
     # Intended for the platform AWS ClusterSecretStore (see docs).
     useAwsSecretsManagerPaths: false
     aws:
       # Filled automatically from cluster metadata when using ApplicationSet parameters (see addons/helm/oss.yaml).
       clusterName: ""
       clusterSecretStoreName: secrets-store
+      # Leading segment shared by every cluster, matching the IAM grants in terraform/main.tf
+      # (parameter/eks/*, secret:eks/*). Set to "" to drop it and start the path at clusterName.
+      rootPrefix: eks
       globalSegment: global
-      secretsPrefix: SECRETS
+      # Optional marker segment after the namespace, e.g. "SECRETS" to require
+      # <root>/<cluster>/<namespace>/SECRETS/... Empty means the secret name follows directly.
+      secretsPrefix: ""
 
   # Deny images with 'latest' tag
   denyLatestImage:

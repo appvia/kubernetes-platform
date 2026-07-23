@@ -31,3 +31,17 @@ results:
     resources:
       - bad-legacy-datafrom
     result: fail
+  # eks/<cluster>/<namespace>/<secret> requires useAwsSecretsManagerPaths;
+  # the legacy rule must not accept it. Positive coverage: kyverno-test-aws.yaml.
+  - kind: ExternalSecret
+    policy: deny-external-secrets
+    rule: namespace-prefix-keys
+    resources:
+      - bad-legacy-aws-layout
+    result: fail
+  - kind: ExternalSecret
+    policy: deny-external-secrets
+    rule: namespace-prefix-keys
+    resources:
+      - bad-legacy-aws-layout-datafrom
+    result: fail
