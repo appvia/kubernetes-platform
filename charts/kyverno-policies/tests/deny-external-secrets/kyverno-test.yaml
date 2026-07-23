@@ -45,3 +45,9 @@ results:
     resources:
       - bad-legacy-aws-layout-datafrom
     result: fail
+  - kind: ExternalSecret
+    policy: deny-external-secrets
+    rule: namespace-prefix-keys
+    resources:
+      - good-legacy-no-spec
+    result: pass

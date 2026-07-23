@@ -44,7 +44,7 @@ spec:
         allowExistingViolations: true
         message: "Liveness, readiness, or startup probes are required for all containers."
         foreach:
-          - list: "{{ "{{ request.object.spec.containers[] }}" }}"
+          - list: "request.object.spec.containers[]"
             deny:
               conditions:
                 all:

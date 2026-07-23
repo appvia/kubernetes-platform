@@ -82,3 +82,10 @@ spec:
   dataFrom:
     - extract:
         key: eks/dev/my-namespace/bundle
+---
+# Regression: legacy rule must not error on an ExternalSecret with no spec
+apiVersion: external-secrets.io/v1
+kind: ExternalSecret
+metadata:
+  name: good-legacy-no-spec
+  namespace: my-namespace

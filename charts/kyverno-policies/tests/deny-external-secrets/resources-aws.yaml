@@ -159,3 +159,30 @@ spec:
     - secretKey: stolen
       remoteRef:
         key: eks/dev-staging/frontend/database
+---
+# Regression: an ExternalSecret with no spec at all must not error the CEL
+# expression ("no such key: spec") — there is nothing to validate, so it passes.
+apiVersion: external-secrets.io/v1
+kind: ExternalSecret
+metadata:
+  name: good-no-spec
+  namespace: frontend
+---
+# Regression: spec present but secretStoreRef absent — not our store, nothing to check
+apiVersion: external-secrets.io/v1
+kind: ExternalSecret
+metadata:
+  name: good-no-secret-store-ref
+  namespace: frontend
+spec:
+  refreshInterval: 1h
+---
+# Regression: secretStoreRef present but kind/name omitted
+apiVersion: external-secrets.io/v1
+kind: ExternalSecret
+metadata:
+  name: good-partial-secret-store-ref
+  namespace: frontend
+spec:
+  secretStoreRef:
+    name: secrets-store
