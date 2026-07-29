@@ -72,7 +72,7 @@ spec:
     {{- $tenant_revision := ternary .tenant_revision .values.override_tenant (eq "ignore" .values.override_tenant) }}
     spec:
       sources:
-        ## Source in the registration application and patch with the relavant
+        ## Source in the registration application and patch with the relevant
         ## information.
         - repoURL: "{{ .platform_repository }}"
           targetRevision: {{ $platform_revision }}

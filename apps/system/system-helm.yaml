@@ -14,7 +14,7 @@ metadata:
 spec:
   goTemplate: true
 
-  ## Add a strategy permiting us to control the ordering of resources
+  ## Add a strategy permitting us to control the ordering of resources
   ## by using labelling.
   strategy:
     type: RollingSync
