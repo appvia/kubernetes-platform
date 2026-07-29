@@ -240,7 +240,7 @@
   namespace: tailscale
   version: "1.98.4"
 - feature: github_arc
-  category: cicd
+  category: gitops
   description: Used to install Github ARC private runners
   link: https://github.com/actions/actions-runner-controller
   chart: actions-runner-controller
