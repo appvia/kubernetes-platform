@@ -88,7 +88,7 @@ data "aws_iam_policy_document" "spot_feed_bucket_policy" {
 module "spot_feed_bucket" {
   count   = var.opencost.enable_spot_feed ? 1 : 0
   source  = "terraform-aws-modules/s3-bucket/aws"
-  version = "5.14.1"
+  version = "5.15.3"
 
   bucket                                = local.spot_feed_bucket_name
   attach_deny_insecure_transport_policy = true
@@ -146,7 +146,7 @@ resource "aws_spot_datafeed_subscription" "default" {
 module "spot_feed_pod_identity" {
   count   = var.opencost.enable_spot_feed ? 1 : 0
   source  = "terraform-aws-modules/eks-pod-identity/aws"
-  version = "2.8.1"
+  version = "2.8.2"
 
   name = "${local.cluster_name}-spot-feed"
   ## The description for the role assumed by the Spot Feed
