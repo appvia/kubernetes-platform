@@ -5,7 +5,7 @@
   link: https://argo-cd.readthedocs.io/
   chart: argo-cd
   repository: https://argoproj.github.io/argo-helm
-  version: "9.7.1"
+  version: "10.9.0"
   namespace: argocd
 - feature: argo_events
   category: gitops
@@ -13,7 +13,7 @@
   link: https://argoproj.github.io/argo-events/
   chart: argo-events
   repository: https://argoproj.github.io/argo-helm
-  version: "2.4.26"
+  version: "2.4.27"
   namespace: argocd
 - feature: argo_rollouts
   category: gitops
@@ -21,7 +21,7 @@
   link: https://argoproj.github.io/argo-rollouts/
   chart: argo-rollouts
   repository: https://argoproj.github.io/argo-helm
-  version: "2.43.0"
+  version: "2.43.1"
   namespace: argocd-rollouts
 - feature: argo_workflows
   category: gitops
@@ -29,7 +29,7 @@
   link: https://argoproj.github.io/argo-workflows/
   chart: argo-workflows
   repository: https://argoproj.github.io/argo-helm
-  version: "1.1.1"
+  version: "2.0.6"
   namespace: argo-workflows
 - feature: argocd_notifications
   category: gitops
