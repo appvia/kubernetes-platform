@@ -46,7 +46,7 @@
   link: https://cert-manager.io/
   chart: cert-manager
   repository: https://charts.jetstack.io
-  version: "v1.21.1"
+  version: "v1.21.2"
   namespace: cert-manager
 - feature: cilium
   category: networking
@@ -70,7 +70,7 @@
   link: https://github.com/kubernetes-sigs/external-dns
   chart: external-dns
   repository: https://kubernetes-sigs.github.io/external-dns
-  version: "1.21.1"
+  version: "1.22.0"
   namespace: kube-system
 - feature: external_secrets
   category: security
@@ -119,7 +119,7 @@
   link: https://github.com/prometheus-community/helm-charts
   chart: kube-prometheus-stack
   repository: https://prometheus-community.github.io/helm-charts
-  version: "79.12.0"
+  version: "91.2.0"
   namespace: prometheus
 - feature: grafana
   category: observability
@@ -146,7 +146,7 @@
   link: https://kyverno.io/
   chart: kyverno
   repository: https://kyverno.github.io/kyverno
-  version: "3.9.0"
+  version: "3.9.1"
   namespace: kyverno-system
 - feature: kyverno_policies
   category: security
@@ -178,7 +178,7 @@
   link: https://github.com/kubernetes-sigs/prometheus-adapter
   chart: prometheus-adapter
   repository: https://prometheus-community.github.io/helm-charts
-  version: "4.14.2"
+  version: "5.3.0"
   namespace: prometheus
 - feature: secrets_store_csi_driver
   category: security
@@ -186,7 +186,7 @@
   link: https://secrets-store-csi-driver.sigs.k8s.io/
   chart: secrets-store-csi-driver
   repository: https://kubernetes-sigs.github.io/secrets-store-csi-driver/charts
-  version: "1.6.0"
+  version: "1.6.1"
   namespace: kube-system
 - feature: opencost
   category: cost
@@ -194,7 +194,7 @@
   link: https://www.opencost.io/
   chart: opencost
   repository: https://opencost.github.io/opencost-helm-chart
-  version: "2.5.30"
+  version: "2.5.31"
   namespace: opencost
   parameters:
     - name: opencost.exporter.defaultClusterId
@@ -205,7 +205,7 @@
   link: https://terranetes.appvia.io/
   chart: terranetes-controller
   repository: https://terranetes-controller.appvia.io
-  version: "v0.5.4"
+  version: "v0.8.6"
   namespace: terranetes-system
 - feature: volcano
   category: workloads
@@ -221,7 +221,7 @@
   link: https://github.com/kubernetes/autoscaler/tree/master/vertical-pod-autoscaler
   chart: vpa
   repository: https://charts.fairwinds.com/stable
-  version: "4.12.5"
+  version: "5.0.1"
   namespace: kube-system
 - feature: envoy_gateway
   category: networking
