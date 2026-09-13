@@ -118,7 +118,14 @@ spec:
   ## If a kustomize.repository is defines we use the environment as the targetRevision. Its
   ## the responsibility of the repository to control the floating revisions.
   templatePatch: |
-    {{- $create_namespace := default true .namespace.create }}
+    {{- /* Default to creating the namespace unless .namespace.create is explicitly set. Guarded so the
+         lookup is safe under missingkey=error when the block or the key is absent. */}}
+    {{- $create_namespace := true }}
+    {{- if hasKey . "namespace" }}
+    {{- if hasKey .namespace "create" }}
+    {{- $create_namespace = .namespace.create }}
+    {{- end }}
+    {{- end }}
     {{- $namespace := .namespace.name }}
     {{- $context := toJson . | fromJson }}
     spec:

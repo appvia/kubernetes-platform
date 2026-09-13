@@ -301,6 +301,14 @@ spec:
 {{- break }}
 {{- end }}
 {{- end }}
+{{- /* Default to creating the namespace unless .namespace.create is explicitly set. Guarded so the
+     lookup is safe under missingkey=error when the block or the key is absent. */}}
+{{- $create_namespace := true }}
+{{- if hasKey . "namespace" }}
+{{- if hasKey .namespace "create" }}
+{{- $create_namespace = .namespace.create }}
+{{- end }}
+{{- end }}
 {{- $namespace := index .path.segments (add1 $index) }}
 {{- $context := toJson . | fromJson }}
 spec:
@@ -341,6 +349,9 @@ spec:
     server: "{{ .server }}"
 
   sources:
+    # We don't create the namespace if the user has explicitly set the
+    # .namespace.create = false - else defaults to true
+    {{- if $create_namespace }}
     - repoURL: "{{ .metadata.annotations.platform_repository }}"
       targetRevision: "{{ .metadata.annotations.platform_revision }}"
       path: "apps/tenant/namespace"
@@ -361,6 +372,7 @@ spec:
               - op: replace
                 path: /metadata/name
                 value: "{{ $namespace }}"
+    {{- end }}
 
     ## We either use the tenant repository of the kustomize.repository
     - repoURL: "{{ default .metadata.annotations.tenant_repository .kustomize.repository }}"
@@ -515,7 +527,14 @@ spec:
       targetRevision: "{{ .metadata.annotations.tenant_revision }}"
       ref: values`
 
-	patchTenantSystemKustomize = `{{- $create_namespace := default true .namespace.create }}
+	patchTenantSystemKustomize = `{{- /* Default to creating the namespace unless .namespace.create is explicitly set. Guarded so the
+     lookup is safe under missingkey=error when the block or the key is absent. */}}
+{{- $create_namespace := true }}
+{{- if hasKey . "namespace" }}
+{{- if hasKey .namespace "create" }}
+{{- $create_namespace = .namespace.create }}
+{{- end }}
+{{- end }}
 {{- $namespace := .namespace.name }}
 {{- $context := toJson . | fromJson }}
 spec:

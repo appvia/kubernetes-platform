@@ -362,6 +362,173 @@ const (
   }
 }
 `
+
+	// No namespace block at all: namespace creation must default to true.
+	paramsTenantAppsKustomizeNoCreate = `
+{
+  "server": "https://kubernetes.default.svc",
+  "sync": {
+    "phase": "secondary"
+  },
+  "metadata": {
+    "labels": {
+      "cluster_name": "dev",
+      "environment": "release"
+    },
+    "annotations": {
+      "platform_repository": "https://github.com/appvia/kubernetes-platform.git",
+      "platform_revision": "main",
+      "tenant_repository": "https://github.com/appvia/kubernetes-platform.git",
+      "tenant_revision": "main",
+      "tenant_path": "release/standalone",
+      "tenant": "tenant"
+    }
+  },
+  "path": {
+    "basenameNormalized": "dev",
+    "path": "release/standalone/workloads/applications/kustomize-app",
+    "segments": [
+      "release",
+      "standalone",
+      "workloads",
+      "applications",
+      "kustomize-app"
+    ]
+  },
+  "kustomize": {
+    "path": "base"
+  },
+  "namespace": {
+    "name": "kustomize-app"
+  }
+}
+`
+
+	paramsTenantAppsKustomizeCreateFalse = `
+{
+  "server": "https://kubernetes.default.svc",
+  "sync": {
+    "phase": "secondary"
+  },
+  "metadata": {
+    "labels": {
+      "cluster_name": "dev",
+      "environment": "release"
+    },
+    "annotations": {
+      "platform_repository": "https://github.com/appvia/kubernetes-platform.git",
+      "platform_revision": "main",
+      "tenant_repository": "https://github.com/appvia/kubernetes-platform.git",
+      "tenant_revision": "main",
+      "tenant_path": "release/standalone",
+      "tenant": "tenant"
+    }
+  },
+  "path": {
+    "basenameNormalized": "dev",
+    "path": "release/standalone/workloads/applications/kustomize-app",
+    "segments": [
+      "release",
+      "standalone",
+      "workloads",
+      "applications",
+      "kustomize-app"
+    ]
+  },
+  "kustomize": {
+    "path": "base"
+  },
+  "namespace": {
+    "name": "kustomize-app",
+    "create": false
+  }
+}
+`
+
+	paramsTenantSystemKustomizeNoCreate = `
+{
+  "server": "https://kubernetes.default.svc",
+  "sync": {
+    "phase": "secondary"
+  },
+  "metadata": {
+    "labels": {
+      "cluster_name": "dev",
+      "environment": "release"
+    },
+    "annotations": {
+      "platform_repository": "https://github.com/appvia/kubernetes-platform.git",
+      "platform_revision": "main",
+      "tenant_repository": "https://github.com/appvia/kubernetes-platform.git",
+      "tenant_revision": "main",
+      "tenant_path": "release/standalone",
+      "tenant": "tenant"
+    }
+  },
+  "path": {
+    "basenameNormalized": "dev",
+    "path": "release/standalone/workloads/system/ingress-system",
+    "segments": [
+      "release",
+      "standalone",
+      "workloads",
+      "system",
+      "ingress-system"
+    ]
+  },
+  "kustomize": {
+    "feature": "ingress",
+    "path": "base",
+    "revision": "main"
+  },
+  "namespace": {
+    "name": "ingress-system"
+  }
+}
+`
+
+	paramsTenantSystemKustomizeCreateFalse = `
+{
+  "server": "https://kubernetes.default.svc",
+  "sync": {
+    "phase": "secondary"
+  },
+  "metadata": {
+    "labels": {
+      "cluster_name": "dev",
+      "environment": "release"
+    },
+    "annotations": {
+      "platform_repository": "https://github.com/appvia/kubernetes-platform.git",
+      "platform_revision": "main",
+      "tenant_repository": "https://github.com/appvia/kubernetes-platform.git",
+      "tenant_revision": "main",
+      "tenant_path": "release/standalone",
+      "tenant": "tenant"
+    }
+  },
+  "path": {
+    "basenameNormalized": "dev",
+    "path": "release/standalone/workloads/system/ingress-system",
+    "segments": [
+      "release",
+      "standalone",
+      "workloads",
+      "system",
+      "ingress-system"
+    ]
+  },
+  "kustomize": {
+    "feature": "ingress",
+    "path": "base",
+    "revision": "main"
+  },
+  "namespace": {
+    "name": "ingress-system",
+    "create": false
+  }
+}
+`
 )
 
 func assertRenderedPatchIsValidYAML(patch, paramsJSON string) {
@@ -377,6 +544,30 @@ func assertRenderedPatchIsValidYAML(patch, paramsJSON string) {
 	var doc map[string]any
 	Expect(yamlv3.Unmarshal([]byte(trimmed), &doc)).To(Succeed(), "rendered output must be valid YAML")
 	Expect(doc).NotTo(BeEmpty(), "rendered YAML should decode to a non-empty document")
+}
+
+// renderedSourcePaths returns the .spec.sources[*].path values from a rendered templatePatch.
+func renderedSourcePaths(patch, paramsJSON string) []string {
+	params, err := paramsFromEmbeddedJSON(paramsJSON)
+	Expect(err).NotTo(HaveOccurred())
+
+	out, err := RenderTemplatePatch(patch, params)
+	Expect(err).NotTo(HaveOccurred(), "templatePatch render failed")
+
+	var doc struct {
+		Spec struct {
+			Sources []struct {
+				Path string `yaml:"path"`
+			} `yaml:"sources"`
+		} `yaml:"spec"`
+	}
+	Expect(yamlv3.Unmarshal([]byte(out), &doc)).To(Succeed(), "rendered output must be valid YAML")
+
+	paths := make([]string, 0, len(doc.Spec.Sources))
+	for _, s := range doc.Spec.Sources {
+		paths = append(paths, s.Path)
+	}
+	return paths
 }
 
 var _ = Describe("ApplicationSet templatePatch", func() {
@@ -419,6 +610,25 @@ var _ = Describe("ApplicationSet templatePatch", func() {
 			})
 		})
 
+		When("apps-kustomize ApplicationSet without namespace.create", func() {
+			It("defaults to creating the namespace when the namespace block is absent", func() {
+				Expect(renderedSourcePaths(patchTenantAppsKustomize, paramsTenantAppsKustomize)).
+					To(ContainElement("apps/tenant/namespace"))
+			})
+
+			It("defaults to creating the namespace when only namespace.name is set", func() {
+				Expect(renderedSourcePaths(patchTenantAppsKustomize, paramsTenantAppsKustomizeNoCreate)).
+					To(ContainElement("apps/tenant/namespace"))
+			})
+		})
+
+		When("apps-kustomize ApplicationSet with namespace.create=false", func() {
+			It("omits the namespace source", func() {
+				Expect(renderedSourcePaths(patchTenantAppsKustomize, paramsTenantAppsKustomizeCreateFalse)).
+					NotTo(ContainElement("apps/tenant/namespace"))
+			})
+		})
+
 		When("system-helm ApplicationSet", func() {
 			It("renders without error and produces valid YAML", func() {
 				assertRenderedPatchIsValidYAML(patchTenantSystemHelm, paramsTenantSystemHelm)
@@ -428,6 +638,20 @@ var _ = Describe("ApplicationSet templatePatch", func() {
 		When("system-kustomize ApplicationSet", func() {
 			It("renders without error and produces valid YAML", func() {
 				assertRenderedPatchIsValidYAML(patchTenantSystemKustomize, paramsTenantSystemKustomize)
+			})
+		})
+
+		When("system-kustomize ApplicationSet without namespace.create", func() {
+			It("defaults to creating the namespace when only namespace.name is set", func() {
+				Expect(renderedSourcePaths(patchTenantSystemKustomize, paramsTenantSystemKustomizeNoCreate)).
+					To(ContainElement("apps/tenant/namespace"))
+			})
+		})
+
+		When("system-kustomize ApplicationSet with namespace.create=false", func() {
+			It("omits the namespace source", func() {
+				Expect(renderedSourcePaths(patchTenantSystemKustomize, paramsTenantSystemKustomizeCreateFalse)).
+					NotTo(ContainElement("apps/tenant/namespace"))
 			})
 		})
 	})
