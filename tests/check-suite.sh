@@ -36,10 +36,14 @@ run_bats() {
   local start_time
   local end_time
   local duration
+  local bats_options=()
+
+  # Split BATS_OPTIONS into words; an empty value must not become an empty argument
+  read -r -a bats_options <<< "${BATS_OPTIONS}"
 
   echo -e "Running units: ${*}\n"
   start_time=$(date +%s.%N)
-  CLOUD=${CLOUD} GIT_COMMIT=${GIT_COMMIT} bats "${BATS_OPTIONS}" "${@}" || exit 1
+  CLOUD=${CLOUD} GIT_COMMIT=${GIT_COMMIT} bats "${bats_options[@]}" "${@}" || exit 1
   end_time=$(date +%s.%N)
   duration=$(echo "${end_time} - ${start_time}" | bc)
   echo -e "Time taken: ${duration} secs\n"
