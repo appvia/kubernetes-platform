@@ -4,6 +4,14 @@ name: Update Addons
 # yamllint disable-line rule:truthy
 on:
   workflow_dispatch:
+    inputs:
+      mode:
+        description: "safe keeps the current major (patch-only for 0.x); latest allows major bumps"
+        type: choice
+        options:
+          - safe
+          - latest
+        default: safe
   schedule:
     # Weekly on Mondays at 06:00 UTC
     - cron: "0 6 * * 1"
@@ -33,13 +41,17 @@ jobs:
       - name: Install Helm
         uses: azure/setup-helm@v5
 
-      - name: Update AWS Versions (safe mode)
+      - name: Update AWS Versions (${{ inputs.mode || 'safe' }} mode)
+        env:
+          MODE: ${{ inputs.mode || 'safe' }}
         run: |
-          bash scripts/update-helm-addon-versions.sh --file addons/helm/cloud/aws.yaml
+          bash scripts/update-helm-addon-versions.sh --file addons/helm/cloud/aws.yaml --mode "${MODE}"
 
-      - name: Update OSS Versions (safe mode)
+      - name: Update OSS Versions (${{ inputs.mode || 'safe' }} mode)
+        env:
+          MODE: ${{ inputs.mode || 'safe' }}
         run: |
-          bash scripts/update-helm-addon-versions.sh --file addons/helm/oss.yaml
+          bash scripts/update-helm-addon-versions.sh --file addons/helm/oss.yaml --mode "${MODE}"
 
       - name: Install Dependencies and Validate
         run: pip install check-jsonschema
@@ -57,7 +69,7 @@ jobs:
           commit-message: "chore: update addon chart versions"
           body: |
             ## Summary
-            - Automated weekly refresh of Helm addon chart versions.
+            - Automated refresh of Helm addon chart versions (mode: `${{ inputs.mode || 'safe' }}`).
 
             ## Notes
             - OCI/ECR-hosted charts are currently skipped by the updater.
