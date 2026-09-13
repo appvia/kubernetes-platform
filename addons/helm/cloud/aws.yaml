@@ -83,21 +83,21 @@
   description: Argo Workflows chart configured with AWS-oriented ingress patterns.
   chart: argo-workflows
   repository: https://argoproj.github.io/argo-helm
-  version: "0.41.14"
+  version: "2.0.6"
   namespace: argocd
 - feature: aws_argocd
   category: gitops
   description: Argo CD release tuned for AWS reference architectures.
   chart: argo-cd
   repository: https://argoproj.github.io/argo-helm
-  version: "7.9.1"
+  version: "10.9.0"
   namespace: argocd
 - feature: aws_argocd_ingress
   category: gitops
   description: Argo CD with ingress settings for AWS load balancers and DNS.
   chart: argo-cd
   repository: https://argoproj.github.io/argo-helm
-  version: "7.9.1"
+  version: "10.9.0"
   namespace: argocd
 - feature: aws_crossplane_provider
   category: aws
