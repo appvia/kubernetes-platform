@@ -127,7 +127,7 @@ latest_version_for() {
   if [[ ${mode} == "safe" ]]; then
     echo "${candidates}" |
       awk '{raw=$1; norm=raw; sub(/^v/,"",norm); print norm "\t" raw}' |
-      awk -v pfx="${prefix}" '$1 ~ ("^" pfx) {print}' |
+      awk -v pfx="${prefix}" 'index($1, pfx) == 1 {print}' |
       sort -V -k1,1 |
       tail -n 1 |
       cut -f2
