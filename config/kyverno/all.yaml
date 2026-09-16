@@ -8,3 +8,18 @@ admissionController:
     minReplicas: 2
     # -- Maximum number of pods
     maxReplicas: 10
+
+config:
+  # Namespaces excluded from the Kyverno admission webhooks. The resource webhooks
+  # are Fail-closed, so if kyverno-svc is ever unavailable nothing in a covered
+  # namespace can be scheduled. argocd is excluded so Argo CD can always recover
+  # and re-sync Kyverno itself. kyverno-system is added by excludeKyvernoNamespace.
+  # NOTE: this list replaces the chart default, so kube-system must be retained.
+  webhooks:
+    namespaceSelector:
+      matchExpressions:
+        - key: kubernetes.io/metadata.name
+          operator: NotIn
+          values:
+            - argocd
+            - kube-system
