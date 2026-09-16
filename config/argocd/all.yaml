@@ -17,6 +17,19 @@ redis-ha:
 controller:
   ## Set the number of replicas for the argocd application controller
   replicas: 2
+  ## Scraped by annotation-based collectors (for example vmagent) on the
+  ## metrics port, which the chart's network policy admits from any namespace
+  podAnnotations:
+    prometheus.io/scrape: "true"
+    prometheus.io/port: "8082"
+
+## Configuration for the argocd dex server
+dex:
+  ## Scraped by annotation-based collectors (for example vmagent) on the
+  ## metrics port, which the chart's network policy admits from any namespace
+  podAnnotations:
+    prometheus.io/scrape: "true"
+    prometheus.io/port: "5558"
 
 ## Configuration for the argocd server
 server:
@@ -24,17 +37,32 @@ server:
   autoscaling:
     enabled: true
     minReplicas: 2
+  ## Scraped by annotation-based collectors (for example vmagent) on the
+  ## metrics port, which the chart's network policy admits from any namespace
+  podAnnotations:
+    prometheus.io/scrape: "true"
+    prometheus.io/port: "8083"
 
 ## Configuration for the repo server
 repoServer:
   autoscaling:
     enabled: true
     minReplicas: 2
+  ## Scraped by annotation-based collectors (for example vmagent) on the
+  ## metrics port, which the chart's network policy admits from any namespace
+  podAnnotations:
+    prometheus.io/scrape: "true"
+    prometheus.io/port: "8084"
 
 ## Configuration for the application set controller
 applicationSet:
   ## Set the number of replicas for the application set controller
   replicas: 2
+  ## Scraped by annotation-based collectors (for example vmagent) on the
+  ## metrics port, which the chart's network policy admits from any namespace
+  podAnnotations:
+    prometheus.io/scrape: "true"
+    prometheus.io/port: "8080"
 
 ## Configuration options for argocd
 configs:
@@ -54,6 +82,11 @@ configs:
 notifications:
   # Enable the argocd notifications controller
   enabled: true
+  ## Scraped by annotation-based collectors (for example vmagent) on the
+  ## metrics port, which the chart's network policy admits from any namespace
+  podAnnotations:
+    prometheus.io/scrape: "true"
+    prometheus.io/port: "9001"
   # COnfiguration for the config map that holds the notification
   # templates and triggers
   cm:
