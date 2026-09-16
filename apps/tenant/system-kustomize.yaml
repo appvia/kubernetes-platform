@@ -93,7 +93,7 @@ spec:
           selfHeal: true
           prune: true
         retry:
-          limit: 10
+          limit: 50
           backoff:
             duration: '{{ default "20s" .sync.duration }}'
             factor: 2

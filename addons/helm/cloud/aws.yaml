@@ -14,6 +14,10 @@
       value: .metadata.annotations.region
     - name: vpcTags.Name
       value: .metadata.labels.cluster_name
+  # The controller registers a Fail-closed webhook on Service creation; it must
+  # be healthy before any addon that creates Services (kyverno, cert-manager, ...)
+  sync:
+    phase: primary
 - feature: aws_ebs_csi_resources
   category: storage
   description: Default StorageClass and related helpers for AWS EBS CSI volumes.

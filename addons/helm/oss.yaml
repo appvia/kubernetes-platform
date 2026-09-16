@@ -48,6 +48,8 @@
   repository: https://charts.jetstack.io
   version: "v1.21.1"
   namespace: cert-manager
+  sync:
+    phase: secondary
 - feature: cilium
   category: networking
   description: eBPF-based CNI, service mesh, and network security for Kubernetes.
@@ -80,6 +82,8 @@
   repository: https://charts.external-secrets.io
   version: "2.10.0"
   namespace: external-secrets
+  sync:
+    phase: secondary
 - feature: keda
   category: workloads
   description: Event-driven autoscaling for workloads and HTTP traffic.
@@ -148,6 +152,8 @@
   repository: https://kyverno.github.io/kyverno
   version: "3.9.0"
   namespace: kyverno-system
+  sync:
+    phase: secondary
 - feature: kyverno_policies
   category: security
   description: Opinionated Kyverno policies for the platform (chart in this repository).
@@ -161,9 +167,11 @@
     - name: policies.denyExternalSecrets.aws.clusterName
       value: .metadata.labels.cluster_name
       default: ""
+  # Policies must follow the kyverno engine (secondary); any phase other than
+  # primary/secondary lands in the final RollingSync step
   sync:
     wave: 40
-    phase: secondary
+    phase: tertiary
 - feature: metrics_server
   category: observability
   description: Cluster-wide aggregator of resource usage metrics for HPA and kubectl top.

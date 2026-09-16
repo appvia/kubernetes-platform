@@ -15,3 +15,18 @@ controllerConfig:
     # load balancing (part of experimental features in AWS Load
     # Balancer Controller)
     NLBGatewayAPI: false
+
+# The Service mutator webhook is Fail-closed and matches every Service in the
+# cluster by default. Exclude the platform namespaces so their Services (e.g.
+# kyverno-svc, cert-manager-webhook) can be created before the controller is
+# ready; none of these expose Services of type LoadBalancer.
+serviceMutatorWebhookConfig:
+  namespaceSelectors:
+    - key: kubernetes.io/metadata.name
+      operator: NotIn
+      values:
+        - argocd
+        - cert-manager
+        - external-secrets
+        - kube-system
+        - kyverno-system
