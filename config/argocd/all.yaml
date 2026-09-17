@@ -43,6 +43,15 @@ server:
     prometheus.io/scrape: "true"
     prometheus.io/port: "8083"
 
+## Configuration for the argocd metrics server
+metrics:
+  ## Enable the argocd metrics server, as it is not needed for this deployment
+  enable: true
+  ## Service annotations for the argocd metrics service
+  service:
+    prometheus.io/scrape: "true"
+    prometheus.io/port: "8083"
+
 ## Configuration for the repo server
 repoServer:
   autoscaling:
