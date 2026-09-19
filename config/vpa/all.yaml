@@ -30,6 +30,12 @@ recommender:
   # Number of old ReplicaSets to retain for rollback capability
   revisionHistoryLimit: 10
 
+  # Scraped by annotation-based collectors (for example vmagent) on the metrics port
+  podAnnotations:
+    prometheus.io/scrape: "true"
+    prometheus.io/port: "8942"
+    prometheus.io/path: "/metrics"
+
   # Command-line arguments passed to the recommender binary
   extraArgs:
     # v: Verbosity level (2 = info level logging). Increase for debugging
@@ -114,6 +120,12 @@ updater:
   replicaCount: 2
   revisionHistoryLimit: 10
 
+  # Scraped by annotation-based collectors (for example vmagent) on the metrics port
+  podAnnotations:
+    prometheus.io/scrape: "true"
+    prometheus.io/port: "8943"
+    prometheus.io/path: "/metrics"
+
   # Pod Disruption Budget: maintains at least 1 updater pod during cluster maintenance
   # If all updaters are evicted, no pods can be updated even if recommendations are ready
   podDisruptionBudget:
@@ -161,6 +173,12 @@ admissionController:
   # 2 replicas ensures webhook availability (Kubernetes requires responsive admission webhooks)
   # If webhook becomes unavailable, pod creation/updates can be blocked cluster-wide
   replicas: 2
+
+  # Scraped by annotation-based collectors (for example vmagent) on the metrics port
+  podAnnotations:
+    prometheus.io/scrape: "true"
+    prometheus.io/port: "8944"
+    prometheus.io/path: "/metrics"
 
   # Pod Disruption Budget: guarantees at least 1 admission controller pod is always available
   # This is critical because a failed webhook can stall the entire control plane
@@ -211,10 +229,6 @@ persistence:
   # storageClassName: standard
   # accessMode: ReadWriteOnce
   # size: 2Gi
-
-# Pod annotations applied to all VPA component pods
-# Useful for monitoring integrations (e.g., Prometheus scrape configs, Datadog tags)
-podAnnotations: {}
 
 # Pod affinity/anti-affinity for spreading VPA components across nodes
 # By default, not set (allows Kubernetes scheduler to place pods naturally)
