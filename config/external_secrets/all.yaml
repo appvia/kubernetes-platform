@@ -1,0 +1,21 @@
+---
+## Scraped by annotation-based collectors (for example vmagent) on the
+## metrics port (--metrics-addr=:8080) exposed by each component
+podAnnotations:
+  prometheus.io/scrape: "true"
+  prometheus.io/port: "8080"
+  prometheus.io/path: "/metrics"
+
+## Configuration for the external-secrets webhook
+webhook:
+  podAnnotations:
+    prometheus.io/scrape: "true"
+    prometheus.io/port: "8080"
+    prometheus.io/path: "/metrics"
+
+## Configuration for the external-secrets cert controller
+certController:
+  podAnnotations:
+    prometheus.io/scrape: "true"
+    prometheus.io/port: "8080"
+    prometheus.io/path: "/metrics"

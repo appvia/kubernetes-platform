@@ -1,0 +1,7 @@
+---
+## Scraped by annotation-based collectors (for example vmagent) on the
+## http port, which serves /metrics alongside the health endpoints
+podAnnotations:
+  prometheus.io/scrape: "true"
+  prometheus.io/port: "7979"
+  prometheus.io/path: "/metrics"

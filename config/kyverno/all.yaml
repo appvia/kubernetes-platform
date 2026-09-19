@@ -8,6 +8,12 @@ admissionController:
     minReplicas: 2
     # -- Maximum number of pods
     maxReplicas: 10
+  ## Scraped by annotation-based collectors (for example vmagent) on the
+  ## metrics port (--metricsPort=8000)
+  podAnnotations:
+    prometheus.io/scrape: "true"
+    prometheus.io/port: "8000"
+    prometheus.io/path: "/metrics"
 
 config:
   # Namespaces excluded from the Kyverno admission webhooks. The resource webhooks
@@ -23,3 +29,30 @@ config:
           values:
             - argocd
             - kube-system
+
+# Background controller configuration
+backgroundController:
+  ## Scraped by annotation-based collectors (for example vmagent) on the
+  ## metrics port (--metricsPort=8000)
+  podAnnotations:
+    prometheus.io/scrape: "true"
+    prometheus.io/port: "8000"
+    prometheus.io/path: "/metrics"
+
+# Cleanup controller configuration
+cleanupController:
+  ## Scraped by annotation-based collectors (for example vmagent) on the
+  ## metrics port (--metricsPort=8000)
+  podAnnotations:
+    prometheus.io/scrape: "true"
+    prometheus.io/port: "8000"
+    prometheus.io/path: "/metrics"
+
+# Reports controller configuration
+reportsController:
+  ## Scraped by annotation-based collectors (for example vmagent) on the
+  ## metrics port (--metricsPort=8000)
+  podAnnotations:
+    prometheus.io/scrape: "true"
+    prometheus.io/port: "8000"
+    prometheus.io/path: "/metrics"

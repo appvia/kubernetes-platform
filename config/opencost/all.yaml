@@ -85,6 +85,13 @@ opencost:
       # The empty dir for the extra volume for cost data
       emptyDir: {}
 
+## Scraped by annotation-based collectors (for example vmagent) on the
+## exporter http port; these also carry the cost metrics OpenCost queries back
+podAnnotations:
+  prometheus.io/scrape: "true"
+  prometheus.io/port: "9003"
+  prometheus.io/path: "/metrics"
+
 # PodDisruptionBudget for high availability
 pdb:
   enabled: true
