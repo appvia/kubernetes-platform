@@ -1,13 +1,4 @@
 ---
-## Common resource requests and limits for all ACK controllers
-resources:
-  requests:
-    memory: "64Mi"
-    cpu: "50m"
-  limits:
-    memory: "128Mi"
-    cpu: "100m"
-
 ## Scraped by annotation-based collectors (for example vmagent) on the
 ## controller metrics port; the chart applies these to the pod template
 deployment:

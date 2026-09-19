@@ -16,3 +16,11 @@ installScope: namespace
 # This value is only used when the `installScope` is set to "namespace". If left empty, the default value is the release namespace for the chart.
 # You can set multiple namespaces by providing a comma separated list of namespaces. e.g "namespace1,namespace2"
 watchNamespace: ack-system
+
+## Scraped by annotation-based collectors (for example vmagent) on the
+## controller metrics port; the chart applies these to the pod template
+deployment:
+  annotations:
+    prometheus.io/scrape: "true"
+    prometheus.io/port: "8080"
+    prometheus.io/path: "/metrics"
