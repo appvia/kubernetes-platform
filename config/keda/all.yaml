@@ -78,3 +78,32 @@ networkPolicy:
   enabled: true
   # Flavor of the network policies (cilium, kubernetes)
   flavor: "kubernetes"
+
+# ---------------------------------------------------------------------------
+# Prometheus metrics for each KEDA component. Enabling a component here also
+# adds its metrics port to that component's chart NetworkPolicy (above), so
+# collectors in other namespaces can reach it.
+# ---------------------------------------------------------------------------
+prometheus:
+  operator:
+    enabled: true
+  metricServer:
+    enabled: true
+  webhooks:
+    enabled: true
+
+## Scraped by annotation-based collectors (for example vmagent) on the
+## prometheus metrics port of each component
+podAnnotations:
+  keda:
+    prometheus.io/scrape: "true"
+    prometheus.io/port: "8080"
+    prometheus.io/path: "/metrics"
+  metricsAdapter:
+    prometheus.io/scrape: "true"
+    prometheus.io/port: "8080"
+    prometheus.io/path: "/metrics"
+  webhooks:
+    prometheus.io/scrape: "true"
+    prometheus.io/port: "8080"
+    prometheus.io/path: "/metrics"
