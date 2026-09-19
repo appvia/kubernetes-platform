@@ -29,6 +29,8 @@ kustomize:
 namespace:
   ## The namespace to deploy the resources
   name: ack-system
+  ## Do not create the namespace
+  create: false
 
 sync:
   phase: secondary

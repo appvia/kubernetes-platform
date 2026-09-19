@@ -23,6 +23,8 @@ kustomize:
 namespace:
   ## The name of the namespace to deploy the application (required)
   name: kube-system
+  ## Do not create the namespace
+  create: false
 
 ## Synchronization options (optional)
 sync:

@@ -22,6 +22,8 @@ kustomize:
 namespace:
   ## The namespace to deploy the resources
   name: external-secrets
+  ## Do not create the namespace
+  create: false
 
 sync:
   phase: secondary

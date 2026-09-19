@@ -13,6 +13,8 @@ kustomize:
 namespace:
   ## ClusterRoles are cluster-scoped; kube-system is used for ApplicationSet destination
   name: kube-system
+  ## Do not create the namespace
+  create: false
 
 ## Synchronization options
 sync:

@@ -21,6 +21,8 @@ kustomize:
 namespace:
   ## Name of the namespace to deploy the application
   name: cert-manager
+  ## Do not create the namespace
+  create: false
 
 ## Synchronization options
 sync:

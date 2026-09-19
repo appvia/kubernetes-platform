@@ -17,6 +17,8 @@ kustomize:
 namespace:
   ## The name of the namespace to deploy the application
   name: terraform-system
+  ## Do not create the namespace
+  create: false
 
 ## Synchronization options
 sync:
