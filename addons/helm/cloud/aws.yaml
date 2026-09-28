@@ -83,21 +83,21 @@
   description: Argo Workflows chart configured with AWS-oriented ingress patterns.
   chart: argo-workflows
   repository: https://argoproj.github.io/argo-helm
-  version: "2.0.6"
+  version: "2.0.8"
   namespace: argocd
 - feature: aws_argocd
   category: gitops
   description: Argo CD release tuned for AWS reference architectures.
   chart: argo-cd
   repository: https://argoproj.github.io/argo-helm
-  version: "10.9.0"
+  version: "10.9.2"
   namespace: argocd
 - feature: aws_argocd_ingress
   category: gitops
   description: Argo CD with ingress settings for AWS load balancers and DNS.
   chart: argo-cd
   repository: https://argoproj.github.io/argo-helm
-  version: "10.9.0"
+  version: "10.9.2"
   namespace: argocd
 - feature: aws_crossplane_provider
   category: aws
@@ -129,7 +129,7 @@
   link: https://velero.io/
   chart: velero
   repository: https://vmware-tanzu.github.io/helm-charts
-  version: "12.1.0"
+  version: "12.2.0"
   namespace: velero
 - feature: aws_secrets_store_csi_driver_provider
   category: security
@@ -137,7 +137,7 @@
   link: https://github.com/aws/secrets-store-csi-driver-provider-aws
   chart: secrets-store-csi-driver-provider-aws
   repository: https://aws.github.io/secrets-store-csi-driver-provider-aws
-  version: "3.1.3"
+  version: "3.1.4"
   namespace: kube-system
 - feature: aws_ack_apigatewayv2
   category: aws
