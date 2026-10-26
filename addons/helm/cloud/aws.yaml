@@ -5,7 +5,7 @@
   link: https://kubernetes-sigs.github.io/aws-load-balancer-controller/
   chart: aws-load-balancer-controller
   repository: https://aws.github.io/eks-charts
-  version: "3.6.0"
+  version: "3.6.2"
   namespace: ingress-system
   parameters:
     - name: clusterName
@@ -36,7 +36,7 @@
   link: https://github.com/kubernetes-sigs/aws-efs-csi-driver
   chart: aws-efs-csi-driver
   repository: https://kubernetes-sigs.github.io/aws-efs-csi-driver
-  version: "4.5.1"
+  version: "4.5.2"
   namespace: kube-system
 - feature: aws_fsx_csi_driver
   category: storage
@@ -44,7 +44,7 @@
   link: https://github.com/kubernetes-sigs/aws-fsx-csi-driver
   chart: aws-fsx-csi-driver
   repository: https://kubernetes-sigs.github.io/aws-fsx-csi-driver
-  version: "1.18.0"
+  version: "1.19.0"
   namespace: kube-system
 - feature: aws_for_fluentbit
   category: observability
@@ -83,21 +83,21 @@
   description: Argo Workflows chart configured with AWS-oriented ingress patterns.
   chart: argo-workflows
   repository: https://argoproj.github.io/argo-helm
-  version: "2.0.12"
+  version: "2.0.14"
   namespace: argocd
 - feature: aws_argocd
   category: gitops
   description: Argo CD release tuned for AWS reference architectures.
   chart: argo-cd
   repository: https://argoproj.github.io/argo-helm
-  version: "10.10.2"
+  version: "10.11.1"
   namespace: argocd
 - feature: aws_argocd_ingress
   category: gitops
   description: Argo CD with ingress settings for AWS load balancers and DNS.
   chart: argo-cd
   repository: https://argoproj.github.io/argo-helm
-  version: "10.10.2"
+  version: "10.11.1"
   namespace: argocd
 - feature: aws_crossplane_provider
   category: aws
@@ -121,7 +121,7 @@
   link: https://cert-manager.github.io/aws-privateca-issuer/
   chart: aws-privateca-issuer
   repository: https://cert-manager.github.io/aws-privateca-issuer
-  version: "v1.10.0"
+  version: "v1.11.1"
   namespace: cert-manager
 - feature: aws_velero
   category: storage
