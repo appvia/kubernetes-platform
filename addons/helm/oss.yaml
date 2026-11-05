@@ -5,7 +5,7 @@
   link: https://argo-cd.readthedocs.io/
   chart: argo-cd
   repository: https://argoproj.github.io/argo-helm
-  version: "10.11.1"
+  version: "10.11.6"
   namespace: argocd
 - feature: argo_events
   category: gitops
@@ -29,7 +29,7 @@
   link: https://argoproj.github.io/argo-workflows/
   chart: argo-workflows
   repository: https://argoproj.github.io/argo-helm
-  version: "2.0.14"
+  version: "2.0.15"
   namespace: argo-workflows
 - feature: argocd_notifications
   category: gitops
