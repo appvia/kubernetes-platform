@@ -5,7 +5,7 @@
   link: https://argo-cd.readthedocs.io/
   chart: argo-cd
   repository: https://argoproj.github.io/argo-helm
-  version: "10.11.6"
+  version: "10.17.0"
   namespace: argocd
 - feature: argo_events
   category: gitops
@@ -13,7 +13,7 @@
   link: https://argoproj.github.io/argo-events/
   chart: argo-events
   repository: https://argoproj.github.io/argo-helm
-  version: "2.4.27"
+  version: "2.4.28"
   namespace: argocd
 - feature: argo_rollouts
   category: gitops
@@ -21,7 +21,7 @@
   link: https://argoproj.github.io/argo-rollouts/
   chart: argo-rollouts
   repository: https://argoproj.github.io/argo-helm
-  version: "2.43.8"
+  version: "2.43.11"
   namespace: argocd-rollouts
 - feature: argo_workflows
   category: gitops
@@ -29,7 +29,7 @@
   link: https://argoproj.github.io/argo-workflows/
   chart: argo-workflows
   repository: https://argoproj.github.io/argo-helm
-  version: "2.0.15"
+  version: "2.0.18"
   namespace: argo-workflows
 - feature: argocd_notifications
   category: gitops
@@ -62,7 +62,7 @@
   link: https://github.com/kubernetes/autoscaler
   chart: cluster-autoscaler
   repository: https://kubernetes.github.io/autoscaler
-  version: "9.59.0"
+  version: "9.60.0"
   namespace: kube-system
 - feature: external_dns
   category: networking
@@ -178,7 +178,7 @@
   link: https://github.com/kubernetes-sigs/prometheus-adapter
   chart: prometheus-adapter
   repository: https://prometheus-community.github.io/helm-charts
-  version: "5.3.0"
+  version: "5.4.0"
   namespace: prometheus
 - feature: secrets_store_csi_driver
   category: security
@@ -186,7 +186,7 @@
   link: https://secrets-store-csi-driver.sigs.k8s.io/
   chart: secrets-store-csi-driver
   repository: https://kubernetes-sigs.github.io/secrets-store-csi-driver/charts
-  version: "1.6.1"
+  version: "1.6.2"
   namespace: kube-system
 - feature: opencost
   category: cost
@@ -221,7 +221,7 @@
   link: https://github.com/kubernetes/autoscaler/tree/master/vertical-pod-autoscaler
   chart: vpa
   repository: https://charts.fairwinds.com/stable
-  version: "5.1.0"
+  version: "5.2.0"
   namespace: kube-system
 - feature: envoy_gateway
   category: networking
@@ -238,4 +238,4 @@
   repository: https://pkgs.tailscale.com/helmcharts
   link: https://tailscale.com/docs/features/kubernetes-operator
   namespace: tailscale
-  version: "1.104.2"
+  version: "1.104.4"
