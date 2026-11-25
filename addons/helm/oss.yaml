@@ -5,7 +5,7 @@
   link: https://argo-cd.readthedocs.io/
   chart: argo-cd
   repository: https://argoproj.github.io/argo-helm
-  version: "10.11.6"
+  version: "10.18.2"
   namespace: argocd
 - feature: argo_events
   category: gitops
@@ -13,7 +13,7 @@
   link: https://argoproj.github.io/argo-events/
   chart: argo-events
   repository: https://argoproj.github.io/argo-helm
-  version: "2.4.27"
+  version: "2.4.28"
   namespace: argocd
 - feature: argo_rollouts
   category: gitops
@@ -21,7 +21,7 @@
   link: https://argoproj.github.io/argo-rollouts/
   chart: argo-rollouts
   repository: https://argoproj.github.io/argo-helm
-  version: "2.43.8"
+  version: "2.43.12"
   namespace: argocd-rollouts
 - feature: argo_workflows
   category: gitops
@@ -29,7 +29,7 @@
   link: https://argoproj.github.io/argo-workflows/
   chart: argo-workflows
   repository: https://argoproj.github.io/argo-helm
-  version: "2.0.15"
+  version: "2.0.18"
   namespace: argo-workflows
 - feature: argocd_notifications
   category: gitops
@@ -54,7 +54,7 @@
   link: https://cilium.io/
   chart: cilium
   repository: https://helm.cilium.io/
-  version: "1.20.4"
+  version: "1.20.5"
   namespace: cilium-system
 - feature: cluster_autoscaler
   category: compute
@@ -62,7 +62,7 @@
   link: https://github.com/kubernetes/autoscaler
   chart: cluster-autoscaler
   repository: https://kubernetes.github.io/autoscaler
-  version: "9.59.0"
+  version: "9.60.0"
   namespace: kube-system
 - feature: external_dns
   category: networking
@@ -70,7 +70,7 @@
   link: https://github.com/kubernetes-sigs/external-dns
   chart: external-dns
   repository: https://kubernetes-sigs.github.io/external-dns
-  version: "1.23.0"
+  version: "1.24.0"
   namespace: kube-system
 - feature: external_secrets
   category: security
@@ -78,7 +78,7 @@
   link: https://external-secrets.io/
   chart: external-secrets
   repository: https://charts.external-secrets.io
-  version: "2.14.0"
+  version: "2.15.0"
   namespace: external-secrets
 - feature: keda
   category: workloads
@@ -86,7 +86,7 @@
   link: https://keda.sh/
   chart: keda
   repository: https://kedacore.github.io/charts
-  version: "2.21.0"
+  version: "2.21.1"
   namespace: keda-system
 - feature: kgateway_crds
   category: networking
@@ -135,7 +135,7 @@
   link: https://www.kubecost.com/
   chart: kubecost
   repository: https://kubecost.github.io/kubecost
-  version: "3.3.1"
+  version: "3.3.2"
   namespace: kubecost
   parameters:
     - name: global.clusterName
@@ -146,7 +146,7 @@
   link: https://kyverno.io/
   chart: kyverno
   repository: https://kyverno.github.io/kyverno
-  version: "3.9.2"
+  version: "3.10.0"
   namespace: kyverno-system
 - feature: kyverno_policies
   category: security
@@ -178,7 +178,7 @@
   link: https://github.com/kubernetes-sigs/prometheus-adapter
   chart: prometheus-adapter
   repository: https://prometheus-community.github.io/helm-charts
-  version: "5.3.0"
+  version: "5.4.2"
   namespace: prometheus
 - feature: secrets_store_csi_driver
   category: security
@@ -186,7 +186,7 @@
   link: https://secrets-store-csi-driver.sigs.k8s.io/
   chart: secrets-store-csi-driver
   repository: https://kubernetes-sigs.github.io/secrets-store-csi-driver/charts
-  version: "1.6.1"
+  version: "1.6.2"
   namespace: kube-system
 - feature: opencost
   category: cost
@@ -194,7 +194,7 @@
   link: https://www.opencost.io/
   chart: opencost
   repository: https://opencost.github.io/opencost-helm-chart
-  version: "2.5.33"
+  version: "2.5.34"
   namespace: opencost
   parameters:
     - name: opencost.exporter.defaultClusterId
@@ -221,7 +221,7 @@
   link: https://github.com/kubernetes/autoscaler/tree/master/vertical-pod-autoscaler
   chart: vpa
   repository: https://charts.fairwinds.com/stable
-  version: "5.1.0"
+  version: "5.2.0"
   namespace: kube-system
 - feature: envoy_gateway
   category: networking
@@ -238,4 +238,4 @@
   repository: https://pkgs.tailscale.com/helmcharts
   link: https://tailscale.com/docs/features/kubernetes-operator
   namespace: tailscale
-  version: "1.104.2"
+  version: "1.104.7"
