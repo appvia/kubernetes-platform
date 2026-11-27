@@ -20,5 +20,7 @@ namespace:
 
 ## Synchronization options
 sync:
-  ## We want to deploy gateway-api after the platform
-  phase: secondary
+  ## The CRDs must exist before the AWS Load Balancer Controller (phase primary)
+  ## starts: it checks for them once at startup and disables its Gateway API
+  ## support if they are missing. They have no dependencies, so deploy them first
+  phase: primary
