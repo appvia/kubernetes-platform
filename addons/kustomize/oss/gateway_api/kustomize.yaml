@@ -20,7 +20,5 @@ namespace:
 
 ## Synchronization options
 sync:
-  ## The CRDs must exist before the AWS Load Balancer Controller (phase primary)
-  ## starts: it checks for them once at startup and disables its Gateway API
-  ## support if they are missing. They have no dependencies, so deploy them first
+  ## Before the AWS Load Balancer Controller, which only checks for the CRDs at startup
   phase: primary
