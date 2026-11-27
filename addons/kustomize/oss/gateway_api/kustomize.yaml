@@ -20,5 +20,5 @@ namespace:
 
 ## Synchronization options
 sync:
-  ## We want to deploy gateway-api after the platform
-  phase: secondary
+  ## Before the AWS Load Balancer Controller, which only checks for the CRDs at startup
+  phase: primary
